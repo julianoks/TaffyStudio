@@ -1,0 +1,18 @@
+<html>
+<head>
+<script src="deps/d3/d3.js"></script>
+</head>
+<body>
+<center><div class="svgHolder"></div></center>
+</body>
+
+<script type="module">
+import {createSVG} from './js/graph_base/make_svg.js'
+import {addNodeCreationClick} from './js/graph_base/nodes.js'
+// Playing around...
+
+let svg = createSVG(d3.select(".svgHolder"), [850, 1100])
+	.call(addNodeCreationClick)
+</script>
+
+</html>
