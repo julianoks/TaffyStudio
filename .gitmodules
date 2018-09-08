@@ -1,0 +1,3 @@
+[submodule "deps/Taffy"]
+	path = deps/Taffy
+	url = https://github.com/julianoks/Taffy
