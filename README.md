@@ -20,6 +20,8 @@
 				- nodeBody ([link](#nodebody))
 				- nodeGuts ([link](#nodeguts))
 	- defs ([link](#defs))
+	- sideBar ([link](#sidebar))
+		- sideBarContent ([link](#sidebarcontent))
 
 ## Data Attributes
 Some elements have Data Attributes attached via D3's data join.
@@ -96,10 +98,17 @@ A [```foreignObject```](https://developer.mozilla.org/en-US/docs/Web/SVG/Element
 Defines "arrowEnd" and "circleEnd" arrows for drawing edges.
 Currently, only the "arrowEnd" marker is used.
 
+### sideBar
+A [```foreignObject```](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject) that holds the [side bar content](#sidebarcontent).
+Note that everthing inside a ```foreignObject``` must be XHTML.
+
+### sideBarContent
+Holds content related to manipulating nodes.
+
 ## Event Listeners
 Event listeners are functions attached to elements which are triggered when a specified event occurs. 
 Event listeners are what makes the application dynamic, providing responses for events like clicking and dragging. 
-Below is a list of event listeners used in the app.
+Below is a list of some event listeners used in the app.
 
 ### SVG Pan/Zoom
 Attached to the [```svg```](#svg-element) element is a zoom listener that modifies the transform applied to the [```drawCanvas```](#drawcanvas) element.

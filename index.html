@@ -9,10 +9,11 @@
 <script type="module">
 import {createSVG} from './js/graph_base/make_svg.js'
 import {addNodeCreationClick} from './js/graph_base/nodes.js'
-// Playing around...
+import {addSideBar} from './js/graph_base/sideBar.js'
 
-let svg = createSVG(d3.select(".svgHolder"), [850, 1100])
+let svg = createSVG(d3.select(".svgHolder"), [1200, 1100])
 	.call(addNodeCreationClick)
+	.call(addSideBar)
 </script>
 
 </html>
