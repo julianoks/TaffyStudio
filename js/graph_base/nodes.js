@@ -52,6 +52,7 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 		.attr("transform", `translate(${mx - (width / 2)},${my - (height / 2)})`)
 		.on("mouseenter", function(ele, override=false){mouseEnter(override? ele : this)})
 		.on("mouseleave", function(ele, override=false){mouseLeave(override? ele : this)})
+		.on("click", function(){d3.event.stopPropagation();click(this);})
 		.call(nodeDragBehavior)
 		.datum(function(){
 			const name = this.ownerSVGElement.__data__.graphStructure.addVertex(this)
@@ -67,12 +68,10 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 		.attr("height", height)
 		.attr("rx", rounding)
 		.attr("ry", rounding)
-		.on("click", function(){d3.event.stopPropagation();click(this);})
 	nodeGuts
 		.classed('nodeGuts', true)
 		.style('width', width)
 		.style('height', height)
-		.on('click', function(){d3.event.stopPropagation()})
 	// call populateNode callback on node upon completion, rescale ports
 	if(typeof populateNode === "function"){
 		nodeContainer.call(populateNode)
@@ -96,7 +95,10 @@ const _nodeEventHandlers = {
 		s.select(".nodePorts")
 			.transition().style("opacity", 0.5)
 	},
-	click: ele => {console.log(ele)}
+	click: ele => {
+		ele.ownerSVGElement.__data__.lastNodeClicked = ele.__data__.vertexName
+		console.log(ele)
+	}
 }
 const _populateNode = container => {
 	container

@@ -124,8 +124,8 @@ When the mouse leaves, the [```nodeGuts```](#nodeguts) are made invisible and th
 When the mouse enters, the [```nodeGuts```](#nodeguts) are made visible and the [```nodePorts```](#nodeports) are made fully opaque.
 This functionality can be found in ```_nodeEventHandlers``` (in ```nodes.js```).
 
-### Node Body click
-When the [```nodeBody```](#nodebody) is clicked, an event fires.
+### Node Container click
+When the [```nodeContainer```](#nodecontainer) is clicked, an event fires.
 This is intended to prompt for info (op type and literals), but currently ```console.log```s the vertex name. This is a TODO.
 This can be found in ```_nodeEventHandlers``` (in ```nodes.js```).
 
