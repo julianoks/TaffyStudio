@@ -1,5 +1,6 @@
 import {giveNodePorts} from './give_ports.js'
 import {inverseRelativeTransform} from './svg_utils.js'
+import {sideBarNodeManipulation} from './sideBar.js'
 
 // node drag behavior
 const __nodeOnDrag = function(ele){
@@ -96,8 +97,9 @@ const _nodeEventHandlers = {
 			.transition().style("opacity", 0.5)
 	},
 	click: ele => {
-		ele.ownerSVGElement.__data__.lastNodeClicked = ele.__data__.vertexName
-		console.log(ele)
+		const {vertexName} = ele.__data__
+		ele.ownerSVGElement.__data__.lastNodeClicked = vertexName
+		sideBarNodeManipulation(ele.ownerSVGElement, vertexName)
 	}
 }
 const _populateNode = container => {

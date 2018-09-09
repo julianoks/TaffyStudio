@@ -18,9 +18,10 @@ export function graphStructure(){
 	this.V = {}
 	// nested dictionary, eg this.E['node1']['node2'] is an array of edge elements from node1 to node2
 	this.E = {}
-
 	// given the name of a vertex, returns all associated edge relations (as a set)
 	this.vertexToEdges = {}
+	// counter for generating unique IDs
+	this.vertexCreationCounter = 0
 
 	this.getVertexElement = vertex => this.V[vertex]
 	this.getEdgeElements = (v1, v2) => this.E[v1][v2]
@@ -30,9 +31,6 @@ export function graphStructure(){
 			.map(edge => this.getEdgeElements(...edge))
 		return [].concat(...edgeBundles)
 	}
-
-	// counter for generating unique IDs
-	this.vertexCreationCounter = 0
 
 	// add a vertex
 	this.addVertex = function(element, name=undefined){
@@ -90,6 +88,7 @@ export function graphStructure(){
 			const neighbor = edge.find(v => v != name)
 			this.vertexToEdges[neighbor].delete(edge)
 		})
+		
 		return elements
 	}
 }
