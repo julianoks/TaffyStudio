@@ -27,6 +27,7 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 	svgData = {
 		graphStructure: graphStructure,
 		lastPortHovered: undefined,
+		nodeMetaData: {},
 		getGraph: makeGetGraph(graphStructure),
 		givePorts: (vertex, nIn, nOut) => getVertexByName(vertex)
 			.call(s => giveNodePorts(s, nIn, nOut)),

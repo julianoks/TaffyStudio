@@ -1,11 +1,12 @@
 # Provisional Architecture
 
 ## TODO
-- Store node metadata
-- Callbacks for sideBar inputs
-- ```.givePorts``` method must transfer edges to new ports 
-- fix focusing issue in sideBar
-- method that uses ```.getGraph``` and the node's metadata to make raw Taffy
+[x] Store node metadata
+[x] Callbacks for sideBar inputs
+[ ] Make Attribute (attr) input field for the sidebar
+[ ] ```.givePorts``` method must transfer edges to new ports 
+[ ] fix focusing issue in sideBar
+[ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
 
 ## The Hierarchy
 - svg element ([link](#svg-element))
@@ -45,6 +46,7 @@ This web app follows two conventions for data attributes:
 Data Attribute:
 - lastPortHovered - The port element that was last hovered
 - graphStructure - A ```graphStructure``` object
+- nodeMetaData - An object with vertexName as keys and {op, literal, userProvidedName} as values
 - givePorts - A function with arguments ```(vertex, nIn, nOut) => selection```. Gives ```nIn``` incoming ports and ```nOut``` outgoing ports to the node with name ```vertex```.
 - setNodeColor - A function with arguments ```(vertex, color) => selection```. Sets the color of the node with name ```vertex``` to the specified ```color```.
 - getGraph - A function ```() => nodes```. The return value is a dictionary with node names as keys, and an array of inputs as values. Each input is represented as a dictionary with the name of the input node, and the index of the output value.

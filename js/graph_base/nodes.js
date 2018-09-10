@@ -73,11 +73,20 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 		.classed('nodeGuts', true)
 		.style('width', width)
 		.style('height', height)
-	// call populateNode callback on node upon completion, rescale ports
+	nodeContainer.each(({vertexName}) => {
+		// add node's metadata to the graph
+		svgSelection.node().__data__.nodeMetaData[vertexName] = {
+			userProvidedName: vertexName,
+			op: undefined,
+			literal: []
+		}
+		// focus the sidebar on the newly created node
+		sideBarNodeManipulation(svgSelection.node(), vertexName)
+	})
+	// upon completion call populateNode callback on node, rescale ports
 	if(typeof populateNode === "function"){
 		nodeContainer.call(populateNode)
 	}
-	return nodeContainer
 }
 
 const _nodeEventHandlers = {
@@ -115,7 +124,6 @@ export function addNodeCreationClick(svg){
 			.selectAll(".drawCanvas").each(function(){
 				const inverted = inverseRelativeTransform(this, "svg")(screenCoord)
 				addNode(svg, inverted, {}, _nodeEventHandlers, _populateNode)
-					.each(({vertexName}) => sideBarNodeManipulation(svg.node(), vertexName))
 			})
 	})
 }

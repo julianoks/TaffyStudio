@@ -65,6 +65,8 @@ function makeSubtractInputButton(ownerSVG, vertexName){
 function makeOperationDropdown(ownerSVG, vertexName){
 	let select = document.createElement('select')
 	select.className = 'custom-select'
+	const firstOption = '<option value="" disabled selected>Select...</option>'
+	select.appendChild(document.createRange().createContextualFragment(firstOption))
 	const operations = Object.entries(primitives)
 		.map(([a,{name}]) => [a, name])
 		.sort(([,a],[,b]) => a<b? -1 : 1)
@@ -72,14 +74,25 @@ function makeOperationDropdown(ownerSVG, vertexName){
 		let option = document.createElement('option')
 		option.value = identifier
 		option.innerHTML = name
+		if(identifier === ownerSVG.__data__.nodeMetaData[vertexName].op){
+			option.selected = 'selected'
+		}
 		select.appendChild(option)
 	})
+	select.oninput = function(){
+		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
+	}
 	return select
 }
 
 function makeNodeNameBox(ownerSVG, vertexName){
-	const html = `<input class="form-control" id="vertexName" value="${vertexName}">`
-	return document.createRange().createContextualFragment(html).firstChild
+	const initValue = ownerSVG.__data__.nodeMetaData[vertexName].userProvidedName
+	const html = `<input class="form-control" id="vertexName" value="${initValue}">`
+	const box = document.createRange().createContextualFragment(html).firstChild
+	box.oninput = function(){
+		ownerSVG.__data__.nodeMetaData[vertexName].userProvidedName = this.value
+	}
+	return box
 }
 
 function makeManipulationCard(ownerSVG, vertexName){
