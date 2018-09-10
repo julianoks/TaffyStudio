@@ -81,6 +81,7 @@ function makeOperationDropdown(ownerSVG, vertexName){
 	})
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
+		sideBarNodeManipulation(ownerSVG, vertexName)
 	}
 	return select
 }
@@ -98,28 +99,70 @@ function makeNodeNameBox(ownerSVG, vertexName){
 function makeManipulationCard(ownerSVG, vertexName){
 	let card = document.createElement('div')
 	card.className = 'card'
-	let list = document.createElement('ul')
-	list.className = 'list-group list-group-flush'
-
 	const listItems = [
-		[document.createTextNode('Name '), makeNodeNameBox(ownerSVG, vertexName)],
-		[document.createTextNode('Operation '), makeOperationDropdown(ownerSVG, vertexName)],
-		[document.createTextNode('Change Arity '), makeSubtractInputButton(ownerSVG, vertexName), makeAddInputButton(ownerSVG, vertexName)],
-		[document.createTextNode('Delete Node '), makeDeleteButton(ownerSVG, vertexName)],
+		['Name ', makeNodeNameBox(ownerSVG, vertexName)],
+		['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
+		['Change Arity ', makeSubtractInputButton(ownerSVG, vertexName), makeAddInputButton(ownerSVG, vertexName)],
+		['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
 	]
-	listItems.forEach(cols => {
-		let li = document.createElement('li')
-		li.className = 'list-group-item'
-		cols.forEach(e => li.appendChild(e))
-		list.appendChild(li)
-	})
+	const list = _makeListFromItems(listItems)
+	list.className += ' list-group-flush'
 
 	card.appendChild(list)
 	return card
+}
+
+
+
+
+function _makeListFromItems(listItems){
+	let list = document.createElement('ul')
+	list.className = 'list-group'
+	listItems
+		.map(e => Array.isArray(e)? e : [e])
+		.forEach(cols => {
+			let li = document.createElement('li')
+			li.className = 'list-group-item'
+			cols
+				.map(e => typeof e === 'string'? document.createTextNode(e) : e)
+				.forEach(e => li.appendChild(e))
+			list.appendChild(li)
+		})
+	return list
+}
+
+function makeOpDocCards(ownerSVG, vertexName){
+	const op = ownerSVG.__data__.nodeMetaData[vertexName].op
+	if(!primitives.hasOwnProperty(op)){
+		const div = document.createElement('div')
+		div.style.display = 'none'
+		return div
+	}
+	const {doc, input, output} = primitives[op].doc
+	const html = `
+	<div class="panel panel-default">
+	  <div class="panel-heading">Documentation for <b><i>${op}</i></b></div>
+	  <div class="panel-body">
+	    <p>${doc}</p>
+	  </div>
+	  <ul class="list-group">
+	    <li class="list-group-item">Input <br>
+	    	<div id="inputListHolder"></div>
+	    </li>
+	    <li class="list-group-item">Output <br>
+	    	<div id="outputListHolder"></div>
+	    </li>
+	  </ul>
+	</div>`
+	const opdoc = document.createRange().createContextualFragment(html)
+	opdoc.querySelector('#inputListHolder').appendChild(_makeListFromItems(input))
+	opdoc.querySelector('#outputListHolder').appendChild(_makeListFromItems(output))
+	return opdoc
 }
 
 export function sideBarNodeManipulation(ownerSVG, vertexName){
 	const sideBarContent = ownerSVG.querySelector('.sideBarContent')
 	sideBarContent.innerHTML = ''
 	sideBarContent.appendChild(makeManipulationCard(ownerSVG, vertexName))
+	sideBarContent.appendChild(makeOpDocCards(ownerSVG, vertexName))
 }

@@ -3,8 +3,9 @@
 ## TODO
 [x] Store node metadata
 [x] Callbacks for sideBar inputs
-[ ] Make Attribute (attr) input field for the sidebar
+[x] Operation Documentation for sidebar
 [ ] ```.givePorts``` method must transfer edges to new ports 
+[ ] Make Attribute (attr) input field for the sidebar
 [ ] fix focusing issue in sideBar
 [ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
 
