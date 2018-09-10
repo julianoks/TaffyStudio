@@ -1,5 +1,12 @@
 # Provisional Architecture
 
+## TODO
+- Store node metadata
+- Callbacks for sideBar inputs
+- ```.givePorts``` method must transfer edges to new ports 
+- fix focusing issue in sideBar
+- method that uses ```.getGraph``` and the node's metadata to make raw Taffy
+
 ## The Hierarchy
 - svg element ([link](#svg-element))
 	- drawCanvas ([link](#drawcanvas))

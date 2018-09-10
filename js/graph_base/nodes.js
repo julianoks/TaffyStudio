@@ -77,6 +77,7 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 	if(typeof populateNode === "function"){
 		nodeContainer.call(populateNode)
 	}
+	return nodeContainer
 }
 
 const _nodeEventHandlers = {
@@ -97,9 +98,7 @@ const _nodeEventHandlers = {
 			.transition().style("opacity", 0.5)
 	},
 	click: ele => {
-		const {vertexName} = ele.__data__
-		ele.ownerSVGElement.__data__.lastNodeClicked = vertexName
-		sideBarNodeManipulation(ele.ownerSVGElement, vertexName)
+		sideBarNodeManipulation(ele.ownerSVGElement, ele.__data__.vertexName)
 	}
 }
 const _populateNode = container => {
@@ -116,6 +115,7 @@ export function addNodeCreationClick(svg){
 			.selectAll(".drawCanvas").each(function(){
 				const inverted = inverseRelativeTransform(this, "svg")(screenCoord)
 				addNode(svg, inverted, {}, _nodeEventHandlers, _populateNode)
+					.each(({vertexName}) => sideBarNodeManipulation(svg.node(), vertexName))
 			})
 	})
 }
