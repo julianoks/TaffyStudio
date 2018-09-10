@@ -155,8 +155,14 @@ function makeOpDocCards(ownerSVG, vertexName){
 	  </ul>
 	</div>`
 	const opdoc = document.createRange().createContextualFragment(html)
-	opdoc.querySelector('#inputListHolder').appendChild(_makeListFromItems(input))
-	opdoc.querySelector('#outputListHolder').appendChild(_makeListFromItems(output))
+	const listNoClass = items => {
+		const list = _makeListFromItems(items)
+		list.className = ''
+		Array.from(list.children).forEach(li => {li.className = ''})
+		return list
+	}
+	opdoc.querySelector('#inputListHolder').appendChild(listNoClass(input))
+	opdoc.querySelector('#outputListHolder').appendChild(listNoClass(output))
 	return opdoc
 }
 
