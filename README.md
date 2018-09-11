@@ -5,32 +5,32 @@
 [x] Callbacks for sideBar inputs
 [x] Operation Documentation for sidebar
 [ ] ```.givePorts``` method must transfer edges to new ports 
-[ ] Make Attribute (attr) input field for the sidebar
-[ ] fix focusing issue in sideBar
+[x] Make Literal (literal) input field for the sidebar
+[x] fix focusing issue in sideBar
 [ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
 
 ## The Hierarchy
-- svg element ([link](#svg-element))
-	- drawCanvas ([link](#drawcanvas))
-		- gridLines ([link](#gridlines))
-			- Vertical lines ([link](#vertical-lines))
-			- Horizontal lines ([link](#horizontal-lines))
-		- edgesGroup ([link](#edgesgroup))
-			- (multiple) Edge Elements ([link](#edge-elements))
-		- nodesGroup ([link](#nodesgroup))
-			- (multiple) nodeContainer ([link](#nodecontainer))
-				- nodePorts ([link](#nodeports))
-					- nodeInPort ([link](#nodeinport))
-						- Hovering Rect ([link](#hovering-rect))
-						- (multiple) Port Elements ([link](#port-elements))
-					- nodeOutPort ([link](#nodeoutport))
-						- Hovering Rect ([link](#hovering-rect))
-						- (multiple) Port Elements ([link](#port-elements))
-				- nodeBody ([link](#nodebody))
-				- nodeGuts ([link](#nodeguts))
-	- defs ([link](#defs))
+- studioHolder ([link](#studioholder))
+	- svg element ([link](#svg-element))
+		- drawCanvas ([link](#drawcanvas))
+			- gridLines ([link](#gridlines))
+				- Vertical lines ([link](#vertical-lines))
+				- Horizontal lines ([link](#horizontal-lines))
+			- edgesGroup ([link](#edgesgroup))
+				- (multiple) Edge Elements ([link](#edge-elements))
+			- nodesGroup ([link](#nodesgroup))
+				- (multiple) nodeContainer ([link](#nodecontainer))
+					- nodePorts ([link](#nodeports))
+						- nodeInPort ([link](#nodeinport))
+							- Hovering Rect ([link](#hovering-rect))
+							- (multiple) Port Elements ([link](#port-elements))
+						- nodeOutPort ([link](#nodeoutport))
+							- Hovering Rect ([link](#hovering-rect))
+							- (multiple) Port Elements ([link](#port-elements))
+					- nodeBody ([link](#nodebody))
+					- nodeGuts ([link](#nodeguts))
+		- defs ([link](#defs))
 	- sideBar ([link](#sidebar))
-		- sideBarContent ([link](#sidebarcontent))
 
 ## Data Attributes
 Some elements have Data Attributes attached via D3's data join.
@@ -42,6 +42,9 @@ This web app follows two conventions for data attributes:
 - D3 has children inherit data elements from its parent. I think using inherited data is smelly, so I'm only accessing data from the owning element, which is why you may see ```ele.parentElement.parentElement.__data__```.
 
 ## Elements
+
+### studioHolder
+Top level ```div``` tha holds the [SVG Element](#svg-element) and [sideBar](#sidebar)
 
 ### SVG Element
 Data Attribute:
@@ -109,11 +112,8 @@ Defines "arrowEnd" and "circleEnd" arrows for drawing edges.
 Currently, only the "arrowEnd" marker is used.
 
 ### sideBar
-A [```foreignObject```](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject) that holds the [side bar content](#sidebarcontent).
-Note that everthing inside a ```foreignObject``` must be XHTML.
-
-### sideBarContent
 Holds content related to manipulating nodes.
+TODO: document this subtree
 
 ## Event Listeners
 Event listeners are functions attached to elements which are triggered when a specified event occurs. 
@@ -136,7 +136,6 @@ This functionality can be found in ```_nodeEventHandlers``` (in ```nodes.js```).
 
 ### Node Container click
 When the [```nodeContainer```](#nodecontainer) is clicked, an event fires.
-This is intended to prompt for info (op type and literals), but currently ```console.log```s the vertex name. This is a TODO.
 This can be found in ```_nodeEventHandlers``` (in ```nodes.js```).
 
 ### Node Drag

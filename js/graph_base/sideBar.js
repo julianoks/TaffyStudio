@@ -2,35 +2,29 @@ import {primitives} from '../../deps/Taffy/src/ops/operations.js'
 
 export function addSideBar(svgSelection){
 	svgSelection.nodes().forEach(svgEle => {
-		const sideBar = d3.select(svgEle).append('foreignObject')
+		const sideBar = d3.select(svgEle.parentElement).append('xhtml:div')
 			.classed('sideBar', true)
-			.attr('x', 0).attr('y', 0)
-			.attr('width', (_,i) => svgSelection.nodes()[i].getAttribute('width')*0.25)
-			.attr('height', (_,i) => svgSelection.nodes()[i].getAttribute('height'))
-			.on('click', () => d3.event.stopPropagation())
-			.on('dblclick', () => d3.event.stopPropagation())
-			.call(d3.drag().on('start', () => d3.event.sourceEvent.preventDefault()))
-		const sideBarContent = sideBar.append('xhtml:div')
-			.classed('sideBarContent', true)
-			.style('width', '100%')
-			.style('height', '100%')
-			.style('background-color', 'f5f5f5')
-		resetSideBarContent(svgEle)
+			.style('float', 'left')
+			.style('width', (_,i) => svgSelection.nodes()[i].getAttribute('width')*0.25)
+			.style('height', (_,i) => svgSelection.nodes()[i].getAttribute('height'))
+			.style('background-color', 'ffffff')
+			.style('border-right', '1px dashed black')
+		resetSideBar(svgEle)
 	})
 }
 
-function resetSideBarContent(ownerSVG){
-	const sideBarContent = ownerSVG.querySelector('.sideBarContent')
-	sideBarContent.innerHTML = ''
+function resetSideBar(ownerSVG){
+	const sideBar = ownerSVG.parentElement.querySelector('.sideBar')
+	sideBar.innerHTML = ''
 }
 
 function makeDeleteButton(ownerSVG, vertexName){
-	const html = '<button type="button" class="btn btn-default btn-lg"> <span style="color:red;" class="glyphicon glyphicon-trash" aria-hidden="true"></span> </button>'
+	const html = '<button type="button" class="btn btn-default"> <span style="color:red;" class="glyphicon glyphicon-trash" aria-hidden="true"></span> </button>'
 	const button = document.createRange().createContextualFragment(html).firstChild
 	button.onclick = () => {
 		const deletes = ownerSVG.__data__.graphStructure.deleteVertex(vertexName)
 		deletes.forEach(e => e.remove())
-		resetSideBarContent(ownerSVG)
+		resetSideBar(ownerSVG)
 	}
 	return button
 }
@@ -43,7 +37,7 @@ function _getNumInputsOutputs(ownerSVG, vertexName){
 	return {nIn, nOut}
 }
 function makeAddInputButton(ownerSVG, vertexName){
-	const html = '<button type="button" class="btn btn-default btn-med"> <span style="color:black;" class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'
+	const html = '<button type="button" class="btn btn-default"> <span style="color:black;" class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'
 	const button = document.createRange().createContextualFragment(html).firstChild
 	button.onclick = () => {
 		const {nIn, nOut} = _getNumInputsOutputs(ownerSVG, vertexName)
@@ -52,7 +46,7 @@ function makeAddInputButton(ownerSVG, vertexName){
 	return button
 }
 function makeSubtractInputButton(ownerSVG, vertexName){
-	const html = '<button type="button" class="btn btn-default btn-med"> <span style="color:black;" class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button>'
+	const html = '<button type="button" class="btn btn-default"> <span style="color:black;" class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button>'
 	const button = document.createRange().createContextualFragment(html).firstChild
 	button.onclick = () => {
 		const {nIn, nOut} = _getNumInputsOutputs(ownerSVG, vertexName)
@@ -141,7 +135,9 @@ function makeOpDocCards(ownerSVG, vertexName){
 	const {doc, input, output} = primitives[op].doc
 	const html = `
 	<div class="panel panel-default">
-	  <div class="panel-heading">Documentation for <b><i>${op}</i></b></div>
+	<div class="panel-heading">
+		<h3 class="panel-title">Documentation for <b><i>${op}</i></b></h3>
+	</div>
 	  <div class="panel-body">
 	    <p>${doc}</p>
 	  </div>
@@ -166,9 +162,52 @@ function makeOpDocCards(ownerSVG, vertexName){
 	return opdoc
 }
 
+
+function makeLiteralsCard(ownerSVG, vertexName){
+	const op = ownerSVG.__data__.nodeMetaData[vertexName].op
+	if(op !== 'literals'){
+		const div = document.createElement('div')
+		div.style.display = 'none'
+		return div
+	}
+	// make initial list
+	const list = _makeListFromItems([])
+	const addListItem = () => {
+		let li = document.createElement('li')
+		li.className = 'list-group-item'
+		const textbox = document.createElement('input')
+		textbox.className = 'form-control'
+		textbox.oninput = function(){
+			ownerSVG.__data__.nodeMetaData[vertexName].literal = Array.from(
+				this.parentElement.parentElement.children)
+					.map(e => e.firstChild.value)
+		}
+		li.appendChild(textbox)
+		list.appendChild(li)
+		return li
+	}
+	if(ownerSVG.__data__.nodeMetaData[vertexName].literal.length === 0){
+		addListItem()
+	} else {
+		ownerSVG.__data__.nodeMetaData[vertexName].literal
+			.map(v => {addListItem().value = v})
+	}
+	// put the list in a panel
+	const panelHTML = '<div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Literals</h3></div> <div class="panel-body"></div> </div>'
+	const panel = document.createRange().createContextualFragment(panelHTML).firstChild
+	const buttonHTML = '<button style="float:right;" type="button" class="btn btn-default"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Literal</button>'
+	const button = document.createRange().createContextualFragment(buttonHTML).firstChild
+	button.onclick = addListItem
+	panel.querySelector('.panel-body').appendChild(list)
+	panel.querySelector('.panel-body').appendChild(button)
+	return panel
+}
+
+
 export function sideBarNodeManipulation(ownerSVG, vertexName){
-	const sideBarContent = ownerSVG.querySelector('.sideBarContent')
-	sideBarContent.innerHTML = ''
-	sideBarContent.appendChild(makeManipulationCard(ownerSVG, vertexName))
-	sideBarContent.appendChild(makeOpDocCards(ownerSVG, vertexName))
+	const sideBar = ownerSVG.parentElement.querySelector('.sideBar')
+	sideBar.innerHTML = ''
+	sideBar.appendChild(makeManipulationCard(ownerSVG, vertexName))
+	sideBar.appendChild(makeOpDocCards(ownerSVG, vertexName))
+	sideBar.appendChild(makeLiteralsCard(ownerSVG, vertexName))
 }

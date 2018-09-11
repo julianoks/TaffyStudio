@@ -44,6 +44,7 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 	const svg = selection
 		.append("svg")
 		.style("border", "1px solid black")
+		.style("float", "right")
 		.attr("width", width)
 		.attr("height", height)
 		.datum(svgData)
