@@ -63,32 +63,36 @@ const portDragBehavior = d3.drag()
     		cache.edgeElement.remove()
     	} else {
 	    	const edge = cache.isOutgoing? [this, lastPort] : [lastPort, this]
-	    	const updatePositionFn = edgeEle => () => {
-	    		const [vin,vout] = edge,
-	    		fromC = [+vin.getAttribute("cx"), +vin.getAttribute("cy")],
-	    		from = relativeTransform(vin, ".drawCanvas")(fromC),
-	    		toC = [+vout.getAttribute("cx"), +vout.getAttribute("cy")],
-	    		to = relativeTransform(vout, ".drawCanvas")(toC)
-	    		positionEdge(d3.select(edgeEle), ...from, ...to)
-	    	}
-	    	cache.edgeElement
-	    		.datum(function(){
-		    		const updatePosition = updatePositionFn(this)
-		    		const getContainer = e => e.parentNode.parentNode.parentNode,
-		    		nodeNames = edge.map(getContainer).map(e => e.__data__.vertexName),
-		    		edgeRelation = {
-		    			from: 	{node: nodeNames[0], index: edge[0].__data__.index},
-		    			to: 	{node: nodeNames[1], index: edge[1].__data__.index}
-		    		}
-		    		// update edge position and register edge
-		    		updatePosition()
-		    		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
-		    		return {updatePosition, edgeRelation}
-		    	})
-	    		.transition().attr("stroke-width", 3)
+	    	finalizeEdge(edge, cache.edgeElement)
     	}
     	delete(this.__dragCache)
     })
+
+function finalizeEdge(edge, edgeElement){
+	const updatePositionFn = edgeEle => () => {
+		const [vin,vout] = edge,
+		fromC = [+vin.getAttribute("cx"), +vin.getAttribute("cy")],
+		from = relativeTransform(vin, ".drawCanvas")(fromC),
+		toC = [+vout.getAttribute("cx"), +vout.getAttribute("cy")],
+		to = relativeTransform(vout, ".drawCanvas")(toC)
+		positionEdge(d3.select(edgeEle), ...from, ...to)
+	}
+	edgeElement
+		.datum(function(){
+    		const updatePosition = updatePositionFn(this)
+    		const getContainer = e => e.parentNode.parentNode.parentNode,
+    		nodeNames = edge.map(getContainer).map(e => e.__data__.vertexName),
+    		edgeRelation = {
+    			from: 	{node: nodeNames[0], index: edge[0].__data__.index},
+    			to: 	{node: nodeNames[1], index: edge[1].__data__.index}
+    		}
+    		// update edge position and register edge
+    		updatePosition()
+    		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
+    		return {updatePosition, edgeRelation}
+    	})
+		.transition().attr("stroke-width", 3)
+}
 
 // position ports
 function scaleAndTranslatePorts(nodeContainerSelection){
@@ -134,5 +138,22 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts){
 		.call(portDragBehavior)
 		.on("mouseover", function(){this.ownerSVGElement.__data__.lastPortHovered = this})
 	nodeContainer.call(scaleAndTranslatePorts)
+	// remove old edge elements, add preexisting edge relations
+	nodeContainer.each(function(){
+		const container = this
+		const {graphStructure} = container.ownerSVGElement.__data__
+		const edges = graphStructure.getIncidentEdgeElements(container.__data__.vertexName)
+		const edgeRelations = edges.map(e => e.__data__.edgeRelation)
+		edgeRelations.forEach(({from,to}) => graphStructure.deleteEdge(from.node, to.node))
+		edges.forEach(e => e.remove())
+		edgeRelations.forEach(({from,to}) => {
+			if(to.node === container.__data__.vertexName && to.index >= nInPorts){ return; }
+			if(from.node === container.__data__.vertexName && from.index >= nOutPorts){ return; }
+			const edgeElement = createEdge(d3.select(container.ownerSVGElement))
+			const circleOut = graphStructure.V[from.node].querySelector('.nodeOutPort').children[1+from.index]
+			const circleIn = graphStructure.V[to.node].querySelector('.nodeInPort').children[1+to.index]
+			finalizeEdge([circleOut, circleIn], edgeElement)
+		})
+	})
 	return {inCircles, outCircles}
 }

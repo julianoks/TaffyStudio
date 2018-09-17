@@ -1,13 +1,13 @@
 # Provisional Architecture
 
 ## TODO
-[x] Store node metadata
-[x] Callbacks for sideBar inputs
-[x] Operation Documentation for sidebar
-[ ] ```.givePorts``` method must transfer edges to new ports 
-[x] Make Literal (literal) input field for the sidebar
-[x] fix focusing issue in sideBar
-[ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
+- [x] Store node metadata
+- [x] Callbacks for sideBar inputs
+- [x] Operation Documentation for sidebar
+- [x] ```.givePorts``` method must transfer edges to new ports 
+- [x] Make Literal (literal) input field for the sidebar
+- [x] fix focusing issue in sideBar
+- [ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
 
 ## The Hierarchy
 - studioHolder ([link](#studioholder))
