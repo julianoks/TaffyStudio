@@ -8,7 +8,7 @@ export function addSideBar(svgSelection){
 			.style('width', (_,i) => svgSelection.nodes()[i].getAttribute('width')*0.25)
 			.style('height', (_,i) => svgSelection.nodes()[i].getAttribute('height'))
 			.style('background-color', 'ffffff')
-			.style('border-right', '1px dashed black')
+			.style('border', '1px solid black')
 		resetSideBar(svgEle)
 	})
 }
@@ -75,6 +75,8 @@ function makeOperationDropdown(ownerSVG, vertexName){
 	})
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
+		const nInputs = primitives[this.value].doc.input.length;
+		ownerSVG.__data__.givePorts(vertexName, nInputs, 0)
 		sideBarNodeManipulation(ownerSVG, vertexName)
 	}
 	return select

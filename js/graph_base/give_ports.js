@@ -58,9 +58,10 @@ const portDragBehavior = d3.drag()
     	cache.mouseLeaveAction()
     	const lastPort = this.ownerSVGElement.__data__.lastPortHovered
     	const portType = e => e.parentElement.className.baseVal
-    	if(portType(lastPort) == portType(this)){
+    	if(portType(lastPort) === portType(this) ||
+    		this.parentElement.parentElement === lastPort.parentElement.parentElement){
     		cache.edgeElement.remove()
-    	}else{
+    	} else {
 	    	const edge = cache.isOutgoing? [this, lastPort] : [lastPort, this]
 	    	const updatePositionFn = edgeEle => () => {
 	    		const [vin,vout] = edge,
