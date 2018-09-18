@@ -8,6 +8,9 @@
 - [x] Make Literal (literal) input field for the sidebar
 - [x] fix focusing issue in sideBar
 - [ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
+	- Will be completed after module metadata functionality is in place
+- [ ] make functionality for creating module metadata (defining outputs, module name, module imports, module documentation)
+- [ ] export Taffy objects from index.html (in Taffy module)
 
 ## The Hierarchy
 - studioHolder ([link](#studioholder))

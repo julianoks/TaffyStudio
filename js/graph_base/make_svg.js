@@ -1,6 +1,7 @@
 import {graphStructure as protoGraphStructure} from './graph_structure.js'
 import {makeGridLines, addMarkerDef} from './svg_utils.js'
 import {giveNodePorts} from './give_ports.js'
+import {constructors as taffyConstructors} from '../../deps/Taffy/src/util/taffy_constructors.js'
 
 const makeGetGraph = graphStructure => () => {
 	const e = graphStructure.E,
@@ -13,6 +14,25 @@ const makeGetGraph = graphStructure => () => {
 		return acc
 	}, {})
 	return g
+}
+
+const makeGetTaffyModule = svgData => () => {
+	let moduleInputs = [],
+	moduleOutputs = []
+	const {node, module} = taffyConstructors,
+	graphSkeleton = svgData.getGraph(),
+	moduleName = "TODO_SOME_MODULE_NAME",
+	moduleImport = [], // list of module names to import
+	moduleDoc = "SOME OPDOC OBJECT",
+	nodes = Object.entries(graphSkeleton).reduce((acc, [name, inputsRaw]) => {
+		let inputs = inputsRaw.slice()
+		while(inputs.length && inputs[inputs.length-1]===undefined){ inputs.pop() }
+		const {op, literal} = svgData.nodeMetaData[name]
+		inputs = inputs.map(({node, index}) => node+':'+index)
+		if(op === 'placeholder'){ moduleInputs.push(name) }
+		return acc.concat([new node(name, op, inputs, literal)])
+	}, [])
+	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)
 }
 
 function zoomSelection(selection) {
@@ -29,11 +49,13 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 		lastPortHovered: undefined,
 		nodeMetaData: {},
 		getGraph: makeGetGraph(graphStructure),
+		getTaffyModule: undefined,
 		givePorts: (vertex, nIn, nOut) => getVertexByName(vertex)
 			.call(s => giveNodePorts(s, nIn, nOut)),
 		setNodeColor: (vertex, color) => getVertexByName(vertex)
 			.select('.nodeBody').attr('fill', color)
 	}
+	svgData.getTaffyModule = makeGetTaffyModule(svgData)
 	function getVertexByName(vertex){
 		if(!svgData.graphStructure.V.hasOwnProperty(vertex)){
 				throw(`Graph doesn't have vertex: "${vertex}"`)
