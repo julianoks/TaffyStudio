@@ -58,11 +58,21 @@ const portDragBehavior = d3.drag()
     	cache.mouseLeaveAction()
     	const lastPort = this.ownerSVGElement.__data__.lastPortHovered
     	const portType = e => e.parentElement.className.baseVal
+    	const edge = cache.isOutgoing? [this, lastPort] : [lastPort, this]
+    	const alreadyIngoing = () => {
+    		const inGoing = edge[1]
+    		const inName = inGoing.parentElement.parentElement.parentElement.__data__.vertexName
+    		const edgeElements = inGoing.ownerSVGElement.__data__.graphStructure.getIncidentEdgeElements(inName)
+    		return edgeElements.some(e => {
+    			const {node, index} = e.__data__.edgeRelation.to
+    			return node === inName && index === inGoing.__data__.index
+    		})
+    	}
     	if(portType(lastPort) === portType(this) ||
-    		this.parentElement.parentElement === lastPort.parentElement.parentElement){
+    		this.parentElement.parentElement === lastPort.parentElement.parentElement || 
+    		alreadyIngoing()){
     		cache.edgeElement.remove()
     	} else {
-	    	const edge = cache.isOutgoing? [this, lastPort] : [lastPort, this]
 	    	finalizeEdge(edge, cache.edgeElement)
     	}
     	delete(this.__dragCache)

@@ -75,8 +75,9 @@ function makeOperationDropdown(ownerSVG, vertexName){
 	})
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
-		const nInputs = primitives[this.value].doc.input.length;
-		ownerSVG.__data__.givePorts(vertexName, nInputs, 0)
+		const nInputs = primitives[this.value].doc.input.length,
+		nOutputs = primitives[this.value].doc.output.length
+		ownerSVG.__data__.givePorts(vertexName, nInputs, nOutputs)
 		sideBarNodeManipulation(ownerSVG, vertexName)
 	}
 	return select
