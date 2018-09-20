@@ -1,7 +1,7 @@
 import {graphStructure as protoGraphStructure} from './graph_structure.js'
 import {makeGridLines, addMarkerDef} from './svg_utils.js'
 import {giveNodePorts} from './give_ports.js'
-import {constructors as taffyConstructors} from '../../deps/Taffy/src/util/taffy_constructors.js'
+import {constructors as taffyConstructors} from '../../deps/Taffy/src/index.js'
 
 const makeGetGraph = graphStructure => () => {
 	const e = graphStructure.E,

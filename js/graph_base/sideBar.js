@@ -1,4 +1,4 @@
-import {primitives} from '../../deps/Taffy/src/ops/operations.js'
+import {primitives} from '../../deps/Taffy/src/index.js'
 
 export function addSideBar(svgSelection){
 	svgSelection.nodes().forEach(svgEle => {
