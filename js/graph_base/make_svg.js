@@ -24,12 +24,20 @@ const makeGetTaffyModule = svgData => () => {
 	moduleName = "TODO_SOME_MODULE_NAME",
 	moduleImport = [], // list of module names to import
 	moduleDoc = "SOME OPDOC OBJECT",
+	inputNodeName = Object.entries(svgData.nodeMetaData).find(([n,{op}])=>op==='INPUTS')[0],
 	nodes = Object.entries(graphSkeleton).reduce((acc, [name, inputsRaw]) => {
 		let inputs = inputsRaw.slice()
 		while(inputs.length && inputs[inputs.length-1]===undefined){ inputs.pop() }
 		const {op, literal} = svgData.nodeMetaData[name]
-		inputs = inputs.map(({node, index}) => node+':'+index)
-		if(op === 'placeholder'){ moduleInputs.push(name) }
+		inputs = inputs
+			.map(({node, index}) => node===inputNodeName? ['INPUT_'+index, 0] : [node,index])
+			.map(([node, index]) => node+':'+index)
+		if(op === 'INPUTS'){
+			const nOutputs = svgData.graphStructure.V[inputNodeName].querySelector('.nodeOutPort').childElementCount-1
+			return acc.concat(Array(nOutputs).fill().map((_,i) => new node(
+				'INPUT_'+i, 'placeholder', [], [])))
+		}
+		if(op === 'OUTPUTS'){ moduleOutputs = inputs }
 		return acc.concat([new node(name, op, inputs, literal)])
 	}, [])
 	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)

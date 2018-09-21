@@ -97,12 +97,12 @@ function makeManipulationCard(ownerSVG, vertexName, op){
 	if(op === "INPUTS"){
 		listItems = [
 			['Module Inputs'],
-			['Number of Inputs', makeChangePortButton(ownerSVG, vertexName, false, false), makeChangePortButton(ownerSVG, vertexName, true, false)]
+			['Number of Inputs ', makeChangePortButton(ownerSVG, vertexName, false, false), makeChangePortButton(ownerSVG, vertexName, true, false)]
 		]
 	} else if (op === "OUTPUTS"){
 		listItems = [
 			['Module Outputs'],
-			['Number of Inputs', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)]
+			['Number of Outputs ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)]
 		]
 	} else {
 		listItems = [
