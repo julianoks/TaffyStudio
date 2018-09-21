@@ -1,5 +1,3 @@
-
-
 export function makeGridLines(selection, svgSize, minGridLines=100){
 	const [width, height] = svgSize,
 	increment = Math.min(...svgSize) / minGridLines,
@@ -37,16 +35,17 @@ export function addMarkerDef(svgSelection){
 
 // make n circles
 export function makeSVGCircles(selection, n, diameterBetweenCircles=0.5){
+	const xPos = i => 0.5+(0.5*diameterBetweenCircles)+(i*(1+diameterBetweenCircles))
 	selection
 		.append("rect")
 		.attr("height", 1)
-		.attr("width", n*(1+diameterBetweenCircles))
+		.attr("width", Math.max(2,n) * (1+diameterBetweenCircles))
 		.attr("fill", "none")
 	return selection.selectAll("circle")
 		.data(d3.range(n))
 		.enter()
 		.append("circle")
-		.attr("cx", i => (0.5*diameterBetweenCircles)+0.5+(i*(1+diameterBetweenCircles)))
+		.attr("cx", n==1? xPos(0.5) : xPos)
 		.attr("cy", 0.5)
 		.attr("r", 0.5)
 		.datum(d => ({index: d}))
