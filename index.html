@@ -24,8 +24,8 @@ function newStudio(parent){
 		.append('div')
 		.classed('studioHolder', true)
 	const svg = createSVG(holder, [1000, 1100])
-		.call(addNodeCreationClick)
 		.call(addSideBar)
+		.call(addNodeCreationClick)
 }
 newStudio('.placeholder')
 </script>

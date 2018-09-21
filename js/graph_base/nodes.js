@@ -116,6 +116,29 @@ const _populateNode = container => {
 		.select(".nodeBody").attr("fill", "blue")
 }
 
+
+function addInputOutputNodes(svgSelection){
+	const nodeParam = {width: 150, height: 50}
+	svgSelection.each(function(){
+		const svgEle = this
+		const width = +svgEle.getAttribute('width')
+		const height = +svgEle.getAttribute('height')
+		const xPos = (width/2)
+		const bottomYPos = height - (nodeParam.height/2)
+		const topYPos = nodeParam.height/2
+		// input
+		const populateInput = container => container
+			.call(s => giveNodePorts(s, 0, 1))
+			.select(".nodeBody").attr("fill", "red")
+		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput)
+		// output
+		const populateOutput = container => container
+			.call(s => giveNodePorts(s, 1, 0))
+			.select(".nodeBody").attr("fill", "red")
+		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
+	})
+}
+
 // add click event to SVG for creating nodes
 export function addNodeCreationClick(svg){
 	svg.on("click", () => {
@@ -126,4 +149,5 @@ export function addNodeCreationClick(svg){
 				addNode(svg, inverted, {}, _nodeEventHandlers, _populateNode)
 			})
 	})
+	.call(addInputOutputNodes)
 }
