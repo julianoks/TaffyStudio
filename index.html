@@ -19,11 +19,11 @@ import {createSVG} from './js/graph_base/make_svg.js'
 import {addNodeCreationClick} from './js/graph_base/nodes.js'
 import {addSideBar} from './js/graph_base/sideBar.js'
 
-function newStudio(parent){
+function newStudio(parent, size){
+	const [width, height] = size? [0.75*size[0], size[1]] : [window.innerWidth*0.75*0.9, window.innerHeight*0.8]
 	const holder = d3.select(parent)
-		.append('div')
-		.classed('studioHolder', true)
-	const svg = createSVG(holder, [1000, 1100])
+		.append('div').classed('studioHolder', true)
+	const svg = createSVG(holder, [width, height])
 		.call(addSideBar)
 		.call(addNodeCreationClick)
 }

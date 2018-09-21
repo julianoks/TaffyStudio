@@ -3,7 +3,7 @@ import {relativeTransform, makeSVGCircles} from './svg_utils.js'
 function createEdge(svgSelection){
 	return svgSelection.select(".edgesGroup")
 		.append("line")
-		.attr("stroke-width", 5)
+		.attr("stroke-width", "0.5%")
 		.attr("stroke", "black")
 		.attr("marker-end", "url(#arrowEnd)") //"url(#circleEnd)")
 }
@@ -101,7 +101,7 @@ function finalizeEdge(edge, edgeElement){
     		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
     		return {updatePosition, edgeRelation}
     	})
-		.transition().attr("stroke-width", 3)
+		.transition().attr("stroke-width", "0.25%")
 }
 
 // position ports

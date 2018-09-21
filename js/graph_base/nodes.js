@@ -34,7 +34,9 @@ const nodeDragBehavior = d3.drag()
 // add node to SVG
 function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 	// unpack nodeParam and eventHandlers
-	const defaultNodeParam = {width: 50, height: 25, rounding: 5},
+	const svgScale = Math.min(+svgSelection.node().getAttribute('width'), +svgSelection.node().getAttribute('height')),
+	defaultNodeParam = Object.entries({width: 0.08, height: 0.04, rounding: 0.005})
+		.reduce((acc,[k,v]) => Object.assign(acc, {[k]: v*svgScale}), {}),
 	{width, height, rounding} = Object.assign({}, defaultNodeParam, nodeParam)
 	// see ```_nodeEventHandlers``` for the eventHandlers being used
 	const defaultEventHandlers = {click: ()=>{}, mouseEnter: ()=>{}, mouseLeave: ()=>{}},
@@ -118,13 +120,16 @@ const _populateNode = container => {
 
 
 function addInputOutputNodes(svgSelection){
-	const nodeParam = {width: 150, height: 50}
+	const unscaledNodeParam = {width: 0.15, height: 0.05, rounding: 0.005}
 	svgSelection.each(function(){
 		const svgEle = this
 		const width = +svgEle.getAttribute('width')
 		const height = +svgEle.getAttribute('height')
+		const svgScale = Math.min(width, height)
+		const nodeParam = Object.entries(unscaledNodeParam)
+			.reduce((acc,[k,v]) => Object.assign(acc, {[k]: v*svgScale}), {})
 		const xPos = (width/2)
-		const bottomYPos = height - (nodeParam.height/2)
+		const bottomYPos = height - (nodeParam.height / 2)
 		const topYPos = nodeParam.height/2
 		// input
 		const populateInput = container => container
