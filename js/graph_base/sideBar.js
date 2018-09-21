@@ -36,21 +36,17 @@ function _getNumInputsOutputs(ownerSVG, vertexName){
 	const nOut = container.querySelector('.nodeOutPort').querySelectorAll('circle').length
 	return {nIn, nOut}
 }
-function makeAddInputButton(ownerSVG, vertexName){
-	const html = '<button type="button" class="btn btn-default"> <span style="color:black;" class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>'
+function makeChangePortButton(ownerSVG, vertexName, isAddition, isInput){
+	const html = '<button type="button" class="btn btn-default"> <span style="color:black;" class="glyphicon glyphicon-'
+	 + (isAddition? 'plus' : 'minus')
+	 +'" aria-hidden="true"></span> </button>'
 	const button = document.createRange().createContextualFragment(html).firstChild
+	const inc = (x) => isAddition? x+1 : Math.max(0,x-1)
 	button.onclick = () => {
 		const {nIn, nOut} = _getNumInputsOutputs(ownerSVG, vertexName)
-		ownerSVG.__data__.givePorts(vertexName, nIn+1, nOut)
-	}
-	return button
-}
-function makeSubtractInputButton(ownerSVG, vertexName){
-	const html = '<button type="button" class="btn btn-default"> <span style="color:black;" class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button>'
-	const button = document.createRange().createContextualFragment(html).firstChild
-	button.onclick = () => {
-		const {nIn, nOut} = _getNumInputsOutputs(ownerSVG, vertexName)
-		ownerSVG.__data__.givePorts(vertexName, Math.max(0,nIn-1), nOut)
+		ownerSVG.__data__.givePorts(vertexName,
+			isInput? inc(nIn) : nIn,
+			isInput? nOut : inc(nOut))
 	}
 	return button
 }
@@ -63,6 +59,7 @@ function makeOperationDropdown(ownerSVG, vertexName){
 	select.appendChild(document.createRange().createContextualFragment(firstOption))
 	const operations = Object.entries(primitives)
 		.map(([a,{name}]) => [a, name])
+		.filter(([,name]) => name !== 'placeholder')
 		.sort(([,a],[,b]) => a<b? -1 : 1)
 	operations.forEach(([identifier, name]) => {
 		let option = document.createElement('option')
@@ -93,15 +90,28 @@ function makeNodeNameBox(ownerSVG, vertexName){
 	return box
 }
 
-function makeManipulationCard(ownerSVG, vertexName){
+function makeManipulationCard(ownerSVG, vertexName, op){
 	let card = document.createElement('div')
 	card.className = 'card'
-	const listItems = [
-		['Name ', makeNodeNameBox(ownerSVG, vertexName)],
-		['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
-		['Change Arity ', makeSubtractInputButton(ownerSVG, vertexName), makeAddInputButton(ownerSVG, vertexName)],
-		['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
-	]
+	let listItems = []
+	if(op === "INPUTS"){
+		listItems = [
+			['Module Inputs'],
+			['Number of Inputs', makeChangePortButton(ownerSVG, vertexName, false, false), makeChangePortButton(ownerSVG, vertexName, true, false)]
+		]
+	} else if (op === "OUTPUTS"){
+		listItems = [
+			['Module Outputs'],
+			['Number of Inputs', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)]
+		]
+	} else {
+		listItems = [
+			['Name ', makeNodeNameBox(ownerSVG, vertexName)],
+			['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
+			['Change Arity ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)],
+			['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
+		]
+	}
 	const list = _makeListFromItems(listItems)
 	list.className += ' list-group-flush'
 
@@ -167,12 +177,6 @@ function makeOpDocCards(ownerSVG, vertexName){
 
 
 function makeLiteralsCard(ownerSVG, vertexName){
-	const op = ownerSVG.__data__.nodeMetaData[vertexName].op
-	if(op !== 'literals'){
-		const div = document.createElement('div')
-		div.style.display = 'none'
-		return div
-	}
 	// make initial list
 	const list = _makeListFromItems([])
 	const addListItem = () => {
@@ -210,7 +214,15 @@ function makeLiteralsCard(ownerSVG, vertexName){
 export function sideBarNodeManipulation(ownerSVG, vertexName){
 	const sideBar = ownerSVG.parentElement.querySelector('.sideBar')
 	sideBar.innerHTML = ''
-	sideBar.appendChild(makeManipulationCard(ownerSVG, vertexName))
-	sideBar.appendChild(makeOpDocCards(ownerSVG, vertexName))
-	sideBar.appendChild(makeLiteralsCard(ownerSVG, vertexName))
+	const op = ownerSVG.__data__.nodeMetaData[vertexName].op // may be "INPUTS", "OUTPUTS", "literals", or others
+	
+	sideBar.appendChild(makeManipulationCard(ownerSVG, vertexName, op))
+
+	if(op !== "INPUTS" && op !== "OUTPUTS"){
+		sideBar.appendChild(makeOpDocCards(ownerSVG, vertexName))
+	}
+
+	if(op === "literals"){
+		sideBar.appendChild(makeLiteralsCard(ownerSVG, vertexName))
+	}
 }

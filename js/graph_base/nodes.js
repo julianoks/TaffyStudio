@@ -133,13 +133,19 @@ function addInputOutputNodes(svgSelection){
 		const topYPos = nodeParam.height/2
 		// input
 		const populateInput = container => container
-			.call(s => giveNodePorts(s, 0, 1))
-			.select(".nodeBody").attr("fill", "red")
+				.call(s => giveNodePorts(s, 0, 1))
+				.each(function({vertexName}){
+					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "INPUTS"
+				})
+				.select(".nodeBody").attr("fill", "red")
 		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput)
 		// output
 		const populateOutput = container => container
-			.call(s => giveNodePorts(s, 1, 0))
-			.select(".nodeBody").attr("fill", "red")
+				.call(s => giveNodePorts(s, 1, 0))
+				.each(function({vertexName}){
+					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "OUTPUTS"
+				})
+				.select(".nodeBody").attr("fill", "red")
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
 	})
 }
