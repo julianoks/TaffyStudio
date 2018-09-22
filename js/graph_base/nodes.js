@@ -96,15 +96,15 @@ const _nodeEventHandlers = {
 		const s = d3.select(ele)
 		s.select(".nodeGuts")
 			.transition().style("opacity", 1)
-			.style('visibility', 'inherit')
+			//.style('visibility', 'inherit')
 		s.select(".nodePorts")
 			.transition().style("opacity", 1)
 	},
 	mouseLeave: ele => {
 		const s = d3.select(ele)
 		s.select(".nodeGuts")
-			.transition().style("opacity", 0)
-			.style('visibility', 'hidden')
+			.transition().style("opacity", 0.5)
+			//.style('visibility', 'hidden')
 		s.select(".nodePorts")
 			.transition().style("opacity", 0.5)
 	},
@@ -132,20 +132,28 @@ function addInputOutputNodes(svgSelection){
 		const bottomYPos = height - (nodeParam.height / 2)
 		const topYPos = nodeParam.height/2
 		// input
-		const populateInput = container => container
+		const populateInput = container => {
+			container
 				.call(s => giveNodePorts(s, 0, 1))
 				.each(function({vertexName}){
 					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "INPUTS"
 				})
-				.select(".nodeBody").attr("fill", "red")
+			container.select(".nodeBody").attr("fill", "red")
+			container.select('.nodeGuts').append('xhtml:span')
+				.text('Inputs')
+		}
 		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput)
 		// output
-		const populateOutput = container => container
+		const populateOutput = container => {
+			container
 				.call(s => giveNodePorts(s, 1, 0))
 				.each(function({vertexName}){
 					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "OUTPUTS"
 				})
-				.select(".nodeBody").attr("fill", "red")
+			container.select(".nodeBody").attr("fill", "red")
+			container.select('.nodeGuts').append('xhtml:span')
+				.text('Outputs')
+		}
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
 	})
 }
