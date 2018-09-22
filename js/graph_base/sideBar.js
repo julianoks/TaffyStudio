@@ -1,12 +1,12 @@
 import {primitives} from '../../deps/Taffy/src/index.js'
 
-export function addSideBar(svgSelection){
+export function addSideBar(svgSelection, size){
 	svgSelection.nodes().forEach(svgEle => {
 		const sideBar = d3.select(svgEle.parentElement)
 			.insert('div', 'svg').classed('sideBar', true)
 			.style('float', 'left')
-			.style('width', (_,i) => svgSelection.nodes()[i].getAttribute('width') * 1/3)
-			.style('height', (_,i) => svgSelection.nodes()[i].getAttribute('height'))
+			.style('width', size[0])
+			.style('height', size[1])
 			.style('background-color', 'ffffff')
 			.style('border', '1px solid black')
 		resetSideBar(svgEle)

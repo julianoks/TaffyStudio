@@ -159,7 +159,7 @@ function addInputOutputNodes(svgSelection){
 }
 
 // add click event to SVG for creating nodes
-export function addNodeCreationClick(svg){
+export function addNodes(svg){
 	svg.on("click", () => {
 		const screenCoord = d3.mouse(d3.event.currentTarget)
 		d3.select(d3.event.currentTarget)
