@@ -18,7 +18,7 @@
 	- [ ] integrate module sandboxes as tabs in a library
 
 ## The Hierarchy
-- studioHolder ([link](#studioholder))
+- moduleHolder ([link](#moduleholder))
 	- svg element ([link](#svg-element))
 		- drawCanvas ([link](#drawcanvas))
 			- gridLines ([link](#gridlines))
@@ -51,7 +51,7 @@ This web app follows two conventions for data attributes:
 
 ## Elements
 
-### studioHolder
+### moduleHolder
 Top level ```div``` tha holds the [SVG Element](#svg-element) and [sideBar](#sidebar)
 
 ### SVG Element

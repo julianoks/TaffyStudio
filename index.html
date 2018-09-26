@@ -2,6 +2,7 @@
 <head>
 <script src="deps/d3/d3.js"></script>
 <link rel="stylesheet" href="deps/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="deps/bootstrap/js/bootstrap.min.js">
 <style>
 .placeholder {
 	margin-left: auto;
@@ -15,8 +16,8 @@
 </body>
 
 <script type="module">
-import {newStudioModule} from './js/studioModule.js'
-newStudioModule('.placeholder')
+import {newStudio} from './js/studioModule.js'
+const studio = newStudio('.placeholder')
 </script>
 
 </html>
