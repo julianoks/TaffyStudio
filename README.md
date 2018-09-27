@@ -12,10 +12,11 @@
 - [ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
 	- Will be completed after module metadata functionality is in place
 - [ ] make functionality for creating module metadata (defining outputs, module name, module imports, module documentation)
-	- [ ] input interface
-	- [ ] output interface
-	- [ ] module sandbox
-	- [ ] integrate module sandboxes as tabs in a library
+	- [ ] input interface for creating input_descriptions, ie ```{shape, dtype}```
+	- [x] output interface
+	- [x] module sandbox
+	- [x] integrate module sandboxes as tabs in a library
+
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
