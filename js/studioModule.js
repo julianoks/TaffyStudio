@@ -1,6 +1,7 @@
 import {createSVG} from './graph_base/make_svg.js'
 import {addNodes} from './graph_base/nodes.js'
 import {addSideBar} from './graph_base/sideBar.js'
+import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
 
 const makeNewTabFn = (navbarList, modulesHolder) => () => {
 	const svg = newStudioModule(modulesHolder).node()
@@ -19,11 +20,22 @@ const makeNewTabFn = (navbarList, modulesHolder) => () => {
 	focus()
 }
 
+const makeGetTaffyLibrary = studioEle => () => {
+	const modules = Array.from(studioEle.querySelector('.modulesHolder').children)
+		.map(e => e.querySelector('svg').__data__.getTaffyModule())
+	return new taffyConstructors.library(modules)
+}
+
 export function newStudio(parent, studioSize){
 	const [width, height] = studioSize? studioSize : [window.innerWidth*0.9, window.innerHeight*0.8]
 	const studio = d3.select(parent).append('div')
 		.classed('studio', true)
-		.datum({moduleCounter: 0})
+		.datum(function(){return {
+			moduleCounter: 0,
+			getTaffyLibrary: makeGetTaffyLibrary(this),
+			pullModule: (module_name, input_descriptions, prune=true) => 
+				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune)
+		}})
 	
 	const navbarList = studio.append('nav')
 		.classed('navbar navbar-default', true)
