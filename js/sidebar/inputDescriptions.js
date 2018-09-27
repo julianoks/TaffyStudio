@@ -49,6 +49,7 @@ function makeInputDescRow(oninput, shape=[], dtype='float32'){
 }
 
 const makeOnInput = (descList, ownerSVG) => () => {
+    ownerSVG.__data__.moduleMetaData.inputDescriptions = {}
     Array.from(descList.children).forEach((ele, i) => {
         const name = `INPUT_${i}`
         const shape = parseToIntArray(descList.querySelector('input').value)

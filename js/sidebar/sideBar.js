@@ -15,7 +15,7 @@ export function addSideBar(svgSelection, size){
 	})
 }
 
-function resetSideBar(ownerSVG){
+export function resetSideBar(ownerSVG){
 	const sideBar = ownerSVG.parentElement.querySelector('.sideBar')
 	sideBar.innerHTML = ''
 }
@@ -152,21 +152,22 @@ function makeManipulationCard(ownerSVG, vertexName, op){
 	let card = document.createElement('div')
 	card.className = 'card'
 	let listItems = []
+	const makePB = (isAdd, isIn) => makeChangePortButton(ownerSVG, vertexName, isAdd, isIn)
 	if(op === "INPUTS"){
 		listItems = [
 			['Module Inputs'],
-			['Number of Inputs ', makeChangePortButton(ownerSVG, vertexName, false, false), makeChangePortButton(ownerSVG, vertexName, true, false)]
+			['Number of Inputs ', makePB(false, false), makePB(true, false)]
 		]
 	} else if (op === "OUTPUTS"){
 		listItems = [
 			['Module Outputs'],
-			['Number of Outputs ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)]
+			['Number of Outputs ', makePB(false, true), makePB(true, true)]
 		]
 	} else {
 		listItems = [
 			['Name ', makeNodeNameBox(ownerSVG, vertexName)],
 			['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
-			['Change Arity ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)],
+			['Change Arity ', makePB(false, true), makePB(true, true)],
 			['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
 		]
 	}

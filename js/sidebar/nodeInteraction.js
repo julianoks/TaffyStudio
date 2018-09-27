@@ -1,3 +1,5 @@
+import {resetSideBar, sideBarNodeManipulation} from './sideBar.js'
+
 export function getNumInputsOutputs(ownerSVG, vertexName){
 	const container = ownerSVG.__data__.graphStructure.V[vertexName]
 	const nIn = container.querySelector('.nodeInPort').querySelectorAll('circle').length
@@ -16,6 +18,7 @@ export function makeChangePortButton(ownerSVG, vertexName, isAddition, isInput){
 		ownerSVG.__data__.givePorts(vertexName,
 			isInput? inc(nIn) : nIn,
 			isInput? nOut : inc(nOut))
+		sideBarNodeManipulation(ownerSVG, vertexName)
 	}
 	return button
 }
