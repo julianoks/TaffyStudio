@@ -15,7 +15,7 @@ const makeNewTabFn = (navbarList, modulesHolder) => () => {
 	const navbarItem = navbarList.insert('li', function(){return this.lastElementChild})
 	const itemInner = navbarItem.append('a')
 		.attr('href', '#')
-		.text(svg.__data__.moduleName)
+		.text(svg.__data__.moduleMetaData.name)
 		.on('click', focus)
 	focus()
 }
@@ -69,6 +69,6 @@ function newStudioModule(parent, size){
 		.call(addSideBar, [sideBarWidth*width, height])
 		.call(addNodes)
 		.each(function(){
-			this.__data__.moduleName = `module_${++parent.__data__.moduleCounter}`})
+			this.__data__.moduleMetaData.name = `module_${++parent.__data__.moduleCounter}`})
 	return svg
 }

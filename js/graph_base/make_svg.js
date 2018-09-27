@@ -21,7 +21,7 @@ const makeGetTaffyModule = svgData => () => {
 	moduleOutputs = []
 	const {node, module} = taffyConstructors,
 	graphSkeleton = svgData.getGraph(),
-	{moduleName} = svgData,
+	moduleName = svgData.moduleMetaData.name,
 	moduleImport = [], // list of module names to import
 	moduleDoc = "SOME OPDOC OBJECT",
 	inputNodeName = Object.entries(svgData.nodeMetaData).find(([n,{op}])=>op==='INPUTS')[0],
@@ -64,7 +64,10 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 		nodeMetaData: {},
 		getGraph: makeGetGraph(graphStructure),
 		getTaffyModule: undefined,
-		moduleName: undefined,
+		moduleMetaData: {
+			name: undefined,
+			inputDescriptions: {}
+		},
 		givePorts: (vertex, nIn, nOut) => getVertexByName(vertex)
 			.call(s => giveNodePorts(s, nIn, nOut)),
 		setNodeColor: (vertex, color) => getVertexByName(vertex)
