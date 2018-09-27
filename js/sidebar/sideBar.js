@@ -1,6 +1,6 @@
 import {primitives} from '../../deps/Taffy/src/index.js'
 import {makeChangePortButton, makeDeleteButton} from './nodeInteraction.js'
-
+import {makeInputDescCard} from './inputDescriptions.js'
 
 export function addSideBar(svgSelection, size){
 	svgSelection.nodes().forEach(svgEle => {
@@ -190,5 +190,9 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 
 	if(op === "literals"){
 		sideBar.appendChild(makeLiteralsCard(ownerSVG, vertexName))
+	}
+
+	if(op === 'INPUTS'){
+		sideBar.appendChild(makeInputDescCard(ownerSVG, vertexName))
 	}
 }
