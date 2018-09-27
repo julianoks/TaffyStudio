@@ -1,6 +1,6 @@
 import {giveNodePorts} from './give_ports.js'
 import {inverseRelativeTransform} from './svg_utils.js'
-import {sideBarNodeManipulation} from './sideBar.js'
+import {sideBarNodeManipulation} from '../sidebar/sideBar.js'
 
 // node drag behavior
 const __nodeOnDrag = function(ele){

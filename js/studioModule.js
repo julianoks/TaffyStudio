@@ -1,6 +1,6 @@
 import {createSVG} from './graph_base/make_svg.js'
 import {addNodes} from './graph_base/nodes.js'
-import {addSideBar} from './graph_base/sideBar.js'
+import {addSideBar} from './sidebar/sideBar.js'
 import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
 
 const makeNewTabFn = (navbarList, modulesHolder) => () => {

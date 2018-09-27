@@ -90,38 +90,6 @@ function makeNodeNameBox(ownerSVG, vertexName){
 	return box
 }
 
-function makeManipulationCard(ownerSVG, vertexName, op){
-	let card = document.createElement('div')
-	card.className = 'card'
-	let listItems = []
-	if(op === "INPUTS"){
-		listItems = [
-			['Module Inputs'],
-			['Number of Inputs ', makeChangePortButton(ownerSVG, vertexName, false, false), makeChangePortButton(ownerSVG, vertexName, true, false)]
-		]
-	} else if (op === "OUTPUTS"){
-		listItems = [
-			['Module Outputs'],
-			['Number of Outputs ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)]
-		]
-	} else {
-		listItems = [
-			['Name ', makeNodeNameBox(ownerSVG, vertexName)],
-			['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
-			['Change Arity ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)],
-			['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
-		]
-	}
-	const list = _makeListFromItems(listItems)
-	list.className += ' list-group-flush'
-
-	card.appendChild(list)
-	return card
-}
-
-
-
-
 function _makeListFromItems(listItems){
 	let list = document.createElement('ul')
 	list.className = 'list-group'
@@ -210,6 +178,36 @@ function makeLiteralsCard(ownerSVG, vertexName){
 	return panel
 }
 
+
+
+function makeManipulationCard(ownerSVG, vertexName, op){
+	let card = document.createElement('div')
+	card.className = 'card'
+	let listItems = []
+	if(op === "INPUTS"){
+		listItems = [
+			['Module Inputs'],
+			['Number of Inputs ', makeChangePortButton(ownerSVG, vertexName, false, false), makeChangePortButton(ownerSVG, vertexName, true, false)]
+		]
+	} else if (op === "OUTPUTS"){
+		listItems = [
+			['Module Outputs'],
+			['Number of Outputs ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)]
+		]
+	} else {
+		listItems = [
+			['Name ', makeNodeNameBox(ownerSVG, vertexName)],
+			['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
+			['Change Arity ', makeChangePortButton(ownerSVG, vertexName, false, true), makeChangePortButton(ownerSVG, vertexName, true, true)],
+			['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
+		]
+	}
+	const list = _makeListFromItems(listItems)
+	list.className += ' list-group-flush'
+
+	card.appendChild(list)
+	return card
+}
 
 export function sideBarNodeManipulation(ownerSVG, vertexName){
 	const sideBar = ownerSVG.parentElement.querySelector('.sideBar')
