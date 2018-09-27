@@ -34,10 +34,16 @@ const makeGetTaffyModule = svgData => () => {
 			.map(([node, index]) => node+':'+index)
 		if(op === 'INPUTS'){
 			const nOutputs = svgData.graphStructure.V[inputNodeName].querySelector('.nodeOutPort').childElementCount-1
-			return acc.concat(Array(nOutputs).fill().map((_,i) => new node(
-				'INPUT_'+i, 'placeholder', [], [])))
+			const newInputNodes = Array(nOutputs).fill().map((_,i) => {
+				moduleInputs.push('INPUT_'+i)
+				return new node('INPUT_'+i, 'placeholder', [], [])
+			})
+			return acc.concat(newInputNodes)
 		}
-		if(op === 'OUTPUTS'){ moduleOutputs = inputs }
+		if(op === 'OUTPUTS'){
+			moduleOutputs = inputs
+			return acc
+		}
 		return acc.concat([new node(name, op, inputs, literal)])
 	}, [])
 	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)
