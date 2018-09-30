@@ -20,7 +20,7 @@ September Sprint:
 - [x] allow imported modules to be selected as operations
 - [ ] interface for pulling module using `.studio`'s `pullModule` method
 
-October Spring:
+October Sprint:
 - [ ] debugging interface
 - [ ] make nodes informative & pretty
 
