@@ -7,7 +7,7 @@ function makeSingleList(texts, ownerTable, update){
             const movingTo = li.closest('td').id === 'available'? '#selected' : '#available'
             li.remove()
             ownerTable.querySelector(movingTo).querySelector('ul').appendChild(li)
-            update()
+            update(ownerTable.querySelector('#selected'))
         }
         li.className = 'list-group-item'
         li.innerText = t
@@ -61,6 +61,11 @@ export function makeModuleImporter(ownerSVG){
     let avail = [], selected = []
     notDependents.forEach(d => modImports.has(d)?
         selected.push(d) : avail.push(d))
-    const update = () => {alert("TODO: update moduleMetaData and sidebar")}
+    const update = (selectedUl) => {
+        ownerSVG.__data__.moduleMetaData.imports = Array.from(selectedUl.children)
+            .map(e => e.innerText.split(/\r?\n/)[0])
+        ownerSVG.closest('.moduleHolder')
+            .querySelector('.sideBar').__data__.rollbackCheckpoint()
+    }
     return makeDropdown(avail, selected, update)
 }

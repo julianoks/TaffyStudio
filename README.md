@@ -16,7 +16,8 @@
 	- [x] output interface
 	- [x] module sandbox
 	- [x] integrate module sandboxes as tabs in a library
-- [ ] update moduleMetaData and sidebar when moduleImporter changes
+- [x] update moduleMetaData and sidebar when moduleImporter changes
+- [ ] allow imported modules to be selected as operations
 
 
 ## The Hierarchy

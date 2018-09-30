@@ -1,5 +1,6 @@
 import {getNumInputsOutputs} from './nodeInteraction.js'
 
+// TODO: parse question marks
 function parseToIntArray(str){
 	const ints = str.replace(/\[|\]|\(|\)/g, '')
 		.replace(/,/g,' ')

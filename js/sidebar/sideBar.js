@@ -3,7 +3,7 @@ import {makeInputDescCard} from './inputDescriptions.js'
 
 export function addSideBar(svgSelection, size){
 	svgSelection.nodes().forEach(svgEle => {
-		const sideBar = d3.select(svgEle.parentElement)
+		const sideBar = d3.select(svgEle.closest('.moduleHolder'))
 			.insert('div', 'svg').classed('sideBar', true)
 			.style('float', 'left')
 			.style('width', size[0])
@@ -11,6 +11,7 @@ export function addSideBar(svgSelection, size){
 			.style('background-color', 'ffffff')
 			.style('border', '1px solid black')
 		resetSideBar(svgEle)
+		sideBar.node().__data__.rollbackCheckpoint = () => resetSideBar(svgEle)
 	})
 }
 
@@ -20,8 +21,8 @@ export function resetSideBar(ownerSVG){
 }
 
 export function sideBarNodeManipulation(ownerSVG, vertexName){
-	const sideBar = ownerSVG.parentElement.querySelector('.sideBar')
-	sideBar.innerHTML = ''
+	resetSideBar(ownerSVG)
+	const sideBar = ownerSVG.closest('.moduleHolder').querySelector('.sideBar')
 	const op = ownerSVG.__data__.nodeMetaData[vertexName].op // may be "INPUTS", "OUTPUTS", "literals", or others
 	
 	sideBar.appendChild(makeManipulationCard(ownerSVG, vertexName, op))
@@ -37,4 +38,6 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 	if(op === 'INPUTS'){
 		sideBar.appendChild(makeInputDescCard(ownerSVG, vertexName))
 	}
+
+	sideBar.__data__.rollbackCheckpoint = () => sideBarNodeManipulation(ownerSVG, vertexName)
 }
