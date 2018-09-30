@@ -1,16 +1,20 @@
 import {createSVG} from './graph_base/make_svg.js'
 import {addNodes} from './graph_base/nodes.js'
 import {addSideBar} from './sidebar/sideBar.js'
+import {makeModuleImporter} from './sidebar/moduleImporter.js'
 import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
 
 const makeNewTabFn = (navbarList, modulesHolder) => () => {
 	const svg = newStudioModule(modulesHolder).node()
 	const focus = () => {
-		navbarList.selectAll('li').each(function(){this.className=''})
+		navbarList.selectAll('li')
+			.each(function(){this.className='';})
+			.select('.btn-group').remove()
 		navbarItem.classed('active', true)
 		d3.selectAll(modulesHolder.childNodes)
 			.style('display', 'none')
 		svg.parentElement.style.display = 'initial'
+		navbarItem.each(function(){this.appendChild(makeModuleImporter(svg))})
 	}
 	const navbarItem = navbarList.insert('li', function(){return this.lastElementChild})
 	const itemInner = navbarItem.append('a')
