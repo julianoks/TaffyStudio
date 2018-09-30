@@ -17,7 +17,7 @@ function makeSingleList(texts, ownerTable, update){
 }
 
 function makeLists(textsAvail, textsSelected, update){
-    const tableHTML = '<table> <tr> <th>Available</th> <th>Selected</th> </tr> <tr> <td id="available" valign="top"></td> <td id="selected" valign="top"></td> </tr> </table>'
+    const tableHTML = '<table> <tr> <th>Available</th> <th>Imported</th> </tr> <tr> <td id="available" valign="top"></td> <td id="selected" valign="top"></td> </tr> </table>'
     const table = document.createRange().createContextualFragment(tableHTML).firstChild
     table.querySelector('#available').appendChild(makeSingleList(textsAvail, table, update))
     table.querySelector('#selected').appendChild(makeSingleList(textsSelected, table, update))
@@ -39,11 +39,15 @@ function makeDropdown(textsAvail, textsSelected, update){
 
 
 function getNotDependents(root, deps){
-    let unvisited = new Set(Object.keys(deps))
+    let reversedDeps = deps.map(a => a[0])
+        .reduce((acc,k) => Object.assign(acc,{[k]:[]}), {})
+    let unvisited = new Set(Object.keys(reversedDeps))
+    Object.entries(deps).forEach(([k, im]) => 
+        im.forEach(i => reversedDeps[i].push(k)))
     let stack = [root]
     while(stack.length > 0){
         const expand = stack.pop()
-        stack.push(...deps[expand])
+        stack.push(...reversedDeps[expand])
         unvisited.delete(expand)
     }
     return Array.from(unvisited)
@@ -55,12 +59,10 @@ export function makeModuleImporter(ownerSVG){
     const moduleDeps = Array.from(ownerSVG.closest('.studio')
         .querySelector('.modulesHolder').querySelectorAll('svg'))
         .map(svg => svg.__data__.moduleMetaData)
-        .reduce((acc, {name, imports}) =>
-            Object.assign(acc, {[name]: imports}), {})
+        .map(({name, imports}) => [name, imports])
     const notDependents = getNotDependents(moduleName, moduleDeps)
-    let avail = [], selected = []
-    notDependents.forEach(d => modImports.has(d)?
-        selected.push(d) : avail.push(d))
+    const selected = ownerSVG.__data__.moduleMetaData.imports
+    const avail = notDependents.filter(d => !modImports.has(d))
     const update = (selectedUl) => {
         ownerSVG.__data__.moduleMetaData.imports = Array.from(selectedUl.children)
             .map(e => e.innerText.split(/\r?\n/)[0])
