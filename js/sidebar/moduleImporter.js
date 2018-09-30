@@ -42,8 +42,7 @@ function getNotDependents(root, deps){
     let reversedDeps = deps.map(a => a[0])
         .reduce((acc,k) => Object.assign(acc,{[k]:[]}), {})
     let unvisited = new Set(Object.keys(reversedDeps))
-    Object.entries(deps).forEach(([k, im]) => 
-        im.forEach(i => reversedDeps[i].push(k)))
+    deps.forEach(([k, im]) => im.forEach(i => reversedDeps[i].push(k)))
     let stack = [root]
     while(stack.length > 0){
         const expand = stack.pop()

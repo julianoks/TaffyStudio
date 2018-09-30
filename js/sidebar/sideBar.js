@@ -27,7 +27,8 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 	
 	sideBar.appendChild(makeManipulationCard(ownerSVG, vertexName, op))
 
-	if(op !== "INPUTS" && op !== "OUTPUTS"){
+	if(op !== "INPUTS" && op !== "OUTPUTS" && op !== undefined){
+		// op may be undefined if sideBar is called before INPUT or OUTPUT are populated
 		sideBar.appendChild(makeOpDocCards(ownerSVG, vertexName))
 	}
 
