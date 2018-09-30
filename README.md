@@ -17,7 +17,7 @@
 	- [x] integrate module sandboxes as tabs in a library
 - [x] update moduleMetaData and sidebar when moduleImporter changes
 - [x] allow imported modules to be selected as operations
-
+- [ ] interface for pulling module using `.studio`'s `pullModule` method
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
