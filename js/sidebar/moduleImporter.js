@@ -7,7 +7,7 @@ function makeSingleList(texts, ownerTable, update){
             const movingTo = li.closest('td').id === 'available'? '#selected' : '#available'
             li.remove()
             ownerTable.querySelector(movingTo).querySelector('ul').appendChild(li)
-            update(ownerTable.querySelector('#selected'))
+            update(ownerTable.querySelector('#selected > ul'))
         }
         li.className = 'list-group-item'
         li.innerText = t
