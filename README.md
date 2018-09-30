@@ -1,6 +1,7 @@
 # Provisional Architecture
 
 ## TODO
+September Sprint:
 - [x] Store node metadata
 - [x] Callbacks for sideBar inputs
 - [x] Operation Documentation for sidebar
@@ -18,6 +19,10 @@
 - [x] update moduleMetaData and sidebar when moduleImporter changes
 - [x] allow imported modules to be selected as operations
 - [ ] interface for pulling module using `.studio`'s `pullModule` method
+
+October Spring:
+- [ ] debugging interface
+- [ ] make nodes informative & pretty
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
