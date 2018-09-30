@@ -1,12 +1,10 @@
 import {getNumInputsOutputs} from './nodeInteraction.js'
 
-// TODO: parse question marks
-function parseToIntArray(str){
-	const ints = str.replace(/\[|\]|\(|\)/g, '')
+function parseToShape(str){
+	return str.replace(/\[|\]|\(|\)/g, '')
 		.replace(/,/g,' ')
 		.split(/\s+/).filter(s=>s !== '')
-		.map(i => parseInt(i))
-	return ints.includes(NaN)? false : ints
+		.map(v => isNaN(parseInt(v))? ''+v : parseInt(v))
 }
 
 function makeInputDescRow(oninput, shape=[], dtype='float32'){
@@ -53,7 +51,7 @@ const makeOnInput = (descList, ownerSVG) => () => {
     ownerSVG.__data__.moduleMetaData.inputDescriptions = {}
     Array.from(descList.children).forEach((li, i) => {
         const name = `INPUT_${i}`
-        const shape = parseToIntArray(li.querySelector('input').value)
+        const shape = parseToShape(li.querySelector('input').value)
         const dtype = li.querySelector('select').value
         ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {shape, dtype}
     })
