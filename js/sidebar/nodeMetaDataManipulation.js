@@ -9,10 +9,18 @@ function _makeListFromItems(listItems){
         .map(e => Array.isArray(e)? e : [e])
         .forEach(cols => {
             let li = document.createElement('li')
-            li.className = 'list-group-item'
+			li.className = 'list-group-item'
+			let table = document.createElement('table')
+			let tr = document.createElement('tr')
             cols
                 .map(e => typeof e === 'string'? document.createTextNode(e) : e)
-                .forEach(e => li.appendChild(e))
+                .forEach(e => {
+					let td = document.createElement('td')
+					td.appendChild(e)
+					tr.appendChild(td)
+				})
+			table.appendChild(tr)
+			li.appendChild(table)
             list.appendChild(li)
         })
     return list
@@ -62,22 +70,23 @@ export function makeManipulationCard(ownerSVG, vertexName, op){
 	card.className = 'card'
 	let listItems = []
 	const makePB = (isAdd, isIn) => makeChangePortButton(ownerSVG, vertexName, isAdd, isIn)
+	const space = () => document.createTextNode('\u00A0')
 	if(op === "INPUTS"){
 		listItems = [
 			['Module Inputs'],
-			['Number of Inputs ', makePB(false, false), makePB(true, false)]
+			['Number of Inputs',space(), makePB(false, false), makePB(true, false)]
 		]
 	} else if (op === "OUTPUTS"){
 		listItems = [
 			['Module Outputs'],
-			['Number of Outputs ', makePB(false, true), makePB(true, true)]
+			['Number of Outputs',space(), makePB(false, true), makePB(true, true)]
 		]
 	} else {
 		listItems = [
-			['Name ', makeNodeNameBox(ownerSVG, vertexName)],
-			['Operation ', makeOperationDropdown(ownerSVG, vertexName)],
-			['Change Arity ', makePB(false, true), makePB(true, true)],
-			['Delete Node ', makeDeleteButton(ownerSVG, vertexName)],
+			['Name',space(), makeNodeNameBox(ownerSVG, vertexName)],
+			['Operation',space(), makeOperationDropdown(ownerSVG, vertexName)],
+			['Change Arity',space(), makePB(false, true), makePB(true, true)],
+			['Delete Node',space(), makeDeleteButton(ownerSVG, vertexName)],
 		]
 	}
 	const list = _makeListFromItems(listItems)

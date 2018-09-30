@@ -155,6 +155,8 @@ function addInputOutputNodes(svgSelection){
 				.text('Outputs')
 		}
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
+
+		sideBarNodeManipulation(this, 'vertex_1')
 	})
 }
 
