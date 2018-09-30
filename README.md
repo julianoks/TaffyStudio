@@ -9,15 +9,14 @@
 - [x] fix focusing issue in sideBar
 - [x] reject incoming edge if input port already filled
 - [x] Decide if a node's output ports should be provided when its operation changes? resolve: YES
-- [ ] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
-	- Will be completed after module metadata functionality is in place
-- [ ] make functionality for creating module metadata (defining outputs, module name, module imports, module documentation)
-	- [ ] input interface for creating input_descriptions, ie ```{shape, dtype}```
+- [x] method that uses ```.getGraph``` and the node's metadata to make raw Taffy
+- [x] make functionality for creating module metadata (defining outputs, module name, module imports, module documentation)
+	- [x] input interface for creating input_descriptions, ie ```{shape, dtype}```
 	- [x] output interface
 	- [x] module sandbox
 	- [x] integrate module sandboxes as tabs in a library
 - [x] update moduleMetaData and sidebar when moduleImporter changes
-- [ ] allow imported modules to be selected as operations
+- [x] allow imported modules to be selected as operations
 
 
 ## The Hierarchy

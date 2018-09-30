@@ -16,6 +16,13 @@ const makeGetGraph = graphStructure => () => {
 	return g
 }
 
+
+const createOpDoc = (moduleInputs, moduleOutputs, moduleName) => {
+	const inputs = moduleInputs.map((_,i) => `Input ${i+1}`)
+	const outputs = moduleOutputs.map((_,i) => `Output ${i+1}`)
+	const doc = `Implements module "${moduleName}"`
+	return new taffyConstructors.op_doc(inputs, outputs, doc)
+}
 const makeGetTaffyModule = svgData => () => {
 	let moduleInputs = [],
 	moduleOutputs = []
@@ -23,7 +30,6 @@ const makeGetTaffyModule = svgData => () => {
 	graphSkeleton = svgData.getGraph(),
 	moduleName = svgData.moduleMetaData.name,
 	moduleImport = svgData.moduleMetaData.imports,
-	moduleDoc = "SOME OPDOC OBJECT",
 	inputNodeName = Object.entries(svgData.nodeMetaData).find(([n,{op}])=>op==='INPUTS')[0],
 	nodes = Object.entries(graphSkeleton).reduce((acc, [name, inputsRaw]) => {
 		let inputs = inputsRaw.slice()
@@ -45,7 +51,8 @@ const makeGetTaffyModule = svgData => () => {
 			return acc
 		}
 		return acc.concat([new node(name, op, inputs, literal)])
-	}, [])
+	}, []),
+	moduleDoc = createOpDoc(moduleInputs, moduleOutputs, moduleName)
 	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)
 }
 

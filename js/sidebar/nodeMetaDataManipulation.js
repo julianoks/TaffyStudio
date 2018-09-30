@@ -26,16 +26,29 @@ function _makeListFromItems(listItems){
     return list
 }
 
+function getOpDoc(ownerSVG, opName){
+	if(primitives.hasOwnProperty(opName)){
+		return primitives[opName].doc
+	}
+	// otherwise we find the module's opDoc
+	const moduleSVG = Array.from(ownerSVG.closest('.studio').querySelectorAll('.modulesHolder > .moduleHolder > svg'))
+		.map(svg => svg.__data__).find(d => d.moduleMetaData.name===opName)
+	if(moduleSVG===undefined){throw `Operation "${opName}" is not a primitive or module`}	
+	return moduleSVG.getTaffyModule().doc
+}
+
 export function makeOperationDropdown(ownerSVG, vertexName){
 	let select = document.createElement('select')
 	select.className = 'custom-select'
 	const firstOption = '<option value="" disabled selected>Select...</option>'
 	select.appendChild(document.createRange().createContextualFragment(firstOption))
-	const operations = Object.entries(primitives)
+	const importedOps = ownerSVG.__data__.moduleMetaData.imports.map(a=>[a,a])
+	const primitiveOps = Object.entries(primitives)
 		.map(([a,{name}]) => [a, name])
 		.filter(([,name]) => name !== 'placeholder')
 		.sort(([,a],[,b]) => a<b? -1 : 1)
-	operations.forEach(([identifier, name]) => {
+	importedOps.concat(primitiveOps)
+		.forEach(([identifier, name]) => {
 		let option = document.createElement('option')
 		option.value = identifier
 		option.innerHTML = name
@@ -46,8 +59,9 @@ export function makeOperationDropdown(ownerSVG, vertexName){
 	})
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
-		const nInputs = primitives[this.value].doc.input.length,
-		nOutputs = primitives[this.value].doc.output.length
+		const opdoc = getOpDoc(ownerSVG, this.value)
+		const nInputs = opdoc.input.length
+		const nOutputs = opdoc.output.length
 		ownerSVG.__data__.givePorts(vertexName, nInputs, nOutputs)
 		sideBarNodeManipulation(ownerSVG, vertexName)
 	}
@@ -100,12 +114,7 @@ export function makeManipulationCard(ownerSVG, vertexName, op){
 
 export function makeOpDocCards(ownerSVG, vertexName){
 	const op = ownerSVG.__data__.nodeMetaData[vertexName].op
-	if(!primitives.hasOwnProperty(op)){
-		const div = document.createElement('div')
-		div.style.display = 'none'
-		return div
-	}
-	const {doc, input, output} = primitives[op].doc
+	const {doc, input, output} = getOpDoc(ownerSVG, op)
 	const html = `
 	<div class="panel panel-default">
 	<div class="panel-heading">
