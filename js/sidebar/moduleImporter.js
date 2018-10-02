@@ -27,6 +27,16 @@ function makeLists(textsAvail, textsSelected, update){
 function makeDropdown(textsAvail, textsSelected, update){
     const dropdownHTML = '<div class="btn-group" style="width:100%;"> <button type="button" style="width:100%;" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Imports <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> </button> <ul class="dropdown-menu"> <li id="tableHolder"></li> </ul> </div>'
     const dropdown = document.createRange().createContextualFragment(dropdownHTML).firstChild
+    const ul = dropdown.querySelector('ul')
+    ul.style.display = 'none'
+    dropdown.querySelector('button').onclick = () => {
+        ul.style.display = ul.style.display==='none'? 'inherit' : 'none'
+    }
+    document.onclick = e => {
+        if(e.target.closest(".btn-group")!==dropdown){
+            ul.style.display = 'none'
+        }
+    }
     const table = makeLists(textsAvail, textsSelected, update)
     table.style.marginLeft = 'auto'
     table.style.marginRight = 'auto'
