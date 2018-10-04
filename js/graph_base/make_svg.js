@@ -3,7 +3,14 @@ import {makeGridLines, addMarkerDef} from './svg_utils.js'
 import {giveNodePorts} from './give_ports.js'
 import {constructors as taffyConstructors} from '../../deps/Taffy/src/index.js'
 
-const makeGetGraph = graphStructure => () => {
+function zoomSelection(selection) {
+	const {k,x,y} = d3.event.transform,
+	transform = `translate(${x},${y})scale(${k})`
+	selection.attr("transform", transform)
+}
+
+function getGraph(){
+	const {graphStructure} = this
 	const e = graphStructure.E,
 	lines = [].concat(...[].concat(...Object.values(e).map(Object.values))),
 	relations = lines.map(l => l.__data__.edgeRelation),
@@ -23,7 +30,8 @@ const createOpDoc = (moduleInputs, moduleOutputs, moduleName) => {
 	const doc = `Implements module "${moduleName}"`
 	return new taffyConstructors.op_doc(inputs, outputs, doc)
 }
-const makeGetTaffyModule = svgData => () => {
+function getTaffyModule(){
+	const svgData = this
 	let moduleInputs = [],
 	moduleOutputs = []
 	const {node, module} = taffyConstructors,
@@ -56,46 +64,55 @@ const makeGetTaffyModule = svgData => () => {
 	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)
 }
 
-function zoomSelection(selection) {
-	const {k,x,y} = d3.event.transform,
-	transform = `translate(${x},${y})scale(${k})`
-	selection.attr("transform", transform)
+function pullModule(){
+	const {name, inputDescriptions} = this.moduleMetaData
+	const pulled = this.svgElement.closest('.studio').__data__.pullModule(name, inputDescriptions)
+	return pulled
+}
+
+function getVertexByName(svgData, vertex){
+	if(!svgData.graphStructure.V.hasOwnProperty(vertex)){
+			throw(`Graph doesn't have vertex: "${vertex}"`)
+		}
+	return d3.select(svgData.graphStructure.V[vertex])
+}
+
+function givePorts(vertex, nIn, nOut){
+	return getVertexByName(this, vertex)
+		.call(s => giveNodePorts(s, nIn, nOut))
+}
+
+function setNodeColor(vertex, color){
+	return getVertexByName(this, vertex)
+		.select('.nodeBody').attr('fill', color)
 }
 
 export function createSVG(selection, size=[1000,500], make_grid=true){
-	const [width, height] = size
-	const graphStructure = new protoGraphStructure(),
-	svgData = {
-		graphStructure: graphStructure,
+	const svgData = {
+		graphStructure: new protoGraphStructure(),
 		lastPortHovered: undefined,
 		nodeMetaData: {},
-		getGraph: makeGetGraph(graphStructure),
 		getTaffyModule: undefined,
 		moduleMetaData: {
 			name: undefined,
 			inputDescriptions: {},
 			imports: []
 		},
-		givePorts: (vertex, nIn, nOut) => getVertexByName(vertex)
-			.call(s => giveNodePorts(s, nIn, nOut)),
-		setNodeColor: (vertex, color) => getVertexByName(vertex)
-			.select('.nodeBody').attr('fill', color)
-	}
-	svgData.getTaffyModule = makeGetTaffyModule(svgData)
-	function getVertexByName(vertex){
-		if(!svgData.graphStructure.V.hasOwnProperty(vertex)){
-				throw(`Graph doesn't have vertex: "${vertex}"`)
-			}
-		return d3.select(svgData.graphStructure.V[vertex])
+		pullModule,
+		getGraph,
+		givePorts,
+		setNodeColor,
+		getTaffyModule
 	}
 	// create svg
 	const svg = selection
 		.append("svg")
 		.style("border", "1px solid black")
 		.style("float", "right")
-		.attr("width", width)
-		.attr("height", height)
+		.attr("width", size[0])
+		.attr("height", size[1])
 		.datum(svgData)
+	svg.each(function(){this.__data__.svgElement = this})
 	// create drawCanvas, to hold elements that will transform (scale and translate)
 	const drawCanvas = svg.append("g")
 		.classed("drawCanvas", true)

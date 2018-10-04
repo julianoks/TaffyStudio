@@ -69,7 +69,10 @@ Data Attribute:
 - givePorts - A function with arguments ```(vertex, nIn, nOut) => selection```. Gives ```nIn``` incoming ports and ```nOut``` outgoing ports to the node with name ```vertex```.
 - setNodeColor - A function with arguments ```(vertex, color) => selection```. Sets the color of the node with name ```vertex``` to the specified ```color```.
 - getGraph - A function ```() => nodes```. The return value is a dictionary with node names as keys, and an array of inputs as values. Each input is represented as a dictionary with the name of the input node, and the index of the output value.
-
+- svgElement - the svg element the data attribute belongs to
+- pullModule - A function ```() => pulledTaffy``` that maps the graph to pulled Taffy
+- moduleMetaData - A dictionary that contains the module's metadata, with keys ```name, inputDescriptions, import```
+- getTaffyModule - A function ```() => taffyModule``` that maps the graph into a taffy module
 
 ### drawCanvas
 Used for scaling/translating content.
