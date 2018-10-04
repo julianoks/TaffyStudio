@@ -1,5 +1,6 @@
 import {makeManipulationCard, makeOpDocCards, makeLiteralsCard} from './nodeMetaDataManipulation.js'
 import {makeInputDescCard} from './inputDescriptions.js'
+import {makeCompileButton} from './compileModuleModal.js'
 
 export function addSideBar(svgSelection, size){
 	svgSelection.nodes().forEach(svgEle => {
@@ -10,6 +11,7 @@ export function addSideBar(svgSelection, size){
 			.style('height', size[1])
 			.style('background-color', 'ffffff')
 			.style('border', '1px solid black')
+			.style('overflow', 'scroll')
 		resetSideBar(svgEle)
 		sideBar.node().__data__.rollbackCheckpoint = () => resetSideBar(svgEle)
 	})
@@ -38,6 +40,9 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 
 	if(op === 'INPUTS'){
 		sideBar.appendChild(makeInputDescCard(ownerSVG, vertexName))
+		const button = makeCompileButton(ownerSVG)
+		button.style = 'margin-left: auto; margin-right: auto; display: table;'
+		sideBar.appendChild(button)
 	}
 
 	sideBar.__data__.rollbackCheckpoint = () => sideBarNodeManipulation(ownerSVG, vertexName)
