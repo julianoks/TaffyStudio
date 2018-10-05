@@ -4,6 +4,7 @@
 
 <details>
  <summary>September Sprint</summary>
+
 September Sprint:
 - [x] Store node metadata
 - [x] Callbacks for sideBar inputs
@@ -22,7 +23,9 @@ September Sprint:
 - [x] update moduleMetaData and sidebar when moduleImporter changes
 - [x] allow imported modules to be selected as operations
 - [x] interface for pulling module using `.studio`'s `pullModule` method
+
 </details>
+
 
 October Sprint:
 - [ ] debugging interface
