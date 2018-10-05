@@ -1,7 +1,7 @@
 import {packagers} from '../../deps/Taffy/src/index.js'
 
 function makeModal(svgElement){
-    const html = `<div class="modal" style="display: block; padding-left: 0px;">
+    const html = `<div class="modal" style="display: block; padding-left: 0px; background-color: rgba(0, 0, 0, 0.5);">
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
