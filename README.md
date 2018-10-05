@@ -28,7 +28,7 @@ September Sprint:
 
 
 October Sprint:
-- [ ] debugging interface
+- [ ] debugging interface 
 - [ ] make nodes informative & pretty
 
 ## The Hierarchy
@@ -80,6 +80,7 @@ Data Attribute:
 - pullModule - A function ```() => pulledTaffy``` that maps the graph to pulled Taffy
 - moduleMetaData - A dictionary that contains the module's metadata, with keys ```name, inputDescriptions, import```
 - getTaffyModule - A function ```() => taffyModule``` that maps the graph into a taffy module
+- nodeAlert - A function ```(vertex, message, duration?) => undefined``` that displays an alert ```message``` next to the specified ```vertex```, which closes once the ```duration``` elapses.
 
 ### drawCanvas
 Used for scaling/translating content.

@@ -87,6 +87,25 @@ function setNodeColor(vertex, color){
 		.select('.nodeBody').attr('fill', color)
 }
 
+function nodeAlert(vertex, message, duration=10000){
+	getVertexByName(this, vertex)
+		.select('.nodeGuts').each(function(){
+			let inp = document.createElement('input')
+			inp.style.width = '1vw'
+			inp.style.height = '1vh'
+			inp.style.margin = '0px'
+			inp.style.padding = '0px'
+			inp.style.border = '0px'
+			inp.style.opacity = '0'
+			this.appendChild(inp)
+			inp.setCustomValidity(message)
+			inp.reportValidity()
+			const interval = setInterval(() => {inp.reportValidity()}, 2000)
+			inp.onclick = ()=>{clearInterval(interval); inp.remove()}
+			setTimeout(()=>{clearInterval(interval); inp.remove()}, duration)
+		})
+}
+
 export function createSVG(selection, size=[1000,500], make_grid=true){
 	const svgData = {
 		graphStructure: new protoGraphStructure(),
@@ -102,7 +121,8 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 		getGraph,
 		givePorts,
 		setNodeColor,
-		getTaffyModule
+		getTaffyModule,
+		nodeAlert
 	}
 	// create svg
 	const svg = selection
