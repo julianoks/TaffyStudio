@@ -40,6 +40,9 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 
 	if(op === 'INPUTS'){
 		sideBar.appendChild(makeInputDescCard(ownerSVG, vertexName))
+	}
+
+	if(op === 'INPUTS' || op === 'OUTPUTS'){
 		const button = makeCompileButton(ownerSVG)
 		button.style = 'margin-left: auto; margin-right: auto; display: table;'
 		sideBar.appendChild(button)

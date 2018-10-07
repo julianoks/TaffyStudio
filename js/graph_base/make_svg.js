@@ -66,8 +66,16 @@ function getTaffyModule(){
 
 function pullModule(){
 	const {name, inputDescriptions} = this.moduleMetaData
-	const pulled = this.svgElement.closest('.studio').__data__.pullModule(name, inputDescriptions)
-	return pulled
+	const {pullModule} = this.svgElement.closest('.studio').__data__
+	try {
+		return pullModule(name, inputDescriptions)
+	} catch(e){
+		if(e.hasOwnProperty('node') && e.hasOwnProperty('error')){
+			const {node, error} = e
+			this.nodeAlert(node, JSON.stringify(error))
+		}
+		else{console.log(e)}
+	}
 }
 
 function getVertexByName(svgData, vertex){
