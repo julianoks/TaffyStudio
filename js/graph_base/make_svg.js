@@ -72,7 +72,7 @@ function pullModule(){
 	} catch(e){
 		if(e.hasOwnProperty('node') && e.hasOwnProperty('error')){
 			const {node, error} = e
-			this.nodeAlert(node, JSON.stringify(error))
+			this.nodeAlert(node, error.message)
 		}
 		else{console.log(e)}
 	}
