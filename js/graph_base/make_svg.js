@@ -41,7 +41,13 @@ function getTaffyModule(){
 	inputNodeName = Object.entries(svgData.nodeMetaData).find(([n,{op}])=>op==='INPUTS')[0],
 	nodes = Object.entries(graphSkeleton).reduce((acc, [name, inputsRaw]) => {
 		let inputs = inputsRaw.slice()
+		// remove trailing empty, replace others with undefineds
 		while(inputs.length && inputs[inputs.length-1]===undefined){ inputs.pop() }
+		for(let i=0; i<inputs.length; i++){
+			if(inputs[i]===undefined){
+				throw({error: {message: `input #${i} is undefined`}, node: name})
+			}
+		}
 		const {op, literal} = svgData.nodeMetaData[name]
 		inputs = inputs
 			.map(({node, index}) => node===inputNodeName? ['INPUT_'+index, 0] : [node,index])
@@ -120,7 +126,6 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 		graphStructure: new protoGraphStructure(),
 		lastPortHovered: undefined,
 		nodeMetaData: {},
-		getTaffyModule: undefined,
 		moduleMetaData: {
 			name: undefined,
 			inputDescriptions: {},
