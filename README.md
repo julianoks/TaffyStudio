@@ -30,6 +30,8 @@ September Sprint:
 October Sprint:
 - [ ] debugging interface 
 - [ ] make nodes informative & pretty
+- [ ] refactor make_svg.js into multiple files
+- [ ] call debugModule when edges are drawn or operation is defined
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
@@ -78,6 +80,7 @@ Data Attribute:
 - getGraph - A function ```() => nodes```. The return value is a dictionary with node names as keys, and an array of inputs as values. Each input is represented as a dictionary with the name of the input node, and the index of the output value.
 - svgElement - the svg element the data attribute belongs to
 - pullModule - A function ```() => pulledTaffy``` that maps the graph to pulled Taffy
+- debugModule - A function ```() => boolean``` that pulls the module, including every node's output in the module's output. For the purpose of intermediate debugging.
 - moduleMetaData - A dictionary that contains the module's metadata, with keys ```name, inputDescriptions, import```
 - getTaffyModule - A function ```() => taffyModule``` that maps the graph into a taffy module
 - nodeAlert - A function ```(vertex, message, duration?) => undefined``` that displays an alert ```message``` next to the specified ```vertex```, which closes once the ```duration``` elapses.

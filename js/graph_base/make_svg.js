@@ -2,6 +2,7 @@ import {graphStructure as protoGraphStructure} from './graph_structure.js'
 import {makeGridLines, addMarkerDef} from './svg_utils.js'
 import {giveNodePorts} from './give_ports.js'
 import {constructors as taffyConstructors} from '../../deps/Taffy/src/index.js'
+import {puller as taffyPuller} from '../../deps/Taffy/src/index.js'
 
 function zoomSelection(selection) {
 	const {k,x,y} = d3.event.transform,
@@ -70,19 +71,39 @@ function getTaffyModule(){
 	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)
 }
 
+
+
+
+
+const handleFailedPull = e => {
+	if(e.hasOwnProperty('node') && e.hasOwnProperty('error')){
+		const {node, error} = e
+		this.nodeAlert(node, error.message)
+	}
+	else{console.log(e)}
+	return false
+}
+
 function pullModule(){
 	const {name, inputDescriptions} = this.moduleMetaData
 	const {pullModule} = this.svgElement.closest('.studio').__data__
 	try {
 		return pullModule(name, inputDescriptions)
-	} catch(e){
-		if(e.hasOwnProperty('node') && e.hasOwnProperty('error')){
-			const {node, error} = e
-			this.nodeAlert(node, error.message)
-		}
-		else{console.log(e)}
-		return false
-	}
+	} catch(e){ return handleFailedPull(e) }
+}
+
+function debugModule(){
+	const {name, inputDescriptions} = this.moduleMetaData
+	const library = this.svgElement.closest('.studio').__data__.getTaffyLibrary()
+	// use every node as an output
+	library.modules.forEach((mod, i) => {
+		if(mod.name !== name){return}
+		library.modules[i].output = mod.nodes.map(n => n.name+':0')
+	})
+	try {
+		taffyPuller(library, name, inputDescriptions, true)
+		return true
+	} catch(e){ return handleFailedPull(e) }
 }
 
 function getVertexByName(svgData, vertex){
@@ -132,6 +153,7 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 			imports: []
 		},
 		pullModule,
+		debugModule,
 		getGraph,
 		givePorts,
 		setNodeColor,
