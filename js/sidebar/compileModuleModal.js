@@ -26,23 +26,25 @@ function makeModal(svgElement){
     let copyButton = modal.querySelector('#copy')
     const backends = Array.from(Object.keys(packagers))
     const pulled = svgElement.__data__.pullModule()
-    backends.sort().forEach(name => {
-        const option = document.createElement('option')
-        option.value = name
-        option.innerText = name
-        selector.appendChild(option)
-    });
-    copyButton.onclick = () => {
-        textarea.select()
-        document.execCommand('copy')
+    if(pulled !== false){
+        backends.sort().forEach(name => {
+            const option = document.createElement('option')
+            option.value = name
+            option.innerText = name
+            selector.appendChild(option)
+        });
+        copyButton.onclick = () => {
+            textarea.select()
+            document.execCommand('copy')
+        }
+        selector.oninput = () => {
+            const code = packagers[selector.value](pulled)
+            textarea.innerText = code
+            textarea.style.display = 'initial'
+            copyButton.style.display = 'initial'
+        }
+        svgElement.parentElement.appendChild(modal)
     }
-    selector.oninput = () => {
-        const code = packagers[selector.value](pulled)
-        textarea.innerText = code
-        textarea.style.display = 'initial'
-        copyButton.style.display = 'initial'
-    }
-    svgElement.parentElement.appendChild(modal)
 }
 
 export function makeCompileButton(svgElement){

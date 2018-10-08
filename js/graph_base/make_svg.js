@@ -75,6 +75,7 @@ function pullModule(){
 			this.nodeAlert(node, error.message)
 		}
 		else{console.log(e)}
+		return false
 	}
 }
 
