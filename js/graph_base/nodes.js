@@ -101,12 +101,14 @@ const _nodeEventHandlers = {
 			.transition().style("opacity", 1)
 	},
 	mouseLeave: ele => {
+		/*
 		const s = d3.select(ele)
 		s.select(".nodeGuts")
 			.transition().style("opacity", 0.5)
 			//.style('visibility', 'hidden')
 		s.select(".nodePorts")
 			.transition().style("opacity", 0.5)
+		*/
 	},
 	click: ele => {
 		sideBarNodeManipulation(ele.ownerSVGElement, ele.__data__.vertexName)

@@ -46,8 +46,6 @@ October Sprint:
 			- gridLines ([link](#gridlines))
 				- Vertical lines ([link](#vertical-lines))
 				- Horizontal lines ([link](#horizontal-lines))
-			- edgesGroup ([link](#edgesgroup))
-				- (multiple) Edge Elements ([link](#edge-elements))
 			- nodesGroup ([link](#nodesgroup))
 				- (multiple) nodeContainer ([link](#nodecontainer))
 					- nodePorts ([link](#nodeports))
@@ -59,6 +57,8 @@ October Sprint:
 							- (multiple) Port Elements ([link](#port-elements))
 					- nodeBody ([link](#nodebody))
 					- nodeGuts ([link](#nodeguts))
+			- edgesGroup ([link](#edgesgroup))
+				- (multiple) Edge Elements ([link](#edge-elements))
 		- defs ([link](#defs))
 	- sideBar ([link](#sidebar))
 

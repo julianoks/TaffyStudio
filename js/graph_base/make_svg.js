@@ -19,8 +19,8 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 	// possibly draw gridlines on drawCanvas
 	if(make_grid){makeGridLines(drawCanvas, size, 100)}
 	// create groups for nodes and edges
-	drawCanvas.append("g").classed("edgesGroup", true)
 	drawCanvas.append("g").classed("nodesGroup", true)
+	drawCanvas.append("g").classed("edgesGroup", true)
 	// add zoom behavior to svg
 	const zoom = d3.zoom().on("zoom", () => zoomSelection(drawCanvas))
 	svg
