@@ -72,8 +72,13 @@ const handleFailedPull = (svgData, e) => {
 	else{console.log(e)}
 	return false
 }
+const clearNodeAlerts = ({svgElement}) =>
+	Array.from(svgElement.querySelectorAll('.nodeAlertTooltip'))
+		.forEach(p => p.parentElement.remove())
 
 function pullModule(){
+	clearNodeAlerts(this)
+	this.svgElement.querySelectorAll
 	const {name, inputDescriptions} = this.moduleMetaData
 	const pullFn = this.svgElement.closest('.studio').__data__.pullModule
 	try {
@@ -82,6 +87,7 @@ function pullModule(){
 }
 
 function debugModule(){
+	clearNodeAlerts(this)
 	const {name, inputDescriptions} = this.moduleMetaData
 	try {
 		const library = this.svgElement.closest('.studio').__data__.getTaffyLibrary()
@@ -117,6 +123,7 @@ function nodeAlert(vertex, message){
     getVertexByName(this, vertex)
 		.select('.nodeGuts').each(function(){
             const ele = document.createRange().createContextualFragment(tooltipHTML).firstElementChild
+			ele.style.opacity = 0
 			this.appendChild(ele)
 			const tool = ele.querySelector('.nodeAlertTooltip')
             tool.innerText = message
@@ -125,8 +132,9 @@ function nodeAlert(vertex, message){
 			tool.style.left = ((bodyWidth-tool.offsetWidth)/2)+'px'
 			const close = tool.appendChild(document.createElement('span'))
 			close.className = 'closeTooltip'
+			d3.select(ele).transition().style('opacity', 1)
 			tool.addEventListener('mousedown', function(e){e.stopPropagation()})
-			close.onclick = function(){ele.remove()}
+			close.onclick = function(){d3.select(ele).transition().style('opacity', 0).remove()}
 		})
 }
 
