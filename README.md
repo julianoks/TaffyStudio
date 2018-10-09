@@ -35,8 +35,9 @@ October Sprint:
 - [x] debug message for input descriptions
 - [x] input descriptions parsing tests (eg shouldnt pass "1, 2, 3g")
 - [x] improve nodeAlert
-- [ ] reflect number of outputs in nodes, and value of those outputs
+- [x] reflect number of outputs in nodes, and value of those outputs
 - [ ] put operation name, and user provided name when defined, in nodeGuts
+- [ ] display outport and edges value on hover
 
 
 ## The Hierarchy

@@ -80,7 +80,7 @@ const bindValuesToPorts = (svgData, pulled) => {
 	const nodesToIdxsToVals = Object.entries(pulled.stage_two.val_trace)
 		.reduce((acc, [k,v]) => {
 			const [name, idx] = k.split(':')
-			if(name.slice(0,6) === 'INPUT_'){return acc}
+			if(name.slice(0,6) === 'INPUT_' || name==='DEBUG'){return acc}
 			if(!acc.hasOwnProperty(name)){ acc[name] = {} }
 			acc[name][idx] = v
 			return acc
@@ -111,12 +111,15 @@ function debugModule(){
 	const {name, inputDescriptions} = this.moduleMetaData
 	try {
 		const library = this.svgElement.closest('.studio').__data__.getTaffyLibrary()
-		// use every node as an output
 		library.modules.forEach((mod, i) => {
 			if(mod.name !== name){return}
-			library.modules[i].output = mod.nodes.map(n => n.name+':0')
+			const debugNode = new taffyConstructors.node('DEBUG', 'placeholder', [], [])
+			library.modules[i].nodes.push(debugNode)
+			library.modules[i].output = ['DEBUG:0']
+			library.modules[i].input.push('DEBUG')
 		})
-		const pulled = taffyPuller(library, name, inputDescriptions, true)
+		const debugInpDesc = Object.assign({'DEBUG': {shape:[],dtype:'float32'}}, inputDescriptions)
+		const pulled = taffyPuller(library, name, debugInpDesc, false)
 		bindValuesToPorts(this, pulled)
 		return true
 	} catch(e){ return handleFailedPull(this, e) }
