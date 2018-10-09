@@ -136,7 +136,7 @@ function addInputOutputNodes(svgSelection){
 		// input
 		const populateInput = container => {
 			container
-				.call(s => giveNodePorts(s, 0, 1))
+				.call(s => giveNodePorts(s, 0, 1, false))
 				.each(function({vertexName}){
 					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "INPUTS"
 				})
@@ -148,7 +148,7 @@ function addInputOutputNodes(svgSelection){
 		// output
 		const populateOutput = container => {
 			container
-				.call(s => giveNodePorts(s, 1, 0))
+				.call(s => giveNodePorts(s, 1, 0, false))
 				.each(function({vertexName}){
 					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "OUTPUTS"
 				})
