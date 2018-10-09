@@ -30,6 +30,7 @@ export function makeDeleteButton(ownerSVG, vertexName){
 		const deletes = ownerSVG.__data__.graphStructure.deleteVertex(vertexName)
 		deletes.forEach(e => e.remove())
 		resetSideBar(ownerSVG)
+		ownerSVG.__data__.debugModule()
 	}
 	return button
 }

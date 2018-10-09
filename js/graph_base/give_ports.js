@@ -100,7 +100,8 @@ function finalizeEdge(edge, edgeElement){
     		updatePosition()
     		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
     		return {updatePosition, edgeRelation}
-    	})
+		})
+		.each(function(){this.ownerSVGElement.__data__.debugModule()})
 		.transition().attr("stroke-width", "0.25%")
 }
 
@@ -164,6 +165,7 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts){
 			const circleIn = graphStructure.V[to.node].querySelector('.nodeInPort').children[1+to.index]
 			finalizeEdge([circleOut, circleIn], edgeElement)
 		})
+		container.ownerSVGElement.__data__.debugModule()
 	})
 	return {inCircles, outCircles}
 }
