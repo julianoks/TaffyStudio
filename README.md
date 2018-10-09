@@ -34,7 +34,10 @@ October Sprint:
 - [x] call debugModule when edges are drawn or operation is defined
 - [x] debug message for input descriptions
 - [x] input descriptions parsing tests (eg shouldnt pass "1, 2, 3g")
-- [ ] improve nodeAlert
+- [x] improve nodeAlert
+- [ ] reflect number of outputs in nodes, and value of those outputs
+- [ ] put operation name, and user provided name when defined, in nodeGuts
+
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
