@@ -30,8 +30,9 @@ September Sprint:
 October Sprint:
 - [ ] debugging interface 
 - [ ] make nodes informative & pretty
-- [ ] refactor make_svg.js into multiple files
+- [x] refactor make_svg.js into multiple files
 - [ ] call debugModule when edges are drawn or operation is defined
+- [ ] debug message for input descriptions
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))

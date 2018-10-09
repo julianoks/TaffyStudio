@@ -64,6 +64,7 @@ export function makeOperationDropdown(ownerSVG, vertexName){
 		const nOutputs = opdoc.output.length
 		ownerSVG.__data__.givePorts(vertexName, nInputs, nOutputs)
 		sideBarNodeManipulation(ownerSVG, vertexName)
+		ownerSVG.__data__.debugModule()
 	}
 	return select
 }

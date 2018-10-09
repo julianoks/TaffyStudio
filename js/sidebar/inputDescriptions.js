@@ -47,13 +47,14 @@ function makeInputDescRow(oninput, shape=[], dtype='float32'){
 	return li
 }
 
-const makeOnInput = (descList, ownerSVG) => () => {
+const makeOnInput = (descList, ownerSVG) => (debug=true) => {
     ownerSVG.__data__.moduleMetaData.inputDescriptions = {}
     Array.from(descList.children).forEach((li, i) => {
         const name = `INPUT_${i}`
         const shape = parseToShape(li.querySelector('input').value)
         const dtype = li.querySelector('select').value
-        ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {shape, dtype}
+		ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {shape, dtype}
+		if(debug){ownerSVG.__data__.debugModule()}
     })
 }
 
@@ -70,9 +71,10 @@ export function makeInputDescCard(ownerSVG, vertexName){
         } else {
             list.appendChild(makeInputDescRow(oninput, [], 'float32'))
         }
-    }
+	}
+	oninput(false)
     const panelHTML = '<div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Input Descriptions</h3></div> <div class="panel-body"></div> </div>'
 	const panel = document.createRange().createContextualFragment(panelHTML).firstChild
-    panel.querySelector('.panel-body').appendChild(list)
+	panel.querySelector('.panel-body').appendChild(list)
     return panel
 }

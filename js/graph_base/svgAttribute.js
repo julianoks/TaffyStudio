@@ -83,13 +83,13 @@ function pullModule(){
 
 function debugModule(){
 	const {name, inputDescriptions} = this.moduleMetaData
-	const library = this.svgElement.closest('.studio').__data__.getTaffyLibrary()
-	// use every node as an output
-	library.modules.forEach((mod, i) => {
-		if(mod.name !== name){return}
-		library.modules[i].output = mod.nodes.map(n => n.name+':0')
-	})
 	try {
+		const library = this.svgElement.closest('.studio').__data__.getTaffyLibrary()
+		// use every node as an output
+		library.modules.forEach((mod, i) => {
+			if(mod.name !== name){return}
+			library.modules[i].output = mod.nodes.map(n => n.name+':0')
+		})
 		taffyPuller(library, name, inputDescriptions, true)
 		return true
 	} catch(e){ return handleFailedPull(this, e) }
