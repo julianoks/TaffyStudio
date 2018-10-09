@@ -76,9 +76,29 @@ const clearNodeAlerts = ({svgElement}) =>
 	Array.from(svgElement.querySelectorAll('.nodeAlertTooltip'))
 		.forEach(p => p.parentElement.remove())
 
+const bindValuesToPorts = (svgData, pulled) => {
+	const nodesToIdxsToVals = Object.entries(pulled.stage_two.val_trace)
+		.reduce((acc, [k,v]) => {
+			const [name, idx] = k.split(':')
+			if(name.slice(0,6) === 'INPUT_'){return acc}
+			if(!acc.hasOwnProperty(name)){ acc[name] = {} }
+			acc[name][idx] = v
+			return acc
+		}, {})
+	Object.entries(nodesToIdxsToVals).map(([node, idxToVal]) => {
+		const container = svgData.graphStructure.V[node]
+		container.querySelector('.nodePorts').__data__.outputVals = idxToVal
+		const displayedOut = container.querySelector('.nodeOutPort').querySelectorAll('circle').length
+		const nOut = Object.keys(idxToVal).length
+		if(nOut !== displayedOut){
+			const nIn = container.querySelector('.nodeInPort').querySelectorAll('circle').length
+			svgData.givePorts(node, nIn, nOut, false)
+		}
+	})
+}
+
 function pullModule(){
 	clearNodeAlerts(this)
-	this.svgElement.querySelectorAll
 	const {name, inputDescriptions} = this.moduleMetaData
 	const pullFn = this.svgElement.closest('.studio').__data__.pullModule
 	try {
@@ -96,7 +116,8 @@ function debugModule(){
 			if(mod.name !== name){return}
 			library.modules[i].output = mod.nodes.map(n => n.name+':0')
 		})
-		taffyPuller(library, name, inputDescriptions, true)
+		const pulled = taffyPuller(library, name, inputDescriptions, true)
+		bindValuesToPorts(this, pulled)
 		return true
 	} catch(e){ return handleFailedPull(this, e) }
 }
@@ -108,9 +129,9 @@ function getVertexByName(svgData, vertex){
 	return d3.select(svgData.graphStructure.V[vertex])
 }
 
-function givePorts(vertex, nIn, nOut){
+function givePorts(vertex, nIn, nOut, runDebug=true){
 	return getVertexByName(this, vertex)
-		.call(s => giveNodePorts(s, nIn, nOut))
+		.call(s => giveNodePorts(s, nIn, nOut, runDebug))
 }
 
 function setNodeColor(vertex, color){

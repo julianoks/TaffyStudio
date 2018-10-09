@@ -73,12 +73,12 @@ const portDragBehavior = d3.drag()
     		alreadyIngoing()){
     		cache.edgeElement.remove()
     	} else {
-	    	finalizeEdge(edge, cache.edgeElement)
+	    	finalizeEdge(edge, cache.edgeElement, true)
     	}
     	delete(this.__dragCache)
     })
 
-function finalizeEdge(edge, edgeElement){
+function finalizeEdge(edge, edgeElement, runDebug){
 	const updatePositionFn = edgeEle => () => {
 		const [vin,vout] = edge,
 		fromC = [+vin.getAttribute("cx"), +vin.getAttribute("cy")],
@@ -101,7 +101,7 @@ function finalizeEdge(edge, edgeElement){
     		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
     		return {updatePosition, edgeRelation}
 		})
-		.each(function(){this.ownerSVGElement.__data__.debugModule()})
+		.each(runDebug? function(){this.ownerSVGElement.__data__.debugModule()} : ()=>{})
 		.transition().attr("stroke-width", "0.25%")
 }
 
@@ -131,7 +131,7 @@ function scaleAndTranslatePorts(nodeContainerSelection){
 }
 
 // add node ports
-export function giveNodePorts(nodeContainer, nInPorts, nOutPorts){
+export function giveNodePorts(nodeContainer, nInPorts, nOutPorts, runDebug=true){
 	// make the circles
 	const inPort = nodeContainer.select(".nodeInPort")
 	inPort.selectAll('*').remove()
@@ -163,9 +163,9 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts){
 			const edgeElement = createEdge(d3.select(container.ownerSVGElement))
 			const circleOut = graphStructure.V[from.node].querySelector('.nodeOutPort').children[1+from.index]
 			const circleIn = graphStructure.V[to.node].querySelector('.nodeInPort').children[1+to.index]
-			finalizeEdge([circleOut, circleIn], edgeElement)
+			finalizeEdge([circleOut, circleIn], edgeElement, false)
 		})
-		container.ownerSVGElement.__data__.debugModule()
+		if(runDebug){ container.ownerSVGElement.__data__.debugModule() }
 	})
 	return {inCircles, outCircles}
 }
