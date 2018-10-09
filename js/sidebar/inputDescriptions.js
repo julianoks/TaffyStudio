@@ -1,10 +1,21 @@
 import {getNumInputsOutputs} from './nodeInteraction.js'
 
+function valid_C_identifier(str){
+	const match = str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)
+	return match !== null && str === str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)[0]
+}
 function parseToShape(str){
-	return str.replace(/\[|\]|\(|\)/g, '')
-		.replace(/,/g,' ')
-		.split(/\s+/).filter(s=>s !== '')
-		.map(v => isNaN(parseInt(v))? ''+v : parseInt(v))
+const toIdent = p => {
+	if(!valid_C_identifier(''+p)){
+		throw({message: `"${p}" is not an integer or valid C identifier`})
+	}
+	return ''+p
+}
+const isIntStrict = s => !isNaN(parseInt(s)) && s.length === (''+parseInt(s)).length
+return str.replace(/\[|\]|\(|\)/g, '')
+	.replace(/,/g,' ')
+	.split(/\s+/).filter(s=>s !== '')
+	.map(v => isIntStrict(v)? parseInt(v) : toIdent(v))
 }
 
 function makeInputDescRow(oninput, shape=[], dtype='float32'){
@@ -50,8 +61,17 @@ function makeInputDescRow(oninput, shape=[], dtype='float32'){
 const makeOnInput = (descList, ownerSVG) => (debug=true) => {
     ownerSVG.__data__.moduleMetaData.inputDescriptions = {}
     Array.from(descList.children).forEach((li, i) => {
+		const inp = li.querySelector('input')
+		inp.setCustomValidity('')
+		inp.reportValidity()
+		let shape = []
+		try{ shape = parseToShape(li.querySelector('input').value) }
+		catch(e){
+			inp.setCustomValidity(e.message)
+			inp.reportValidity()
+			return
+		}
         const name = `INPUT_${i}`
-        const shape = parseToShape(li.querySelector('input').value)
         const dtype = li.querySelector('select').value
 		ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {shape, dtype}
 		if(debug){ownerSVG.__data__.debugModule()}
