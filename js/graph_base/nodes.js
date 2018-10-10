@@ -143,6 +143,7 @@ function addInputOutputNodes(svgSelection){
 			container.select(".nodeBody").attr("fill", "red")
 			container.select('.nodeGuts').append('xhtml:span')
 				.text('Inputs')
+			svgEle.__data__.moduleMetaData.inputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput)
 		// output
@@ -155,6 +156,7 @@ function addInputOutputNodes(svgSelection){
 			container.select(".nodeBody").attr("fill", "red")
 			container.select('.nodeGuts').append('xhtml:span')
 				.text('Outputs')
+				svgEle.__data__.moduleMetaData.outputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
 

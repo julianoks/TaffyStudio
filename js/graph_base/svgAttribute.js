@@ -31,7 +31,7 @@ function getTaffyModule(){
 	graphSkeleton = svgData.getGraph(),
 	moduleName = svgData.moduleMetaData.name,
 	moduleImport = svgData.moduleMetaData.imports,
-	inputNodeName = Object.entries(svgData.nodeMetaData).find(([n,{op}])=>op==='INPUTS')[0],
+	inputNodeName = svgData.moduleMetaData.inputNode.__data__.vertexName,
 	nodes = Object.entries(graphSkeleton).reduce((acc, [name, inputsRaw]) => {
 		let inputs = inputsRaw.slice()
 		// remove trailing empty, replace others with undefineds
@@ -46,7 +46,7 @@ function getTaffyModule(){
 			.map(({node, index}) => node===inputNodeName? ['INPUT_'+index, 0] : [node,index])
 			.map(([node, index]) => node+':'+index)
 		if(op === 'INPUTS'){
-			const nOutputs = svgData.graphStructure.V[inputNodeName].querySelector('.nodeOutPort').childElementCount-1
+			const nOutputs = svgData.moduleMetaData.inputNode.querySelector('.nodeOutPort').childElementCount-1
 			const newInputNodes = Array(nOutputs).fill().map((_,i) => {
 				moduleInputs.push('INPUT_'+i)
 				return new node('INPUT_'+i, 'placeholder', [], [])
@@ -82,8 +82,7 @@ const clearNodeAlerts = ({svgElement}) =>
 const bindValuesToPorts = (svgData, valueTrace) => {
 	Array.from(svgData.svgElement.querySelectorAll('.nodePorts'))
 		.forEach(e => {e.__data__.outputVals = {}})
-	const inputNodeName = Object.entries(svgData.nodeMetaData).find(([k,{op}])=>op==='INPUTS')[0]
-	const inputPorts = svgData.graphStructure.V[inputNodeName].querySelector('.nodePorts')
+	const inputPorts = svgData.moduleMetaData.inputNode.querySelector('.nodePorts')
 	inputPorts.__data__.outputVals = {}
 	const nodesToIdxsToVals = Object.entries(valueTrace)
 		.reduce((acc, [k,v]) => {
@@ -182,7 +181,9 @@ export function makeSvgData(){
 		moduleMetaData: {
 			name: undefined,
 			inputDescriptions: {},
-			imports: []
+			imports: [],
+			inputNode: undefined,
+			outputNode: undefined
 		},
 		pullModule,
 		debugModule,
