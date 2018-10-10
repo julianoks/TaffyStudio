@@ -31,10 +31,9 @@ function getOpDoc(ownerSVG, opName){
 		return primitives[opName].doc
 	}
 	// otherwise we find the module's opDoc
-	const moduleSVG = Array.from(ownerSVG.closest('.studio').querySelectorAll('.modulesHolder > .moduleHolder > svg'))
-		.map(svg => svg.__data__).find(d => d.moduleMetaData.name===opName)
+	const moduleSVG = ownerSVG.closest('.studio').__data__.moduleHolders[opName].querySelector('svg')
 	if(moduleSVG===undefined){throw `Operation "${opName}" is not a primitive or module`}	
-	return moduleSVG.getTaffyModule().doc
+	return moduleSVG.__data__.getTaffyModule().doc
 }
 
 export function makeOperationDropdown(ownerSVG, vertexName){

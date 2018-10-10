@@ -36,6 +36,7 @@ export function newStudio(parent, studioSize){
 		.classed('studio', true)
 		.datum(function(){return {
 			moduleCounter: 0,
+			moduleHolders: {},
 			getTaffyLibrary: makeGetTaffyLibrary(this),
 			pullModule: (module_name, input_descriptions, prune=true) => 
 				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune)
@@ -73,6 +74,9 @@ function newStudioModule(parent, size){
 		.call(addSideBar, [sideBarWidth*width, height])
 		.call(addNodes)
 		.each(function(){
-			this.__data__.moduleMetaData.name = `module_${++parent.__data__.moduleCounter}`})
+			const name = `module_${++parent.__data__.moduleCounter}`
+			parent.closest('.studio').__data__.moduleHolders[name] = holder.node()
+			this.__data__.moduleMetaData.name = name
+		})
 	return svg
 }
