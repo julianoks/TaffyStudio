@@ -19,6 +19,7 @@ const makeNewTabFn = (navbarList, modulesHolder) => () => {
 	const navbarItem = navbarList.insert('li', function(){return this.lastElementChild})
 	const itemInner = navbarItem.append('a')
 		.attr('href', '#')
+		.attr('id', svg.__data__.moduleMetaData.name)
 		.text(svg.__data__.moduleMetaData.name)
 		.on('click', focus)
 	focus()

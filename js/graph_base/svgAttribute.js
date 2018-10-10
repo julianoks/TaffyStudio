@@ -181,7 +181,8 @@ function nodeAlert(vertex, message){
 	if(vertex.includes('/')){
 		const [node, ...children] = vertex.split('/')
 		const moduleImp = this.nodeMetaData[node].op
-		this.nodeAlert(node, `Error in module "${moduleImp}": ${message}`)
+		const onclick = `this.closest('.studio').querySelector('nav li a#${moduleImp}').click()`
+		this.nodeAlert(node, `Error in <a href="#" onclick="${onclick}">${moduleImp}</a>: <br>${message}`)
 		const externalData = this.svgElement.closest('.studio').__data__
 			.moduleHolders[moduleImp].querySelector('svg').__data__
 		externalData.nodeAlert(children.join('/'), message)
@@ -193,7 +194,7 @@ function nodeAlert(vertex, message){
 			ele.style.opacity = 0
 			this.appendChild(ele)
 			const tool = ele.querySelector('.nodeAlertTooltip')
-            tool.innerText = message
+            tool.innerHTML = message
 			tool.style.bottom = this.parentElement.querySelector('.nodeBody').height.baseVal.value+'px'
 			const bodyWidth = this.parentElement.querySelector('.nodeBody').width.baseVal.value
 			tool.style.left = ((bodyWidth-tool.offsetWidth)/2)+'px'
