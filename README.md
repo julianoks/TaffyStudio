@@ -38,6 +38,7 @@ October Sprint:
 - [x] reflect number of outputs in nodes, and value of those outputs
 - [ ] put operation name, and user provided name when defined, in nodeGuts
 - [x] display outport and edges value on hover
+- [ ] nested debugging
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))

@@ -68,18 +68,23 @@ const handleFailedPull = (svgData, e) => {
 	if(e.hasOwnProperty('node') && e.hasOwnProperty('error')){
 		const {node, error} = e
 		svgData.nodeAlert(node, error.message)
+		if(e.hasOwnProperty('valueTrace')){
+			bindValuesToPorts(svgData, e.valueTrace, e.node)
+		}
 	}
-	else{console.log(e)}
-	if(e.hasOwnProperty('valueTrace')){
-		bindValuesToPorts(svgData, e.valueTrace)
+	else{
+		console.log(e)
+		if(e.hasOwnProperty('valueTrace')){
+			bindValuesToPorts(svgData, e.valueTrace)
+		}
 	}
 	return false
 }
 const clearNodeAlerts = ({svgElement}) =>
-	Array.from(svgElement.querySelectorAll('.nodeAlertTooltip'))
+	Array.from(svgElement.closest('.studio').querySelectorAll('.nodeAlertTooltip'))
 		.forEach(p => p.parentElement.remove())
 
-const bindValuesToPorts = (svgData, valueTrace) => {
+const bindValuesToPorts = (svgData, valueTrace, failedNode=false) => {
 	Array.from(svgData.svgElement.querySelectorAll('.nodePorts'))
 		.forEach(e => {e.__data__.outputVals = {}})
 	const inputPorts = svgData.moduleMetaData.inputNode.querySelector('.nodePorts')
@@ -96,7 +101,18 @@ const bindValuesToPorts = (svgData, valueTrace) => {
 			acc[name][idx] = v
 			return acc
 		}, {})
-	Object.entries(nodesToIdxsToVals).map(([node, idxToVal]) => {
+	const subValTrace = {}
+	Object.entries(nodesToIdxsToVals).forEach(([node, idxToVal]) => {
+		if(node.includes('/')){
+			if(failedNode === false){ return }
+			const [child, ...grandChildren] = node.split('/')
+			if(child === failedNode.split('/')[0]){
+				Object.entries(idxToVal).forEach(([idx, val]) => {
+					subValTrace[grandChildren.join('/')+':'+idx] = val
+				})
+			}
+			return
+		}
 		const container = svgData.graphStructure.V[node]
 		container.querySelector('.nodePorts').__data__.outputVals = idxToVal
 		const displayedOut = container.querySelector('.nodeOutPort').querySelectorAll('circle').length
@@ -106,6 +122,13 @@ const bindValuesToPorts = (svgData, valueTrace) => {
 			svgData.givePorts(node, nIn, nOut, false)
 		}
 	})
+	if(failedNode !== false && failedNode.includes('/')){
+		const {op} = svgData.nodeMetaData[failedNode.split('/')[0]]
+		const holder = svgData.svgElement.closest('.studio').__data__.moduleHolders[op]
+		const subSVGData = holder.querySelector('svg').__data__
+		const failedGrandChildren = failedNode.split('/').slice(1).join('/')
+		bindValuesToPorts(subSVGData, subValTrace, failedGrandChildren)
+	}
 }
 
 function pullModule(){
@@ -155,7 +178,16 @@ function setNodeColor(vertex, color){
 
 function nodeAlert(vertex, message){
     const tooltipHTML = `<div><style>.nodeAlertTooltip{width:20vw;max-width:20vw;font-size:12px;position:absolute;pointer-events:all;line-height:1;font-weight:700;padding:12px;background:rgba(100,0,0,.8);color:#fff;border-radius:2px}.nodeAlertTooltip:after{box-sizing:border-box;display:inline;font-size:10px;width:100%;line-height:1;color:rgba(100,0,0,.8);content:"\\25BC";position:absolute;text-align:center;margin:-1px 0 0 0;top:100%;left:0}.closeTooltip:before{content:'✕'}.closeTooltip{position:absolute;top:0;right:0;cursor:pointer}</style><div class=nodeAlertTooltip></div></div>`
-    getVertexByName(this, vertex)
+	if(vertex.includes('/')){
+		const [node, ...children] = vertex.split('/')
+		const moduleImp = this.nodeMetaData[node].op
+		this.nodeAlert(node, `Error in module "${moduleImp}": ${message}`)
+		const externalData = this.svgElement.closest('.studio').__data__
+			.moduleHolders[moduleImp].querySelector('svg').__data__
+		externalData.nodeAlert(children.join('/'), message)
+		return
+	}
+	getVertexByName(this, vertex)
 		.select('.nodeGuts').each(function(){
             const ele = document.createRange().createContextualFragment(tooltipHTML).firstElementChild
 			ele.style.opacity = 0
