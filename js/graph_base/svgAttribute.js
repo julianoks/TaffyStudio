@@ -70,17 +70,22 @@ const handleFailedPull = (svgData, e) => {
 		svgData.nodeAlert(node, error.message)
 	}
 	else{console.log(e)}
+	if(e.hasOwnProperty('valueTrace')){
+		bindValuesToPorts(svgData, e.valueTrace)
+	}
 	return false
 }
 const clearNodeAlerts = ({svgElement}) =>
 	Array.from(svgElement.querySelectorAll('.nodeAlertTooltip'))
 		.forEach(p => p.parentElement.remove())
 
-const bindValuesToPorts = (svgData, pulled) => {
+const bindValuesToPorts = (svgData, valueTrace) => {
+	Array.from(svgData.svgElement.querySelectorAll('.nodePorts'))
+		.forEach(e => {e.__data__.outputVals = {}})
 	const inputNodeName = Object.entries(svgData.nodeMetaData).find(([k,{op}])=>op==='INPUTS')[0]
 	const inputPorts = svgData.graphStructure.V[inputNodeName].querySelector('.nodePorts')
 	inputPorts.__data__.outputVals = {}
-	const nodesToIdxsToVals = Object.entries(pulled.stage_two.val_trace)
+	const nodesToIdxsToVals = Object.entries(valueTrace)
 		.reduce((acc, [k,v]) => {
 			const [name, idx] = k.split(':')
 			if(name==='DEBUG'){return acc}
@@ -127,7 +132,7 @@ function debugModule(){
 		})
 		const debugInpDesc = Object.assign({'DEBUG': {shape:[],dtype:'float32'}}, inputDescriptions)
 		const pulled = taffyPuller(library, name, debugInpDesc, false)
-		bindValuesToPorts(this, pulled)
+		bindValuesToPorts(this, pulled.stage_two.val_trace)
 		return true
 	} catch(e){ return handleFailedPull(this, e) }
 }

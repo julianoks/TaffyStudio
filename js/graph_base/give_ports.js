@@ -69,7 +69,8 @@ const portDragBehavior = d3.drag()
     			return node === inName && index === inGoing.__data__.index
     		})
     	}
-    	if(portType(lastPort) === portType(this) ||
+		if(lastPort === undefined ||
+			portType(lastPort) === portType(this) ||
     		this.parentElement.parentElement === lastPort.parentElement.parentElement || 
     		alreadyIngoing()){
     		cache.edgeElement.remove()
