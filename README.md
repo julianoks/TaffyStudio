@@ -37,8 +37,7 @@ October Sprint:
 - [x] improve nodeAlert
 - [x] reflect number of outputs in nodes, and value of those outputs
 - [ ] put operation name, and user provided name when defined, in nodeGuts
-- [ ] display outport and edges value on hover
-
+- [x] display outport and edges value on hover
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))

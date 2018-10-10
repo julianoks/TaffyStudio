@@ -43,6 +43,7 @@ export function addValueHover(selection){
                 .style('left', d3.event.pageX + 'px')		
                 .style('top', d3.event.pageY + 'px')
                 .style('position', 'absolute')
+                .style('pointer-events', 'none')
             
         })
         .on('mouseout', function(){

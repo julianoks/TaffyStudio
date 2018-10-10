@@ -77,10 +77,17 @@ const clearNodeAlerts = ({svgElement}) =>
 		.forEach(p => p.parentElement.remove())
 
 const bindValuesToPorts = (svgData, pulled) => {
+	const inputNodeName = Object.entries(svgData.nodeMetaData).find(([k,{op}])=>op==='INPUTS')[0]
+	const inputPorts = svgData.graphStructure.V[inputNodeName].querySelector('.nodePorts')
+	inputPorts.__data__.outputVals = {}
 	const nodesToIdxsToVals = Object.entries(pulled.stage_two.val_trace)
 		.reduce((acc, [k,v]) => {
 			const [name, idx] = k.split(':')
-			if(name.slice(0,6) === 'INPUT_' || name==='DEBUG'){return acc}
+			if(name==='DEBUG'){return acc}
+			if(name.slice(0,6) === 'INPUT_'){
+				inputPorts.__data__.outputVals[idx] = v
+				return acc
+			}
 			if(!acc.hasOwnProperty(name)){ acc[name] = {} }
 			acc[name][idx] = v
 			return acc
