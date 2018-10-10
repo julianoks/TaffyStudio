@@ -85,7 +85,7 @@ const bindValuesToPorts = (svgData, pulled) => {
 			const [name, idx] = k.split(':')
 			if(name==='DEBUG'){return acc}
 			if(name.slice(0,6) === 'INPUT_'){
-				inputPorts.__data__.outputVals[idx] = v
+				inputPorts.__data__.outputVals[name.split('_')[1]] = v
 				return acc
 			}
 			if(!acc.hasOwnProperty(name)){ acc[name] = {} }
