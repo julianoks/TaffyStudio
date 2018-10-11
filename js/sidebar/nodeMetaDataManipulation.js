@@ -33,7 +33,11 @@ function getOpDoc(ownerSVG, opName){
 	// otherwise we find the module's opDoc
 	const moduleSVG = ownerSVG.closest('.studio').__data__.moduleHolders[opName].querySelector('svg')
 	if(moduleSVG===undefined){throw `Operation "${opName}" is not a primitive or module`}	
-	return moduleSVG.__data__.getTaffyModule().doc
+	try { return moduleSVG.__data__.getTaffyModule().doc }
+	catch(e) {
+		ownerSVG.__data__.handleFailedPull(e)
+		return {input:[],output:[],doc:'Failure while compiling module'}
+	}
 }
 
 export function makeOperationDropdown(ownerSVG, vertexName){

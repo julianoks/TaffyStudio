@@ -38,7 +38,7 @@ October Sprint:
 - [x] reflect number of outputs in nodes, and value of those outputs
 - [ ] put operation name, and user provided name when defined, in nodeGuts
 - [x] display outport and edges value on hover
-- [ ] nested debugging
+- [x] nested debugging
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
@@ -91,6 +91,7 @@ Data Attribute:
 - moduleMetaData - A dictionary that contains the module's metadata, with keys ```name, inputDescriptions, import```
 - getTaffyModule - A function ```() => taffyModule``` that maps the graph into a taffy module
 - nodeAlert - A function ```(vertex, message, duration?) => undefined``` that displays an alert ```message``` next to the specified ```vertex```, which closes once the ```duration``` elapses.
+- handleFailedPull - A function ```(e) => false``` that takes an error ```e``` and propagates it to the UI
 
 ### drawCanvas
 Used for scaling/translating content.

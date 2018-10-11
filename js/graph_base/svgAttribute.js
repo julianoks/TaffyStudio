@@ -38,7 +38,7 @@ function getTaffyModule(){
 		while(inputs.length && inputs[inputs.length-1]===undefined){ inputs.pop() }
 		for(let i=0; i<inputs.length; i++){
 			if(inputs[i]===undefined){
-				throw({error: {message: `input #${i} is undefined`}, node: name})
+				throw({error: {message: `input #${i} is undefined`}, node: moduleName+'/'+name})
 			}
 		}
 		const {op, literal} = svgData.nodeMetaData[name]
@@ -64,7 +64,8 @@ function getTaffyModule(){
 }
 
 
-const handleFailedPull = (svgData, e) => {
+function handleFailedPull(e){
+	const svgData = this
 	if(e.hasOwnProperty('node') && e.hasOwnProperty('error')){
 		const {node, error} = e
 		svgData.nodeAlert(node, error.message)
@@ -137,7 +138,7 @@ function pullModule(){
 	const pullFn = this.svgElement.closest('.studio').__data__.pullModule
 	try {
 		return pullFn(name, inputDescriptions)
-	} catch(e){ return handleFailedPull(this, e) }
+	} catch(e){ return this.handleFailedPull(e) }
 }
 
 function debugModule(){
@@ -156,7 +157,7 @@ function debugModule(){
 		const pulled = taffyPuller(library, name, debugInpDesc, false)
 		bindValuesToPorts(this, pulled.stage_two.val_trace)
 		return true
-	} catch(e){ return handleFailedPull(this, e) }
+	} catch(e){ return this.handleFailedPull(e) }
 }
 
 function getVertexByName(svgData, vertex){
@@ -176,18 +177,31 @@ function setNodeColor(vertex, color){
 		.select('.nodeBody').attr('fill', color)
 }
 
+const alertMalformedModule = (svgData, vertex, message) => {
+	const [moduleName, ...children] = vertex.split('/')
+	const studio = svgData.svgElement.closest('.studio')
+	if(!studio.__data__.moduleHolders.hasOwnProperty(moduleName)){ return false }
+	studio.querySelector(`nav li a#${moduleName}`).click()
+	const externalData = studio.__data__.moduleHolders[moduleName].querySelector('svg').__data__
+	externalData.nodeAlert(children.join('/'), message)
+	return true
+}
+const alertNestedMessage = (svgData, vertex, message) => {
+	if(!vertex.includes('/')){ return false}
+	const [node, ...children] = vertex.split('/')
+	const moduleImp = svgData.nodeMetaData[node].op
+	const onclick = `this.closest('.studio').querySelector('nav li a#${moduleImp}').click()`
+	svgData.nodeAlert(node, `Error in <a href="#" onclick="${onclick}">${moduleImp}</a>: <br>${message}`)
+	const externalData = svgData.svgElement.closest('.studio').__data__
+		.moduleHolders[moduleImp].querySelector('svg').__data__
+	externalData.nodeAlert(children.join('/'), message)
+	return true
+}
+
 function nodeAlert(vertex, message){
-    const tooltipHTML = `<div><style>.nodeAlertTooltip{width:20vw;max-width:20vw;font-size:12px;position:absolute;pointer-events:all;line-height:1;font-weight:700;padding:12px;background:rgba(100,0,0,.8);color:#fff;border-radius:2px}.nodeAlertTooltip:after{box-sizing:border-box;display:inline;font-size:10px;width:100%;line-height:1;color:rgba(100,0,0,.8);content:"\\25BC";position:absolute;text-align:center;margin:-1px 0 0 0;top:100%;left:0}.closeTooltip:before{content:'✕'}.closeTooltip{position:absolute;top:0;right:0;cursor:pointer}</style><div class=nodeAlertTooltip></div></div>`
-	if(vertex.includes('/')){
-		const [node, ...children] = vertex.split('/')
-		const moduleImp = this.nodeMetaData[node].op
-		const onclick = `this.closest('.studio').querySelector('nav li a#${moduleImp}').click()`
-		this.nodeAlert(node, `Error in <a href="#" onclick="${onclick}">${moduleImp}</a>: <br>${message}`)
-		const externalData = this.svgElement.closest('.studio').__data__
-			.moduleHolders[moduleImp].querySelector('svg').__data__
-		externalData.nodeAlert(children.join('/'), message)
-		return
-	}
+	if(alertMalformedModule(this, vertex, message) ||
+		alertNestedMessage(this, vertex, message)){return}
+	const tooltipHTML = `<div><style>.nodeAlertTooltip{width:20vw;max-width:20vw;font-size:12px;position:absolute;pointer-events:all;line-height:1;font-weight:700;padding:12px;background:rgba(100,0,0,.8);color:#fff;border-radius:2px}.nodeAlertTooltip:after{box-sizing:border-box;display:inline;font-size:10px;width:100%;line-height:1;color:rgba(100,0,0,.8);content:"\\25BC";position:absolute;text-align:center;margin:-1px 0 0 0;top:100%;left:0}.closeTooltip:before{content:'✕'}.closeTooltip{position:absolute;top:0;right:0;cursor:pointer}</style><div class=nodeAlertTooltip></div></div>`
 	getVertexByName(this, vertex)
 		.select('.nodeGuts').each(function(){
             const ele = document.createRange().createContextualFragment(tooltipHTML).firstElementChild
@@ -224,6 +238,7 @@ export function makeSvgData(){
 		givePorts,
 		setNodeColor,
 		getTaffyModule,
-		nodeAlert
+		nodeAlert,
+		handleFailedPull
 	}
 }
