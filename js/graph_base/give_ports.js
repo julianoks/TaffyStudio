@@ -1,5 +1,5 @@
 import {relativeTransform, makeSVGCircles} from './svg_utils.js'
-import {addValueHover} from './valueHover.js'
+import {valueHover} from './valueHover.js'
 
 function createEdge(svgSelection){
 	return svgSelection.select(".edgesGroup")
@@ -103,9 +103,10 @@ function finalizeEdge(edge, edgeElement, runDebug){
     		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
     		return {updatePosition, edgeRelation}
 		})
-		.call(addValueHover)
 		.each(runDebug? function(){this.ownerSVGElement.__data__.debugModule()} : ()=>{})
 		.transition().attr("stroke-width", "0.25%")
+	edgeElement.on('mouseover', function(){valueHover.mouseover(this)})
+	edgeElement.on('mouseout', valueHover.mouseout)
 }
 
 // position ports
@@ -150,8 +151,11 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts, runDebug=true)
 	outCircles
 		.attr("fill", "white").attr("stroke", "black").attr("stroke-width", 0.2)
 		.call(portDragBehavior)
-		.on("mouseover", function(){this.ownerSVGElement.__data__.lastPortHovered = this})
-	outCircles.call(addValueHover)
+		.on("mouseover", function(){
+			this.ownerSVGElement.__data__.lastPortHovered = this
+			valueHover.mouseover(this)
+		})
+		.on("mouseout", valueHover.mouseout)
 	nodeContainer.call(scaleAndTranslatePorts)
 	// remove old edge elements, add preexisting edge relations
 	nodeContainer.each(function(){

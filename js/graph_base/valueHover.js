@@ -33,23 +33,22 @@ function getInner(ele){
     return `<style>.valueTooltip{max-width:20vw;font-size:12px;position:absolute;line-height:1;font-weight:700;padding:12px;background:rgba(0,0,0,1);color:#fff;border-radius:2px}</style><div class="valueTooltip">${inside}</div>`
 }
 
-export function addValueHover(selection){
-    selection
-        .on('mouseover', function(){
-            d3.selectAll('.outputValueTooltipHolder').remove()
-            d3.select(this.ownerSVGElement.parentElement)
-                .append('div').classed('outputValueTooltipHolder', true)
-                .html(getInner(this))
-                .style('left', d3.event.pageX + 'px')		
-                .style('top', d3.event.pageY + 'px')
-                .style('position', 'absolute')
-                .style('pointer-events', 'none')
-            
-        })
-        .on('mouseout', function(){
-            d3.selectAll('.outputValueTooltipHolder')
-                .transition()
-                .style('opacity', 0)
-                .remove()
-        })
+export const valueHover = {
+    mouseover: (ele) => {
+        d3.selectAll('.outputValueTooltipHolder').remove()
+        d3.select(ele.ownerSVGElement.parentElement)
+            .append('div').classed('outputValueTooltipHolder', true)
+            .html(getInner(ele))
+            .style('left', d3.event.pageX + 'px')		
+            .style('top', d3.event.pageY + 'px')
+            .style('position', 'absolute')
+            .style('pointer-events', 'none')
+        
+    },
+    mouseout: () => {
+        d3.selectAll('.outputValueTooltipHolder')
+            .transition()
+            .style('opacity', 0)
+            .remove()
+    }
 }
