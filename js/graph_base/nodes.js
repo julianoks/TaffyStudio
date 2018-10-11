@@ -117,7 +117,23 @@ const _nodeEventHandlers = {
 const _populateNode = container => {
 	container
 		.call(s => giveNodePorts(s, 0, 0))
-		.select(".nodeBody").attr("fill", "blue")
+		.select(".nodeBody")
+			.attr("fill", "#bac5dd")
+			.attr("stroke-width", "2px")
+			.attr("stroke", "#828a9b")
+}
+
+const addTextToGuts = text => container => {
+	container.select('.nodeGuts').html('')
+		.append('xhtml:div')
+		.style('width', '100%')
+		.style('height', '100%')
+		.style('display', 'table')
+			.append('div')
+			.style('display', 'table-cell')
+			.style('text-align', 'center')
+			.style('vertical-align', 'middle')
+			.text(text)
 }
 
 
@@ -140,9 +156,11 @@ function addInputOutputNodes(svgSelection){
 				.each(function({vertexName}){
 					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "INPUTS"
 				})
-			container.select(".nodeBody").attr("fill", "red")
-			container.select('.nodeGuts').append('xhtml:span')
-				.text('Inputs')
+			container.select(".nodeBody")
+				.attr("fill", "#ebaaea")
+				.attr("stroke-width", "2px")
+				.attr("stroke", "#897e9f")
+			container.call(addTextToGuts('Inputs'))
 			svgEle.__data__.moduleMetaData.inputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput)
@@ -153,10 +171,12 @@ function addInputOutputNodes(svgSelection){
 				.each(function({vertexName}){
 					this.ownerSVGElement.__data__.nodeMetaData[vertexName].op = "OUTPUTS"
 				})
-			container.select(".nodeBody").attr("fill", "red")
-			container.select('.nodeGuts').append('xhtml:span')
-				.text('Outputs')
-				svgEle.__data__.moduleMetaData.outputNode = container.node()
+			container.select(".nodeBody")
+				.attr("fill", "#ebaaea")
+				.attr("stroke-width", "2px")
+				.attr("stroke", "#897e9f")
+			container.call(addTextToGuts('Outputs'))
+			svgEle.__data__.moduleMetaData.outputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
 
