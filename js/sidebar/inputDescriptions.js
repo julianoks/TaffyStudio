@@ -18,9 +18,23 @@ return str.replace(/\[|\]|\(|\)/g, '')
 	.map(v => isIntStrict(v)? parseInt(v) : toIdent(v))
 }
 
-function makeInputDescRow(oninput, shape=[], dtype='float32'){
+function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float32', JSONtext=''){
 	let li = document.createElement('li')
 	li.className = 'list-group-item'
+	// Type selector
+	const typeSelectorHTML = `<div style=" margin-bottom: 6px; ">Type: <select id="typeSelector"> <option value="tensor">Tensor</option> <option value="literal">JSON literal</option> </select></div>`
+	const typeSelector = document.createRange().createContextualFragment(typeSelectorHTML).firstChild
+	typeSelector.querySelector('select').oninput = function(){
+		Array.from(this.closest('li').children).slice(1)
+			.forEach(e => { e.style.display = 'none' })
+		this.closest('li').querySelector('#'+this.value).style.display = 'inherit'
+		oninput()
+	}
+	li.appendChild(typeSelector)
+	// JSON literal input
+	const JSONLiteralHTML = `<table id="literal" style="border: none; display: none;"><tbody><tr style="border: none;"><td style="border: none;">JSON Literal:</td><td style="border: none;"><textarea rows="4">${JSONtext}</textarea></td></tr></tbody></table>`
+	const JSONLiteralTable = document.createRange().createContextualFragment(JSONLiteralHTML).firstChild
+	li.appendChild(JSONLiteralTable)
 	// dtypeSelector
 	let dtypeSelector = document.createElement('select')
 	const options = ['float32', 'int32']
@@ -54,7 +68,11 @@ function makeInputDescRow(oninput, shape=[], dtype='float32'){
 	table.children[0].children[1].appendChild(shapeTextBox)
 	table.children[1].children[0].innerText = 'dtype:'
 	table.children[1].children[1].appendChild(dtypeSelector)
+	table.id = 'tensor'
 	li.appendChild(table)
+	// trigger change to input description type
+	Array.from(typeSelector.children).find(c => c.value == selectedType).selected = true
+	typeSelector.querySelector('select').oninput()
 	return li
 }
 
@@ -65,15 +83,17 @@ const makeOnInput = (descList, ownerSVG) => (debug=true) => {
 		inp.setCustomValidity('')
 		inp.reportValidity()
 		let shape = []
-		try{ shape = parseToShape(li.querySelector('input').value) }
+		try{ shape = parseToShape(li.querySelector('#tensor input').value) }
 		catch(e){
 			inp.setCustomValidity(e.message)
 			inp.reportValidity()
 			return
 		}
         const name = `INPUT_${i}`
-        const dtype = li.querySelector('select').value
-		ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {shape, dtype}
+        const dtype = li.querySelector('#tensor select').value
+		const selectedType = li.querySelector('#typeSelector').value
+		const JSONtext = li.querySelector('#literal textarea').value
+		ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {selectedType, shape, dtype, JSONtext}
 		if(debug){ownerSVG.__data__.debugModule()}
     })
 }
@@ -86,10 +106,10 @@ export function makeInputDescCard(ownerSVG, vertexName){
     const oninput = makeOnInput(list, ownerSVG)
     for(let i=0; i<nInputs; i++){
         if(inputDescriptions.hasOwnProperty(`INPUT_${i}`)){
-            const {shape, dtype} = inputDescriptions[`INPUT_${i}`]
-            list.appendChild(makeInputDescRow(oninput, shape, dtype))
+            const {selectedType, shape, dtype, JSONtext} = inputDescriptions[`INPUT_${i}`]
+            list.appendChild(makeInputDescRow(oninput, selectedType, shape, dtype, JSONtext))
         } else {
-            list.appendChild(makeInputDescRow(oninput, [], 'float32'))
+            list.appendChild(makeInputDescRow(oninput))
         }
 	}
 	oninput(false)

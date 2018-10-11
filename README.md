@@ -39,6 +39,7 @@ October Sprint:
 - [ ] put operation name, and user provided name when defined, in nodeGuts
 - [x] display outport and edges value on hover
 - [x] nested debugging
+- [ ] support literals as input descriptions for debugging (not compiling)
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
