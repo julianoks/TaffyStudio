@@ -71,7 +71,7 @@ function newStudioModule(parent, size){
 	const holder = d3.select(parent)
 		.append('div')
 		.classed('moduleHolder', true)
-	const svg = createSVG(holder, [(1-sideBarWidth)*width, height])
+	const svg = createSVG(holder, [(1-sideBarWidth)*width, height], false)
 		.call(addSideBar, [sideBarWidth*width, height])
 		.call(addNodes)
 		.each(function(){

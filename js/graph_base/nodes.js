@@ -133,6 +133,7 @@ const addTextToGuts = text => container => {
 			.style('display', 'table-cell')
 			.style('text-align', 'center')
 			.style('vertical-align', 'middle')
+			.style('font-weight', '500')
 			.text(text)
 }
 
