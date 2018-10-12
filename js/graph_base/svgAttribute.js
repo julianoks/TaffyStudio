@@ -147,7 +147,8 @@ const _preprocessModuleForDebug = (inputDescriptions, mod) => {
 	mod.input = Object.entries(inputDescriptions)
 		.filter(([,{selectedType}]) => selectedType === 'tensor')
 		.map(([name,]) => name)
-	mod.nodes = mod.nodes.filter(node => !node.name.startsWith('INPUT'))
+	mod.nodes = mod.nodes.filter(node => !inputDescriptions.hasOwnProperty(node) ||
+		inputDescriptions[node].selectedType !== 'literal')
 	let newInpDesc = Object.entries(inputDescriptions)
 		.filter(([,{selectedType}]) => selectedType === 'tensor')
 		.reduce((acc,[k,v])=>Object.assign(acc,{[k]:v}),

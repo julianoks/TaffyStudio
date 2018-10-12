@@ -24,11 +24,12 @@ function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float
 	// Type selector
 	const typeSelectorHTML = `<div style=" margin-bottom: 6px; ">Type: <select id="typeSelector"> <option value="tensor">Tensor</option> <option value="literal">JSON literal</option> </select></div>`
 	const typeSelector = document.createRange().createContextualFragment(typeSelectorHTML).firstChild
-	typeSelector.querySelector('select').oninput = function(){
+	Array.from(typeSelector.querySelector('select').children).find(c => c.value == selectedType).selected = true
+	typeSelector.querySelector('select').oninput = function(debug=true){
 		Array.from(this.closest('li').children).slice(1)
 			.forEach(e => { e.style.display = 'none' })
 		this.closest('li').querySelector('#'+this.value).style.display = 'inherit'
-		oninput()
+		oninput(debug)
 	}
 	li.appendChild(typeSelector)
 	// JSON literal input
@@ -71,20 +72,18 @@ function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float
 	table.children[1].children[1].appendChild(dtypeSelector)
 	table.id = 'tensor'
 	li.appendChild(table)
-	// trigger change to input description type
-	Array.from(typeSelector.querySelector('select').children).find(c => c.value == selectedType).selected = true
-	typeSelector.querySelector('select').oninput()
+	typeSelector.querySelector('select').oninput(false)
 	return li
 }
 
 const makeOnInput = (descList, ownerSVG) => (debug=true) => {
     ownerSVG.__data__.moduleMetaData.inputDescriptions = {}
     Array.from(descList.children).forEach((li, i) => {
-		const inp = li.querySelector('input')
+		const inp = li.querySelector('#tensor input')
 		inp.setCustomValidity('')
 		inp.reportValidity()
 		let shape = []
-		try{ shape = parseToShape(li.querySelector('#tensor input').value) }
+		try{ shape = parseToShape(inp.value) }
 		catch(e){
 			inp.setCustomValidity(e.message)
 			inp.reportValidity()
@@ -95,8 +94,8 @@ const makeOnInput = (descList, ownerSVG) => (debug=true) => {
 		const selectedType = li.querySelector('#typeSelector').value
 		const JSONtext = li.querySelector('#literal textarea').value
 		ownerSVG.__data__.moduleMetaData.inputDescriptions[name] = {selectedType, shape, dtype, JSONtext}
-		if(debug){ownerSVG.__data__.debugModule()}
-    })
+	})
+	if(debug && descList.childElementCount){ownerSVG.__data__.debugModule()}
 }
 
 export function makeInputDescCard(ownerSVG, vertexName){

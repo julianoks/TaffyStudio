@@ -160,7 +160,16 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts, runDebug=true)
 	// remove old edge elements, add preexisting edge relations
 	nodeContainer.each(function(){
 		const container = this
-		const {graphStructure} = container.ownerSVGElement.__data__
+		const {graphStructure, moduleMetaData} = container.ownerSVGElement.__data__
+		if(moduleMetaData.inputNode === container){
+			for(let i=0;i<nOutPorts;i++){
+				const name = `INPUT_${i}`
+				if(!moduleMetaData.inputDescriptions.hasOwnProperty(name)){
+					moduleMetaData.inputDescriptions[name] = {
+						selectedType: "tensor", shape: [], dtype: "float32", JSONtext: ""}
+				}
+			}
+		}
 		const edges = graphStructure.getIncidentEdgeElements(container.__data__.vertexName)
 		const edgeRelations = edges.map(e => e.__data__.edgeRelation)
 		edgeRelations.forEach(({from,to}) => graphStructure.deleteEdge(from.node, to.node))
