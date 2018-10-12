@@ -154,7 +154,7 @@ export function makeLiteralsCard(ownerSVG, vertexName){
 	const addListItem = () => {
 		let li = document.createElement('li')
 		li.className = 'list-group-item'
-		const textbox = document.createElement('input')
+		const textbox = document.createElement('textarea')
 		textbox.className = 'form-control'
 		textbox.oninput = () => {
 			const nLiteralsCommited = ownerSVG.__data__.nodeMetaData[vertexName].literal

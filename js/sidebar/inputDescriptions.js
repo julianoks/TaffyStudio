@@ -33,7 +33,7 @@ function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float
 	}
 	li.appendChild(typeSelector)
 	// JSON literal input
-	const JSONLiteralHTML = `<table id="literal" style="border: none; display: none;"><tbody><tr style="border: none;"><td style="border: none;">JSON Literal:</td><td style="border: none;"><textarea rows="4">${JSONtext}</textarea></td></tr></tbody></table>`
+	const JSONLiteralHTML = `<table id="literal" style="border: none; display: none;"><tbody><tr style="border: none;"><td style="border: none;">JSON Literal:</td><td style="border: none;"><textarea class="form-control" rows="4">${JSONtext}</textarea></td></tr></tbody></table>`
 	const JSONLiteralTable = document.createRange().createContextualFragment(JSONLiteralHTML).firstChild
 	JSONLiteralTable.querySelector('textarea').oninput = oninput
 	li.appendChild(JSONLiteralTable)
@@ -50,7 +50,8 @@ function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float
 	dtypeSelector.oninput = oninput
 	// shapeTextBox
 	let shapeTextBox = document.createElement('input')
-    shapeTextBox.setAttribute('placeholder', 'e.g. "1, 2, 3"')
+	shapeTextBox.setAttribute('placeholder', '')
+	shapeTextBox.className = 'form-control'
     shapeTextBox.value = shape.join(', ')
 	shapeTextBox.oninput = oninput
 	// table
