@@ -94,7 +94,7 @@ const bindValuesToPorts = (svgData, valueTrace, failedNode=false) => {
 		.reduce((acc, [k,v]) => {
 			const [name, idx] = k.split(':')
 			if(name==='DEBUG'){return acc}
-			if(name.slice(0,6) === 'INPUT_'){
+			if(name.startsWith('INPUT_')){
 				inputPorts.__data__.outputVals[name.split('_')[1]] = v
 				return acc
 			}
@@ -141,26 +141,66 @@ function pullModule(){
 	} catch(e){ return this.handleFailedPull(e) }
 }
 
+
+const _preprocessModuleForDebug = (inputDescriptions, mod) => {
+	// move input descriptions that are not tensors into literal nodes
+	mod.input = Object.entries(inputDescriptions)
+		.filter(([,{selectedType}]) => selectedType === 'tensor')
+		.map(([name,]) => name)
+	let newInpDesc = Object.entries(inputDescriptions)
+		.filter(([,{selectedType}]) => selectedType === 'tensor')
+		.reduce((acc,[k,v])=>Object.assign(acc,{[k]:v}),
+			{'DEBUG': {shape:[],dtype:'float32',JSONtext:'', selectedType:'tensor'}})
+	// move literals to LITERALS node, which are forwarded to a parse_json op with the same name as the input
+	let literals = []
+	Object.entries(inputDescriptions)
+		.filter(([,{selectedType}]) => selectedType === 'literal')
+		.forEach(([name, {JSONtext}]) => {
+			const parseNode = new taffyConstructors.node(name, 'parse_json', [`LITERALS:${literals.length}`], [])
+			mod.nodes.push(parseNode)
+			literals.push(JSONtext)
+		})
+	const literalsNode = new taffyConstructors.node('LITERALS', 'literals', [], literals)
+	mod.nodes.push(literalsNode)
+	// add debug node
+	const debugNode = new taffyConstructors.node('DEBUG', 'placeholder', [], [])
+	mod.nodes.push(debugNode)
+	mod.output = ['DEBUG:0']
+	mod.input.push('DEBUG')
+	return {mod, newInpDesc}
+}
 function debugModule(){
 	clearNodeAlerts(this)
 	const {name, inputDescriptions} = this.moduleMetaData
+	let debugInpDesc = inputDescriptions
 	try {
 		const library = this.svgElement.closest('.studio').__data__.getTaffyLibrary()
-		library.modules.forEach((mod, i) => {
-			if(mod.name !== name){return}
-			const debugNode = new taffyConstructors.node('DEBUG', 'placeholder', [], [])
-			library.modules[i].nodes.push(debugNode)
-			library.modules[i].output = ['DEBUG:0']
-			library.modules[i].input.push('DEBUG')
+		library.modules.forEach((thisMod, i) => {
+			if(thisMod.name !== name){return}
+			const {mod, newInpDesc} = _preprocessModuleForDebug(inputDescriptions, thisMod)
+			library.modules[i] = mod
+			debugInpDesc = newInpDesc
 		})
-		const debugInpDesc = Object.assign({'DEBUG': {shape:[],dtype:'float32'}}, inputDescriptions)
 		const pulled = taffyPuller(library, name, debugInpDesc, false)
+		Object.keys(pulled.stage_two.val_trace)
+			.filter(n => n.startsWith('LITERALS'))
+			.forEach(n => {delete pulled.stage_two.val_trace[n]})
+		delete pulled.stage_two.val_trace['DEBUG:0']
 		bindValuesToPorts(this, pulled.stage_two.val_trace)
 		return true
-	} catch(e){ return this.handleFailedPull(e) }
+	} catch(e){
+		if(e.hasOwnProperty('valueTrace')){
+			Object.keys(e.valueTrace)
+				.filter(n => n.startsWith('LITERALS'))
+				.forEach(n => {delete e.valueTrace[n]})
+			delete e.valueTrace['DEBUG:0']
+		}
+		return this.handleFailedPull(e)
+	}
 }
 
-function getVertexByName(svgData, vertex){
+function getVertexByName(svgData, name){
+	const vertex = name.startsWith('INPUT_')? svgData.moduleMetaData.inputNode.__data__.vertexName : name
 	if(!svgData.graphStructure.V.hasOwnProperty(vertex)){
 			throw(`Graph doesn't have vertex: "${vertex}"`)
 		}

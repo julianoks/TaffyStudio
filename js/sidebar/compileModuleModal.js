@@ -1,6 +1,11 @@
 import {packagers} from '../../deps/Taffy/src/index.js'
 
 function makeModal(svgElement){
+    Object.entries(svgElement.__data__.moduleMetaData.inputDescriptions)
+	.filter(([,{selectedType}]) => selectedType !== 'tensor')
+	.forEach(([name,]) => {throw {
+        error: {message: `Input #${name.slice(6)} is not a tensor`},
+		node: svgElement.__data__.moduleMetaData.inputNode.__data__.vertexName}})
     const pulled = svgElement.__data__.pullModule()
     if(pulled === false){ return false }
     const html = `<div class="modal" style="display: block; padding-left: 0px; background-color: rgba(0, 0, 0, 0.5);">

@@ -34,6 +34,7 @@ function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float
 	// JSON literal input
 	const JSONLiteralHTML = `<table id="literal" style="border: none; display: none;"><tbody><tr style="border: none;"><td style="border: none;">JSON Literal:</td><td style="border: none;"><textarea rows="4">${JSONtext}</textarea></td></tr></tbody></table>`
 	const JSONLiteralTable = document.createRange().createContextualFragment(JSONLiteralHTML).firstChild
+	JSONLiteralTable.querySelector('textarea').oninput = oninput
 	li.appendChild(JSONLiteralTable)
 	// dtypeSelector
 	let dtypeSelector = document.createElement('select')
@@ -71,7 +72,7 @@ function makeInputDescRow(oninput, selectedType='tensor', shape=[], dtype='float
 	table.id = 'tensor'
 	li.appendChild(table)
 	// trigger change to input description type
-	Array.from(typeSelector.children).find(c => c.value == selectedType).selected = true
+	Array.from(typeSelector.querySelector('select').children).find(c => c.value == selectedType).selected = true
 	typeSelector.querySelector('select').oninput()
 	return li
 }
