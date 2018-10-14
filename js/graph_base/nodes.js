@@ -89,6 +89,7 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 	if(typeof populateNode === "function"){
 		nodeContainer.call(populateNode)
 	}
+	return nodeContainer
 }
 
 const _nodeEventHandlers = {
@@ -196,4 +197,13 @@ export function addNodes(svg){
 			})
 	})
 	.call(addInputOutputNodes)
+}
+
+export function addNodeNoGUI(coords, op, literal){
+	const {svgElement, nodeMetaData} = this
+	return addNode(d3.select(svgElement),
+			coords, {}, _nodeEventHandlers, _populateNode)
+		.each(({vertexName}) => {
+			nodeMetaData[vertexName] = {op, literal, userProvidedName: vertexName}
+		})
 }

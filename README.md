@@ -28,18 +28,19 @@ September Sprint:
 
 
 October Sprint:
-- [ ] debugging interface 
+- [x] debugging interface 
 - [ ] make nodes informative & pretty
+- [ ] put operation name, and user provided name when defined, in nodeGuts
 - [x] refactor make_svg.js into multiple files
 - [x] call debugModule when edges are drawn or operation is defined
 - [x] debug message for input descriptions
 - [x] input descriptions parsing tests (eg shouldnt pass "1, 2, 3g")
 - [x] improve nodeAlert
 - [x] reflect number of outputs in nodes, and value of those outputs
-- [ ] put operation name, and user provided name when defined, in nodeGuts
 - [x] display outport and edges value on hover
 - [x] nested debugging
 - [x] support literals as input descriptions for debugging (not compiling)
+- [ ] add default "layers" modules
 
 ## The Hierarchy
 - moduleHolder ([link](#moduleholder))
@@ -93,6 +94,8 @@ Data Attribute:
 - getTaffyModule - A function ```() => taffyModule``` that maps the graph into a taffy module
 - nodeAlert - A function ```(vertex, message, duration?) => undefined``` that displays an alert ```message``` next to the specified ```vertex```, which closes once the ```duration``` elapses.
 - handleFailedPull - A function ```(e) => false``` that takes an error ```e``` and propagates it to the UI
+- addNode - A function ```([x,y], 'operation', literals) => selection``` that adds a node without using the GUI
+- addEdge - A function ```("node1:index", "node2:index") => undefined``` that adds an edge without using the GUI
 
 ### drawCanvas
 Used for scaling/translating content.

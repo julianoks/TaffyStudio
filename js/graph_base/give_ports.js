@@ -103,10 +103,10 @@ function finalizeEdge(edge, edgeElement, runDebug){
     		this.ownerSVGElement.__data__.graphStructure.addEdge(this, ...nodeNames)
     		return {updatePosition, edgeRelation}
 		})
-		.each(runDebug? function(){this.ownerSVGElement.__data__.debugModule()} : ()=>{})
 		.transition().attr("stroke-width", "0.25%")
 	edgeElement.on('mouseover', function(){valueHover.mouseover(this)})
 	edgeElement.on('mouseout', valueHover.mouseout)
+	if(runDebug){edgeElement.each(function(){this.ownerSVGElement.__data__.debugModule()})}
 }
 
 // position ports
@@ -185,4 +185,38 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts, runDebug=true)
 		if(runDebug){ container.ownerSVGElement.__data__.debugModule() }
 	})
 	return {inCircles, outCircles}
+}
+
+/**
+ * 
+ * @param {String} fromValRef of the form `node:index` 
+ * @param {String} toValRef of the form `node:index`  
+ * @param {boolean} debug whether to run debug or not 
+ */
+export function addEdge(fromValRef, toValRef, debug=false){
+	const {svgElement} = this
+	let [from, fromI] = fromValRef.split(':')
+	from = svgElement.__data__.graphStructure.V[from]
+	fromI = parseInt(fromI)
+	let [to, toI] = toValRef.split(':')
+	to = svgElement.__data__.graphStructure.V[to]
+	toI = parseInt(toI)
+	const edgeEle = createEdge(d3.select(svgElement))
+	{
+		const nOut = from.querySelector('.nodeOutPort').childElementCount-1
+		if(nOut <= fromI){
+			const nIn = from.querySelector('.nodeInPort').childElementCount-1
+			giveNodePorts(d3.select(from), nIn, fromI+1, debug)
+		}
+	}
+	{
+		const nIn = to.querySelector('.nodeInPort').childElementCount-1
+		if(nIn <= toI){
+			const nOut = to.querySelector('.nodeOutPort').childElementCount-1
+			giveNodePorts(d3.select(to), toI+1, nOut, debug)
+		}
+	}
+	const fromCirc = from.querySelector('.nodeOutPort').children[fromI+1]
+	const toCirc = to.querySelector('.nodeInPort').children[toI+1]
+	finalizeEdge([fromCirc, toCirc], edgeEle, debug)
 }

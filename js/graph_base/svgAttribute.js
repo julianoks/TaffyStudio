@@ -1,4 +1,5 @@
-import {giveNodePorts} from './give_ports.js'
+import {giveNodePorts, addEdge} from './give_ports.js'
+import {addNodeNoGUI as addNode} from './nodes.js'
 import {constructors as taffyConstructors} from '../../deps/Taffy/src/index.js'
 import {puller as taffyPuller} from '../../deps/Taffy/src/index.js'
 import {graphStructure as protoGraphStructure} from './graph_structure.js'
@@ -281,6 +282,8 @@ export function makeSvgData(){
 		setNodeColor,
 		getTaffyModule,
 		nodeAlert,
-		handleFailedPull
+		handleFailedPull,
+		addEdge,
+		addNode,
 	}
 }
