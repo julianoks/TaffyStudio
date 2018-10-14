@@ -32,7 +32,7 @@ const nodeDragBehavior = d3.drag()
     })
 
 // add node to SVG
-function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
+function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode, name=undefined){
 	// unpack nodeParam and eventHandlers
 	const svgScale = Math.min(+svgSelection.node().getAttribute('width'), +svgSelection.node().getAttribute('height')),
 	defaultNodeParam = Object.entries({width: 0.08, height: 0.04, rounding: 0.005})
@@ -58,8 +58,8 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode){
 		.on("click", function(){d3.event.stopPropagation();click(this);})
 		.call(nodeDragBehavior)
 		.datum(function(){
-			const name = this.ownerSVGElement.__data__.graphStructure.addVertex(this)
-			return {vertexName: name}
+			const vertexName = this.ownerSVGElement.__data__.graphStructure.addVertex(this, name)
+			return {vertexName}
 		})
 	nodePorts
 		.classed("nodePorts", true)
@@ -165,7 +165,7 @@ function addInputOutputNodes(svgSelection){
 			container.call(addTextToGuts('Inputs'))
 			svgEle.__data__.moduleMetaData.inputNode = container.node()
 		}
-		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput)
+		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput, 'Inputs')
 		// output
 		const populateOutput = container => {
 			container
@@ -180,9 +180,8 @@ function addInputOutputNodes(svgSelection){
 			container.call(addTextToGuts('Outputs'))
 			svgEle.__data__.moduleMetaData.outputNode = container.node()
 		}
-		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput)
-
-		sideBarNodeManipulation(this, 'vertex_1')
+		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput, 'Outputs')
+		sideBarNodeManipulation(this, 'Inputs')
 	})
 }
 
@@ -199,10 +198,10 @@ export function addNodes(svg){
 	.call(addInputOutputNodes)
 }
 
-export function addNodeNoGUI(coords, op, literal){
+export function addNodeNoGUI(coords, op, literal, name){
 	const {svgElement, nodeMetaData} = this
 	return addNode(d3.select(svgElement),
-			coords, {}, _nodeEventHandlers, _populateNode)
+			coords, {}, _nodeEventHandlers, _populateNode, name)
 		.each(({vertexName}) => {
 			nodeMetaData[vertexName] = {op, literal, userProvidedName: vertexName}
 		})

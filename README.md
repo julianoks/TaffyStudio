@@ -94,7 +94,7 @@ Data Attribute:
 - getTaffyModule - A function ```() => taffyModule``` that maps the graph into a taffy module
 - nodeAlert - A function ```(vertex, message, duration?) => undefined``` that displays an alert ```message``` next to the specified ```vertex```, which closes once the ```duration``` elapses.
 - handleFailedPull - A function ```(e) => false``` that takes an error ```e``` and propagates it to the UI
-- addNode - A function ```([x,y], 'operation', literals) => selection``` that adds a node without using the GUI
+- addNode - A function ```([x,y], 'operation', literals, 'name') => selection``` that adds a node without using the GUI
 - addEdge - A function ```("node1:index", "node2:index") => undefined``` that adds an edge without using the GUI
 
 ### drawCanvas
