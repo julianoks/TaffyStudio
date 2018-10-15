@@ -5,13 +5,14 @@ import {makeModuleImporter} from './sidebar/moduleImporter.js'
 import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
 import {addBaseModule} from './addBaseModule.js'
 import {baseModules} from './baseModules.js'
+import {addMarkerDef} from './graph_base/svg_utils.js'
 
 const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined, imports=[]) => {
 	const svgSize = undefined
 	const svg = newStudioModule(modulesHolder, svgSize, name).node()
 	const focus = () => {
 		navbarList.selectAll('li')
-			.each(function(){this.className='';})
+			.classed('active', false)
 			.select('.btn-group').remove()
 		navbarItem.classed('active', true)
 		d3.selectAll(modulesHolder.childNodes)
@@ -49,7 +50,8 @@ export function newStudio(studioParent, studioSize){
 			pullModule: (module_name, input_descriptions, prune=true) => 
 				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune),
 		}})
-	
+	studio.append('svg').call(addMarkerDef).attr('width', 0).attr('height', 0)
+	studio.append('style').html('li.defaultModule{display:none;}li.defaultModule.active{display:inherit;}')
 	const navbarList = studio.append('nav')
 		.classed('navbar navbar-default', true)
 		.style('margin-bottom', '0px')

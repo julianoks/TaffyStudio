@@ -1,4 +1,4 @@
-import {makeGridLines, addMarkerDef} from './svg_utils.js'
+import {makeGridLines} from './svg_utils.js'
 import {makeSvgData} from './svgAttribute.js'
 
 export function createSVG(selection, size=[1000,500], make_grid=true){
@@ -25,7 +25,6 @@ export function createSVG(selection, size=[1000,500], make_grid=true){
 	const zoom = d3.zoom().on("zoom", () => zoomSelection(drawCanvas))
 	svg
 		.call(zoom)
-		.call(addMarkerDef)
 	return svg
 }
 

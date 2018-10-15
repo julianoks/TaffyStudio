@@ -62,7 +62,6 @@ October Sprint:
 					- nodeGuts ([link](#nodeguts))
 			- edgesGroup ([link](#edgesgroup))
 				- (multiple) Edge Elements ([link](#edge-elements))
-		- defs ([link](#defs))
 	- sideBar ([link](#sidebar))
 
 ## Data Attributes
