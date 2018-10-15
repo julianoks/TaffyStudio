@@ -43,7 +43,6 @@ export function addBaseModule(module){
     const {svg, navbarItem} = this.newTabFn(module.name)
     // don't show in navbar, don't debug when creating
     navbarItem.classed('defaultModule', true)
-    console.log(navbarItem)
     const {debugModule} = svg.__data__
     svg.__data__.debugModule = () => {}
     svg.__data__.moduleMetaData.imports = module.module_import
