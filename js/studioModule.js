@@ -64,7 +64,7 @@ export function newStudio(studioParent, studioSize){
 	studio.each(function(){this.__data__.newTabFn = newTabFn})
 	const newTabItem = navbarList.append('li').append('a')
 		.attr('href', '#')
-		.on('click', newTabFn)
+		.on('click', () => newTabFn())
 		.html('<span style="color:green;" class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
 	newTabFn()
 	return modulesHolder

@@ -60,7 +60,6 @@ export function addBaseModule(module){
             .forEach((inp, toI) => {
                 const [f,fromI] = inp.split(':')
                 const fromRef = inputSet.has(f)? `Inputs:${module.input.indexOf(f)}` : `${f}:${fromI}`
-                console.log(fromRef, f, module.input)
                 svg.__data__.addEdge(fromRef, `${name}:${toI}`)
             }))
 }
