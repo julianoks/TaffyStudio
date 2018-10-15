@@ -19,8 +19,10 @@ function valueToHTML(value){
     if(value.constructor.name === 'tensor_description'){
         const shape = value.shape
         const dtype = value.dtype
+        let size = shape.filter(Number.isInteger).reduce((acc,x)=>acc*x, 1)
+        size += shape.filter(isNaN).reduce((acc,s)=>`${acc}*${s}`, '')
         return '<style>.tensorDescTable td{color:#fff;padding:0 5px 0 5px;}</style>' +
-            `<table class="tensorDescTable"><tr><td>Shape: <td>${JSON.stringify(shape)}<tr><td>Size: <td>${shape.reduce((acc,x)=>acc*x, 1)}<tr><td>DType: <td>${dtype}</table>`
+            `<table class="tensorDescTable"><tr><td>Shape: <td>${JSON.stringify(shape)}<tr><td>Size: <td>${size}<tr><td>DType: <td>${dtype}</table>`
     }
     return JSON.stringify(value)
 }
