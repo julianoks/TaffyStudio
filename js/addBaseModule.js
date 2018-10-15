@@ -46,6 +46,7 @@ export function addBaseModule(module){
     const {debugModule} = svg.__data__
     svg.__data__.debugModule = () => {}
     svg.__data__.moduleMetaData.imports = module.module_import
+    svg.__data__.moduleMetaData.doc = module.doc
     // add nodes
     const inputSet = new Set(module.input)
     const positions = transformPositions(getPositions(module), svg)

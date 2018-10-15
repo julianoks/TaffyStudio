@@ -4,8 +4,9 @@ import {addSideBar} from './sidebar/sideBar.js'
 import {makeModuleImporter} from './sidebar/moduleImporter.js'
 import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
 import {addBaseModule} from './addBaseModule.js'
+import {baseModules} from './baseModules.js'
 
-const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined) => {
+const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined, imports=[]) => {
 	const svgSize = undefined
 	const svg = newStudioModule(modulesHolder, svgSize, name).node()
 	const focus = () => {
@@ -24,6 +25,7 @@ const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined) => {
 		.attr('id', svg.__data__.moduleMetaData.name)
 		.text(svg.__data__.moduleMetaData.name)
 		.on('click', focus)
+	svg.__data__.moduleMetaData.imports = imports
 	focus()
 	return {svg, navbarItem}
 }
@@ -35,13 +37,14 @@ const makeGetTaffyLibrary = studioEle => () => {
 }
 
 export function newStudio(studioParent, studioSize){
-	const [width, height] = studioSize? studioSize : [window.innerWidth*0.9, window.innerHeight*0.8]
+	const [width, height] = studioSize? studioSize : [window.outerWidth*1, window.outerHeight*0.8]
 	const studio = d3.select(studioParent).append('div')
 		.classed('studio', true)
 		.datum(function(){return {
 			moduleCounter: 0,
 			moduleHolders: {},
 			addBaseModule,
+			baseModules,
 			getTaffyLibrary: makeGetTaffyLibrary(this),
 			pullModule: (module_name, input_descriptions, prune=true) => 
 				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune),
@@ -61,12 +64,15 @@ export function newStudio(studioParent, studioSize){
 		.node()
 	
 	const newTabFn = makeNewTabFn(navbarList, modulesHolder)
-	studio.each(function(){this.__data__.newTabFn = newTabFn})
+	studio.each(function(){
+		this.__data__.newTabFn = newTabFn
+		baseModules.forEach(mod => this.__data__.addBaseModule(mod))
+	})
 	const newTabItem = navbarList.append('li').append('a')
 		.attr('href', '#')
-		.on('click', () => newTabFn())
+		.on('click', () => newTabFn(undefined, baseModules.map(({name})=>name)))
 		.html('<span style="color:green;" class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
-	newTabFn()
+	newTabFn(undefined, baseModules.map(({name})=>name))
 	return modulesHolder
 }
 
