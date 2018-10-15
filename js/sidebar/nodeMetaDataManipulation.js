@@ -65,6 +65,7 @@ export function makeOperationDropdown(ownerSVG, vertexName){
 	})
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
+		ownerSVG.__data__.graphStructure.V[vertexName].__data__.addText(this.value)
 		const opdoc = getOpDoc(ownerSVG, this.value)
 		const nInputs = opdoc.input.length
 		const nOutputs = opdoc.output.length

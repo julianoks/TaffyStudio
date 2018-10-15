@@ -59,10 +59,12 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode, n
 		.call(nodeDragBehavior)
 		.datum(function(){
 			const vertexName = this.ownerSVGElement.__data__.graphStructure.addVertex(this, name)
-			return {vertexName}
+			return {
+				vertexName,
+				addText: text => addTextToGuts(d3.select(this), text)
+			}
 		})
-	nodePorts
-		.classed("nodePorts", true)
+	nodePorts.classed("nodePorts", true)
 	nodeInPort.classed("nodeInPort", true).style("pointer-events", "all")
 	nodeOutPort.classed("nodeOutPort", true).style("pointer-events", "all")
 	nodeBody
@@ -75,15 +77,15 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode, n
 		.classed('nodeGuts', true)
 		.style('width', width)
 		.style('height', height)
-	nodeContainer.each(({vertexName}) => {
+	nodeContainer.each(function({vertexName}){
 		// add node's metadata to the graph
-		svgSelection.node().__data__.nodeMetaData[vertexName] = {
+		this.ownerSVGElement.__data__.nodeMetaData[vertexName] = {
 			userProvidedName: vertexName,
 			op: undefined,
 			literal: []
 		}
 		// focus the sidebar on the newly created node
-		sideBarNodeManipulation(svgSelection.node(), vertexName)
+		sideBarNodeManipulation(this.ownerSVGElement, vertexName)
 	})
 	// upon completion call populateNode callback on node, rescale ports
 	if(typeof populateNode === "function"){
@@ -124,7 +126,7 @@ const _populateNode = container => {
 			.attr("stroke", "#828a9b")
 }
 
-const addTextToGuts = text => container => {
+const addTextToGuts = (container, text) => {
 	container.select('.nodeGuts').html('')
 		.append('xhtml:div')
 		.style('width', '100%')
@@ -162,7 +164,7 @@ function addInputOutputNodes(svgSelection){
 				.attr("fill", "#ebaaea")
 				.attr("stroke-width", "2px")
 				.attr("stroke", "#897e9f")
-			container.call(addTextToGuts('Inputs'))
+			container.call(s => addTextToGuts(s, 'Inputs'))
 			svgEle.__data__.moduleMetaData.inputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, bottomYPos], nodeParam, _nodeEventHandlers, populateInput, 'Inputs')
@@ -177,11 +179,11 @@ function addInputOutputNodes(svgSelection){
 				.attr("fill", "#ebaaea")
 				.attr("stroke-width", "2px")
 				.attr("stroke", "#897e9f")
-			container.call(addTextToGuts('Outputs'))
+			container.call(s => addTextToGuts(s, 'Outputs'))
 			svgEle.__data__.moduleMetaData.outputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput, 'Outputs')
-		sideBarNodeManipulation(this, 'Inputs')
+		sideBarNodeManipulation(svgEle, 'Inputs')
 	})
 }
 
@@ -202,6 +204,7 @@ export function addNodeNoGUI(coords, op, literal, name){
 	const {svgElement, nodeMetaData} = this
 	return addNode(d3.select(svgElement),
 			coords, {}, _nodeEventHandlers, _populateNode, name)
+		.call(s => addTextToGuts(s, op))
 		.each(({vertexName}) => {
 			nodeMetaData[vertexName] = {op, literal, userProvidedName: vertexName}
 		})
