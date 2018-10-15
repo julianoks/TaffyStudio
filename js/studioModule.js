@@ -3,9 +3,11 @@ import {addNodes} from './graph_base/nodes.js'
 import {addSideBar} from './sidebar/sideBar.js'
 import {makeModuleImporter} from './sidebar/moduleImporter.js'
 import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
+import {addBaseModule} from './addBaseModule.js'
 
-const makeNewTabFn = (navbarList, modulesHolder) => () => {
-	const svg = newStudioModule(modulesHolder).node()
+const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined) => {
+	const svgSize = undefined
+	const svg = newStudioModule(modulesHolder, svgSize, name).node()
 	const focus = () => {
 		navbarList.selectAll('li')
 			.each(function(){this.className='';})
@@ -23,6 +25,7 @@ const makeNewTabFn = (navbarList, modulesHolder) => () => {
 		.text(svg.__data__.moduleMetaData.name)
 		.on('click', focus)
 	focus()
+	return {svg, navbarItem}
 }
 
 const makeGetTaffyLibrary = studioEle => () => {
@@ -31,16 +34,17 @@ const makeGetTaffyLibrary = studioEle => () => {
 	return new taffyConstructors.library(modules)
 }
 
-export function newStudio(parent, studioSize){
+export function newStudio(studioParent, studioSize){
 	const [width, height] = studioSize? studioSize : [window.innerWidth*0.9, window.innerHeight*0.8]
-	const studio = d3.select(parent).append('div')
+	const studio = d3.select(studioParent).append('div')
 		.classed('studio', true)
 		.datum(function(){return {
 			moduleCounter: 0,
 			moduleHolders: {},
+			addBaseModule,
 			getTaffyLibrary: makeGetTaffyLibrary(this),
 			pullModule: (module_name, input_descriptions, prune=true) => 
-				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune)
+				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune),
 		}})
 	
 	const navbarList = studio.append('nav')
@@ -57,6 +61,7 @@ export function newStudio(parent, studioSize){
 		.node()
 	
 	const newTabFn = makeNewTabFn(navbarList, modulesHolder)
+	studio.each(function(){this.__data__.newTabFn = newTabFn})
 	const newTabItem = navbarList.append('li').append('a')
 		.attr('href', '#')
 		.on('click', newTabFn)
@@ -65,7 +70,7 @@ export function newStudio(parent, studioSize){
 	return modulesHolder
 }
 
-function newStudioModule(parent, size){
+function newStudioModule(parent, size, moduleName){
 	const [width, height] = size? size : [parent.clientWidth, parent.clientHeight]
 	const sideBarWidth = 0.25 // as a percentage
 	const holder = d3.select(parent)
@@ -75,7 +80,7 @@ function newStudioModule(parent, size){
 		.call(addSideBar, [sideBarWidth*width, height])
 		.call(addNodes)
 		.each(function(){
-			const name = `module_${++parent.__data__.moduleCounter}`
+			const name = moduleName? moduleName : `module_${++parent.__data__.moduleCounter}`
 			parent.closest('.studio').__data__.moduleHolders[name] = holder.node()
 			this.__data__.moduleMetaData.name = name
 		})
