@@ -230,7 +230,7 @@ const alertMalformedModule = (svgData, vertex, message) => {
 	return true
 }
 const alertNestedMessage = (svgData, vertex, message) => {
-	if(!vertex.includes('/')){ return false}
+	if(!vertex.includes('/')){ return false }
 	const [node, ...children] = vertex.split('/')
 	const moduleImp = svgData.nodeMetaData[node].op
 	const onclick = `this.closest('.studio').querySelector('nav li a#${moduleImp}').click()`
@@ -244,7 +244,8 @@ const alertNestedMessage = (svgData, vertex, message) => {
 function nodeAlert(vertex, message){
 	if(alertMalformedModule(this, vertex, message) ||
 		alertNestedMessage(this, vertex, message)){return}
-	const tooltipHTML = `<div><style>.nodeAlertTooltip{width:20vw;max-width:20vw;font-size:12px;position:absolute;pointer-events:all;line-height:1;font-weight:700;padding:12px;background:rgba(100,0,0,.8);color:#fff;border-radius:2px}.nodeAlertTooltip:after{box-sizing:border-box;display:inline;font-size:10px;width:100%;line-height:1;color:rgba(100,0,0,.8);content:"\\25BC";position:absolute;text-align:center;margin:-1px 0 0 0;top:100%;left:0}.closeTooltip:before{content:'✕'}.closeTooltip{position:absolute;top:0;right:0;cursor:pointer}</style><div class=nodeAlertTooltip></div></div>`
+	const tooltipWidth = window.innerWidth*0.2
+	const tooltipHTML = `<div><style>.nodeAlertTooltip{width:${tooltipWidth}px;font-size:12px;position:absolute;pointer-events:all;line-height:1;font-weight:700;padding:12px;background:rgb(244, 67, 54);color:#fff;border-radius:2px}.nodeAlertTooltip:after{box-sizing:border-box;display:inline;font-size:10px;width:100%;line-height:1;color:rgb(244, 67, 54);content:"\\25BC";position:absolute;text-align:center;margin:-1px 0 0 0;top:100%;left:0}.closeTooltip:before{content:'✕'}.closeTooltip{position:absolute;top:0;right:0;cursor:pointer}</style><div class=nodeAlertTooltip></div></div>`
 	getVertexByName(this, vertex)
 		.select('.nodeGuts').each(function(){
             const ele = document.createRange().createContextualFragment(tooltipHTML).firstElementChild
@@ -252,9 +253,9 @@ function nodeAlert(vertex, message){
 			this.appendChild(ele)
 			const tool = ele.querySelector('.nodeAlertTooltip')
             tool.innerHTML = message
-			tool.style.bottom = this.parentElement.querySelector('.nodeBody').height.baseVal.value+'px'
-			const bodyWidth = this.parentElement.querySelector('.nodeBody').width.baseVal.value
-			tool.style.left = ((bodyWidth-tool.offsetWidth)/2)+'px'
+			tool.style.bottom = this.parentElement.querySelector('.nodeBody').getAttribute('height')+'px'
+			const bodyWidth = this.parentElement.querySelector('.nodeBody').getAttribute('width')
+			tool.style.left = `${(bodyWidth-tooltipWidth)/2}px`
 			const close = tool.appendChild(document.createElement('span'))
 			close.className = 'closeTooltip'
 			d3.select(ele).transition().style('opacity', 1)

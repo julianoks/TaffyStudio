@@ -32,7 +32,7 @@ function getInner(ele){
     if(res === false){ return '' }
     const {value} = res
     const inside = valueToHTML(value)
-    return `<style>.valueTooltip{max-width:20vw;font-size:12px;position:absolute;line-height:1;font-weight:700;padding:12px;background:rgba(0,0,0,1);color:#fff;border-radius:2px}</style><div class="valueTooltip">${inside}</div>`
+    return `<style>.valueTooltip{max-width:20vw;font-size:12px;position:absolute;line-height:1;font-weight:700;padding:12px;background:#37364d;color:#fff;border-radius:2px}</style><div class="valueTooltip">${inside}</div>`
 }
 
 export const valueHover = {
