@@ -87,7 +87,7 @@ const clearNodeAlerts = ({svgElement}) =>
 		.forEach(p => p.parentElement.remove())
 
 const bindValuesToPorts = (svgData, valueTrace, failedNode=false) => {
-	Array.from(svgData.svgElement.querySelectorAll('.nodePorts'))
+	Array.from(svgData.svgElement.closest('.studio').querySelectorAll('.nodePorts'))
 		.forEach(e => {e.__data__.outputVals = {}})
 	const inputPorts = svgData.moduleMetaData.inputNode.querySelector('.nodePorts')
 	inputPorts.__data__.outputVals = {}
