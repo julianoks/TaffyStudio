@@ -62,11 +62,12 @@ const portDragBehavior = d3.drag()
     	const edge = cache.isOutgoing? [this, lastPort] : [lastPort, this]
     	const alreadyIngoing = () => {
     		const inGoing = edge[1]
-    		const inName = inGoing.parentElement.parentElement.parentElement.__data__.vertexName
+			const inContainer = inGoing.closest('.nodeContainer')
+			const inName = inContainer.__data__.vertexName
     		const edgeElements = inGoing.ownerSVGElement.__data__.graphStructure.getIncidentEdgeElements(inName)
     		return edgeElements.some(e => {
     			const {node, index} = e.__data__.edgeRelation.to
-    			return node === inName && index === inGoing.__data__.index
+    			return node === inContainer && index === inGoing.__data__.index
     		})
     	}
 		if(lastPort === undefined ||
@@ -92,11 +93,12 @@ function finalizeEdge(edge, edgeElement, runDebug){
 	edgeElement
 		.datum(function(){
     		const updatePosition = updatePositionFn(this)
-    		const getContainer = e => e.parentNode.parentNode.parentNode,
-    		nodeNames = edge.map(getContainer).map(e => e.__data__.vertexName),
+    		const getContainer = e => e.closest('.nodeContainer'),
+			nodes = edge.map(getContainer),
+			nodeNames = nodes.map(e => e.__data__.vertexName),
     		edgeRelation = {
-    			from: 	{node: nodeNames[0], index: edge[0].__data__.index},
-    			to: 	{node: nodeNames[1], index: edge[1].__data__.index}
+    			from: 	{node: nodes[0], index: edge[0].__data__.index},
+    			to: 	{node: nodes[1], index: edge[1].__data__.index}
     		}
     		// update edge position and register edge
     		updatePosition()
@@ -172,14 +174,15 @@ export function giveNodePorts(nodeContainer, nInPorts, nOutPorts, runDebug=true)
 		}
 		const edges = graphStructure.getIncidentEdgeElements(container.__data__.vertexName)
 		const edgeRelations = edges.map(e => e.__data__.edgeRelation)
-		edgeRelations.forEach(({from,to}) => graphStructure.deleteEdge(from.node, to.node))
+		const getName = v => v.__data__.vertexName
+		edgeRelations.forEach(({from,to}) => graphStructure.deleteEdge(getName(from.node), getName(to.node)))
 		edges.forEach(e => e.remove())
 		edgeRelations.forEach(({from,to}) => {
-			if(to.node === container.__data__.vertexName && to.index >= nInPorts){ return; }
-			if(from.node === container.__data__.vertexName && from.index >= nOutPorts){ return; }
+			if(to.node === container && to.index >= nInPorts){ return; }
+			if(from.node === container && from.index >= nOutPorts){ return; }
 			const edgeElement = createEdge(d3.select(container.ownerSVGElement))
-			const circleOut = graphStructure.V[from.node].querySelector('.nodeOutPort').children[1+from.index]
-			const circleIn = graphStructure.V[to.node].querySelector('.nodeInPort').children[1+to.index]
+			const circleOut = graphStructure.V[getName(from.node)].querySelector('.nodeOutPort').children[1+from.index]
+			const circleIn = graphStructure.V[getName(to.node)].querySelector('.nodeInPort').children[1+to.index]
 			finalizeEdge([circleOut, circleIn], edgeElement, false)
 		})
 		if(runDebug){ container.ownerSVGElement.__data__.debugModule() }

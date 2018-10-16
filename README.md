@@ -82,7 +82,7 @@ Top level ```div``` tha holds the [SVG Element](#svg-element) and [sideBar](#sid
 Data Attribute:
 - lastPortHovered - The port element that was last hovered
 - graphStructure - A ```graphStructure``` object
-- nodeMetaData - An object with vertexName as keys and {op, literal, userProvidedName} as values
+- nodeMetaData - An object with vertexName as keys and {op, literal} as values
 - givePorts - A function with arguments ```(vertex, nIn, nOut) => selection```. Gives ```nIn``` incoming ports and ```nOut``` outgoing ports to the node with name ```vertex```.
 - setNodeColor - A function with arguments ```(vertex, color) => selection```. Sets the color of the node with name ```vertex``` to the specified ```color```.
 - getGraph - A function ```() => nodes```. The return value is a dictionary with node names as keys, and an array of inputs as values. Each input is represented as a dictionary with the name of the input node, and the index of the output value.
@@ -113,7 +113,7 @@ Contains multiple edges.
 
 ### Edge Elements
 Data Attribute:
-- edgeRelation - A dictionary with keys ```from``` and ```to```, and values as a dictionary with the node name and port index.
+- edgeRelation - A dictionary with keys ```from``` and ```to```, and values as a dictionary with the node element and port index.
 - updatePosition - A function ```() => undefined``` that is called to update the position of the edge.
 
 ### nodesGroup

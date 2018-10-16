@@ -3,8 +3,7 @@ function getValue(ele){
     if(ele.tagName === 'line'){
         const {node, index} = ele.__data__.edgeRelation.from
         outIndex = index
-        ports = ele.ownerSVGElement.__data__
-            .graphStructure.V[node].querySelector('.nodePorts')
+        ports = node.querySelector('.nodePorts')
     } else if(ele.tagName === 'circle'){
         ports = ele.closest('.nodePorts')
         outIndex = ele.__data__.index

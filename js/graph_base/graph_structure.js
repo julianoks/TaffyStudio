@@ -91,6 +91,17 @@ export function graphStructure(){
 		
 		return elements
 	}
+
+	this.changeVertexName = function(oldName, newName){
+		const val = this.getVertexElement(oldName)
+		this.addVertex(val, newName)
+		this.getIncidentEdges(oldName).forEach(oldEdge => {
+			const edgeVals = this.getEdgeElements(...oldEdge)
+			const newEdge = oldEdge.map(n => n===oldName? newName : n)
+			edgeVals.forEach(v => this.addEdge(v, ...newEdge))
+		})
+		this.deleteVertex(oldName)
+	}
 }
 
 

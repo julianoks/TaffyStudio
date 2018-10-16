@@ -80,7 +80,6 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode, n
 	nodeContainer.each(function({vertexName}){
 		// add node's metadata to the graph
 		this.ownerSVGElement.__data__.nodeMetaData[vertexName] = {
-			userProvidedName: vertexName,
 			op: undefined,
 			literal: []
 		}
@@ -206,6 +205,6 @@ export function addNodeNoGUI(coords, op, literal, name){
 			coords, {}, _nodeEventHandlers, _populateNode, name)
 		.call(s => addTextToGuts(s, op))
 		.each(({vertexName}) => {
-			nodeMetaData[vertexName] = {op, literal, userProvidedName: vertexName}
+			nodeMetaData[vertexName] = {op, literal}
 		})
 }

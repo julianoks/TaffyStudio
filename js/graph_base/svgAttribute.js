@@ -5,14 +5,15 @@ import {puller as taffyPuller} from '../../deps/Taffy/src/index.js'
 import {graphStructure as protoGraphStructure} from './graph_structure.js'
 
 function getGraph(){
-	const {graphStructure} = this
-	const e = graphStructure.E,
+	const getName = v => v.__data__.vertexName,
+	{graphStructure} = this,
+	e = graphStructure.E,
 	lines = [].concat(...[].concat(...Object.values(e).map(Object.values))),
 	relations = lines.map(l => l.__data__.edgeRelation),
 	g = relations.reduce((acc,{from,to}) => {
-		if(!acc.hasOwnProperty(to.node)){acc[to.node]=[]}
-		if(!acc.hasOwnProperty(from.node)){acc[from.node]=[]}
-		acc[to.node][to.index] = from
+		if(!acc.hasOwnProperty(getName(to.node))){acc[getName(to.node)]=[]}
+		if(!acc.hasOwnProperty(getName(from.node))){acc[getName(from.node)]=[]}
+		acc[getName(to.node)][to.index] = {node: getName(from.node), index: from.index}
 		return acc
 	}, {})
 	return g

@@ -2,6 +2,11 @@ import {primitives} from '../../deps/Taffy/src/index.js'
 import {makeChangePortButton, makeDeleteButton} from './nodeInteraction.js'
 import {sideBarNodeManipulation} from './sideBar.js'
 
+function valid_C_identifier(str){
+	const match = str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)
+	return match !== null && str === str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)[0]
+}
+
 function _makeListFromItems(listItems){
     let list = document.createElement('ul')
     list.className = 'list-group'
@@ -76,15 +81,48 @@ export function makeOperationDropdown(ownerSVG, vertexName){
 	return select
 }
 
-
+function changeVertexName(svgData, oldName, newName){
+	// update graphStructure
+	svgData.graphStructure.changeVertexName(oldName, newName)
+	// update container
+	svgData.graphStructure.V[newName].__data__.vertexName = newName
+	// update nodeMetaData
+	const meta = svgData.nodeMetaData[oldName]
+	delete svgData.nodeMetaData[oldName]
+	svgData.nodeMetaData[newName] = meta
+}
 export function makeNodeNameBox(ownerSVG, vertexName){
-	const initValue = ownerSVG.__data__.nodeMetaData[vertexName].userProvidedName
-	const html = `<input class="form-control" id="vertexName" value="${initValue}">`
-	const box = document.createRange().createContextualFragment(html).firstChild
-	box.oninput = function(){
-		ownerSVG.__data__.nodeMetaData[vertexName].userProvidedName = this.value
+	const html = `<input class="form-control" id="vertexName" value="${vertexName}">`
+	const inp = document.createRange().createContextualFragment(html).firstChild
+	inp.oninput = function(){
+		inp.setCustomValidity('')
+		inp.reportValidity()
+		if(this.value === vertexName){
+			ownerSVG.__data__.graphStructure.V[this.value].__data__.addText(this.value)
+			return
+		}
+		if(!valid_C_identifier(this.value)){
+			inp.setCustomValidity(`"${this.value}" is not a valid C identifier`)
+			inp.reportValidity()
+			return
+		}
+		try {
+			if(primitives.hasOwnProperty(this.value) || 
+				["DEBUG", "LITERALS", "Inputs", "Outputs"].includes(this.value)){ throw "taken" }
+			changeVertexName(ownerSVG.__data__, vertexName, this.value)
+			ownerSVG.__data__.graphStructure.V[this.value].__data__.addText(this.value)
+		} catch(e){
+			inp.setCustomValidity(`The name "${this.value}" is already taken`)
+			inp.reportValidity()
+			return
+		}
+		sideBarNodeManipulation(ownerSVG, this.value)
+		const nextBox = ownerSVG.closest('.moduleHolder').querySelector('.sideBar #vertexName')
+		nextBox.focus()
+		nextBox.value = ''
+		nextBox.value = this.value
 	}
-	return box
+	return inp
 }
 
 export function makeManipulationCard(ownerSVG, vertexName, op){
