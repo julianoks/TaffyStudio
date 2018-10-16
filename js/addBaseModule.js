@@ -44,7 +44,7 @@ export function addBaseModule(module){
     // don't show in navbar, don't debug when creating
     navbarItem.classed('defaultModule', true)
     const {debugModule} = svg.__data__
-    svg.__data__.debugModule = () => {}
+    //svg.__data__.debugModule = () => {}
     svg.__data__.moduleMetaData.imports = module.module_import
     svg.__data__.moduleMetaData.doc = module.doc
     // add nodes

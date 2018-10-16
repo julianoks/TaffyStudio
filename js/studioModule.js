@@ -4,7 +4,7 @@ import {addSideBar} from './sidebar/sideBar.js'
 import {makeModuleImporter} from './sidebar/moduleImporter.js'
 import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/Taffy/src/index.js'
 import {addBaseModule} from './addBaseModule.js'
-import {baseModules} from './baseModules.js'
+import {baseModules, defaultImports} from './baseModules.js'
 import {addMarkerDef} from './graph_base/svg_utils.js'
 
 const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined, imports=[]) => {
@@ -45,7 +45,6 @@ export function newStudio(studioParent, studioSize){
 			moduleCounter: 0,
 			moduleHolders: {},
 			addBaseModule,
-			baseModules,
 			getTaffyLibrary: makeGetTaffyLibrary(this),
 			pullModule: (module_name, input_descriptions, prune=true) => 
 				taffyPuller(this.__data__.getTaffyLibrary(), module_name, input_descriptions, prune),
@@ -72,9 +71,9 @@ export function newStudio(studioParent, studioSize){
 	})
 	const newTabItem = navbarList.append('li').append('a')
 		.attr('href', '#')
-		.on('click', () => newTabFn(undefined, baseModules.map(({name})=>name)))
+		.on('click', () => newTabFn(undefined, defaultImports))
 		.html('<span style="color:green;" class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
-	newTabFn(undefined, baseModules.map(({name})=>name))
+	newTabFn(undefined, defaultImports)
 	return modulesHolder
 }
 
