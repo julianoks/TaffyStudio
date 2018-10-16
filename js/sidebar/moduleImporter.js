@@ -3,7 +3,7 @@ function makeSingleList(texts, ownerTable, update){
     list.className = 'list-group'
     texts.forEach(t => {
         let li = document.createElement('li')
-        li.ondblclick = () => {
+        li.onclick = () => {
             const movingTo = li.closest('td').id === 'available'? '#selected' : '#available'
             li.remove()
             ownerTable.querySelector(movingTo).querySelector('ul').appendChild(li)
