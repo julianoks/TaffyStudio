@@ -107,7 +107,7 @@ export function makeNodeNameBox(ownerSVG, vertexName){
 			return
 		}
 		try {
-			if(primitives.hasOwnProperty(this.value) || 
+			if(this.value.startsWith('INPUT_') || 
 				["DEBUG", "LITERALS", "Inputs", "Outputs"].includes(this.value)){ throw "taken" }
 			changeVertexName(ownerSVG.__data__, vertexName, this.value)
 			ownerSVG.__data__.graphStructure.V[this.value].__data__.addText(this.value)
