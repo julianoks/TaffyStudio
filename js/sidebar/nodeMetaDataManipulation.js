@@ -203,8 +203,19 @@ export function makeLiteralsCard(ownerSVG, vertexName){
 			if(list.childElementCount !== nLiteralsCommited){
 				ownerSVG.__data__.givePorts(vertexName, 0, list.childElementCount)
 			}
-			ownerSVG.__data__.nodeMetaData[vertexName].literal = 
-				Array.from(list.children).map(e => e.firstChild.value)
+			textbox.setCustomValidity('')
+			textbox.reportValidity()
+			let newLiterals = []
+			for(const box of list.children){
+				try {
+					newLiterals.push(JSON.parse(box.firstChild.value))
+				} catch(e) {
+					textbox.setCustomValidity("Couldn't parse JSON")
+					textbox.reportValidity()
+					return
+				}
+			}
+			ownerSVG.__data__.nodeMetaData[vertexName].literal = newLiterals
 		}
 		li.appendChild(textbox)
 		list.appendChild(li)
@@ -216,7 +227,7 @@ export function makeLiteralsCard(ownerSVG, vertexName){
 		addListItem()
 	} else {
 		ownerSVG.__data__.nodeMetaData[vertexName].literal
-			.forEach(v => { addListItem().value = v })
+			.forEach(v => { addListItem().value = JSON.stringify(v) })
 	}
 	// put the list in a panel
 	const panelHTML = '<div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Literals</h3></div> <div class="panel-body"></div> </div>'
