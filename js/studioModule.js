@@ -6,6 +6,57 @@ import {puller as taffyPuller, constructors as taffyConstructors} from '../deps/
 import {addBaseModule} from './addBaseModule.js'
 import {baseModules, defaultImports} from './baseModules.js'
 import {addMarkerDef} from './graph_base/svg_utils.js'
+import {primitives} from '../deps/Taffy/src/index.js'
+
+function valid_C_identifier(str){
+	const match = str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)
+	return match !== null && str === str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)[0]
+}
+
+function validModuleName(studio, name){
+	if(!valid_C_identifier(name)){
+		return 'Must be a valid C identifier'
+	}
+	if(studio.__data__.moduleHolders.hasOwnProperty(name)){
+		return 'Module name already exists'
+	}
+	if(primitives.hasOwnProperty(name) || name === 'INPUTS' || name === 'OUTPTUS'){
+		return 'Cannot be named after an operation'
+	}
+	return true
+}
+
+function applyModuleNameChange(aTag, textbox){
+	const studio = aTag.node().closest('.studio')
+	const oldName = aTag.node().innerText
+	const proposedName = textbox.value
+	textbox.remove()
+	if(validModuleName(studio, proposedName) !== true
+		|| proposedName === oldName){ return }
+	aTag.text(proposedName)
+	const holder = studio.__data__.moduleHolders[oldName]
+	delete studio.__data__.moduleHolders[oldName]
+	studio.__data__.moduleHolders[proposedName] = holder
+	holder.querySelector('svg').__data__.moduleMetaData.name = proposedName
+	Array.from(Object.values(studio.__data__.moduleHolders))
+		.map(h => h.querySelector('svg'))
+		.filter(svg => svg.__data__.moduleMetaData.imports.includes(oldName))
+		.forEach(svg => {
+			const data = svg.__data__
+			data.moduleMetaData.imports = data.moduleMetaData.imports
+				.map(n => n===oldName? proposedName : n)
+			Array.from(Object.entries(data.nodeMetaData))
+				.forEach(([node, {op}]) => {
+					if(op === oldName){
+						data.nodeMetaData[node].op = proposedName
+						const container = data.graphStructure.V[node]
+						if(container.querySelector('foreignObject').textContent === oldName){
+							container.__data__.addText(proposedName)
+						}
+					}
+				})
+		})
+}
 
 const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined, imports=[]) => {
 	const svgSize = undefined
@@ -26,6 +77,26 @@ const makeNewTabFn = (navbarList, modulesHolder) => (name=undefined, imports=[])
 		.attr('id', svg.__data__.moduleMetaData.name)
 		.text(svg.__data__.moduleMetaData.name)
 		.on('click', focus)
+		.on('dblclick', function(){
+			focus()
+			itemInner.style('display', 'none')
+			const commitChange =  function(){
+				itemInner.style('display', 'inherit')
+				applyModuleNameChange(itemInner, this)
+			}
+			navbarItem.insert('input', ':first-child')
+				.classed('form-control', true)
+				.attr('type', 'text')
+				.attr('value', itemInner.node().innerText)
+				.on('input', function(){
+					const valid = validModuleName(this.closest('.studio'), this.value)
+					this.setCustomValidity(valid===true? '' : valid)
+					this.reportValidity()
+				})
+				.on('focusout', commitChange)
+				.on('change', commitChange)
+				.each(function(){this.focus()})
+		})
 	svg.__data__.moduleMetaData.imports = imports
 	focus()
 	return {svg, navbarItem}
