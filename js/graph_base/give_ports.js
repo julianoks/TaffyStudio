@@ -3,15 +3,16 @@ import {valueHover} from './valueHover.js'
 
 function createEdge(svgSelection){
 	return svgSelection.select(".edgesGroup")
-		.append("line")
+		.append("path")
 		.attr("stroke-width", "0.5%")
 		.attr("stroke", "black")
 		.attr("marker-end", "url(#arrowEnd)") //"url(#circleEnd)")
+		.style('fill', 'none')
 }
 function positionEdge(edgeSelection, x1,y1, x2,y2){
+	const xBetween = Math.min(x1,x2) + (Math.abs(x2-x1) / 2)
 	edgeSelection
-		.attr("x1",x1).attr("y1",y1)
-		.attr("x2",x2).attr("y2",y2)
+		.attr('d', `M${x1},${y1} C${xBetween},${y1} ${xBetween},${y2} ${x2},${y2}`)
 }
 
 

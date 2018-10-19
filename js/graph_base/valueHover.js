@@ -1,6 +1,6 @@
 function getValue(ele){
     let ports, outIndex;
-    if(ele.tagName === 'line'){
+    if(ele.tagName === 'path'){
         const {node, index} = ele.__data__.edgeRelation.from
         outIndex = index
         ports = node.querySelector('.nodePorts')
