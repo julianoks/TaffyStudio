@@ -239,3 +239,18 @@ export function makeLiteralsCard(ownerSVG, vertexName){
 	panel.querySelector('.panel-body').appendChild(button)
 	return panel
 }
+
+export function makeFunctionCard(ownerSVG, vertexName){
+	if(ownerSVG.__data__.nodeMetaData[vertexName].literal.length == 0){
+		ownerSVG.__data__.nodeMetaData[vertexName].literal = ['() => {}']
+	}
+	const fnVal = ownerSVG.__data__.nodeMetaData[vertexName].literal[0]
+	const panelHTML = `<div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Function</h3></div> <div class="panel-body"><textarea rows="5" class="form-control">${fnVal}</textarea></div> </div>`
+	const panel = document.createRange().createContextualFragment(panelHTML).firstChild
+	const textbox = panel.querySelector('textarea')
+	textbox.oninput = function(){
+		ownerSVG.__data__.nodeMetaData[vertexName].literal = [this.value]
+		ownerSVG.__data__.debugModule()
+	}
+	return panel
+}

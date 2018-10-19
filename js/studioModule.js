@@ -55,6 +55,7 @@ function applyModuleNameChange(aTag, textbox){
 						}
 					}
 				})
+			svg.parentElement.querySelector('.sideBar').__data__.rollbackCheckpoint()
 		})
 }
 

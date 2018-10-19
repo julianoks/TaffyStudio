@@ -1,4 +1,4 @@
-import {makeManipulationCard, makeOpDocCards, makeLiteralsCard} from './nodeMetaDataManipulation.js'
+import {makeManipulationCard, makeOpDocCards, makeLiteralsCard, makeFunctionCard} from './nodeMetaDataManipulation.js'
 import {makeInputDescCard} from './inputDescriptions.js'
 import {makeCompileButton} from './compileModuleModal.js'
 
@@ -36,6 +36,10 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 
 	if(op === "literals"){
 		sideBar.appendChild(makeLiteralsCard(ownerSVG, vertexName))
+	}
+
+	if(op === 'js_function'){
+		sideBar.appendChild(makeFunctionCard(ownerSVG, vertexName))
 	}
 
 	if(op === 'INPUTS'){
