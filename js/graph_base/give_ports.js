@@ -125,15 +125,17 @@ function scaleAndTranslatePorts(nodeContainerSelection){
 		inBbox = inPort.getBBox(),
 		outBbox = outPort.getBBox()
 		// transform .nodeInPort
-		const inScale = pd(bodyW, inBbox.width),
-		inTransY = (bodyH + inBbox.height) / inScale
+		const inScaleX = pd(bodyW, inBbox.width),
+		inScaleY = Math.min(inScaleX, pd(bodyH, inBbox.height)),
+		inTransY = (bodyH + inBbox.height) / inScaleY
 		d3.select(inPort)
-			.attr("transform", `scale(${inScale})translate(0,${inTransY})`)
+			.attr("transform", `scale(${[inScaleX, inScaleY]})translate(0,${inTransY})`)
 		// transform .nodeOutPort
-		const outScale = pd(bodyW, outBbox.width),
+		const outScaleX = pd(bodyW, outBbox.width),
+		outScaleY = Math.min(outScaleX, pd(bodyH, outBbox.height)),
 		outTransY = -1 * outBbox.height
 		d3.select(outPort)
-			.attr("transform", `scale(${outScale})translate(0,${outTransY})`)
+			.attr("transform", `scale(${[outScaleX, outScaleY]})translate(0,${outTransY})`)
 	})
 }
 

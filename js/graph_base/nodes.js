@@ -35,7 +35,7 @@ const nodeDragBehavior = d3.drag()
 function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode, name=undefined){
 	// unpack nodeParam and eventHandlers
 	const svgScale = Math.min(+svgSelection.node().getAttribute('width'), +svgSelection.node().getAttribute('height')),
-	defaultNodeParam = Object.entries({width: 0.08, height: 0.04, rounding: 0.005})
+	defaultNodeParam = Object.entries({width: 0.12, height: 0.06, rounding: 0.005})
 		.reduce((acc,[k,v]) => Object.assign(acc, {[k]: v*svgScale}), {}),
 	{width, height, rounding} = Object.assign({}, defaultNodeParam, nodeParam)
 	// see ```_nodeEventHandlers``` for the eventHandlers being used
@@ -141,7 +141,7 @@ const addTextToGuts = (container, text) => {
 
 
 function addInputOutputNodes(svgSelection){
-	const unscaledNodeParam = {width: 0.15, height: 0.05, rounding: 0.005}
+	const unscaledNodeParam = {width: 0.5, height: 0.05, rounding: 0.005}
 	svgSelection.each(function(){
 		const svgEle = this
 		const width = +svgEle.getAttribute('width')
