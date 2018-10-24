@@ -141,7 +141,7 @@ const addTextToGuts = (container, text) => {
 
 
 function addInputOutputNodes(svgSelection){
-	const unscaledNodeParam = {width: 0.5, height: 0.05, rounding: 0.005}
+	const unscaledNodeParam = {width: 0.25, height: 0.05, rounding: 0.005}
 	svgSelection.each(function(){
 		const svgEle = this
 		const width = +svgEle.getAttribute('width')

@@ -50,7 +50,7 @@ function getOpDoc(ownerSVG, opName){
 
 export function makeOperationDropdown(ownerSVG, vertexName){
 	let select = document.createElement('select')
-	select.className = 'custom-select'
+	select.className = 'form-control'
 	const firstOption = '<option value="" disabled selected>Select...</option>'
 	select.appendChild(document.createRange().createContextualFragment(firstOption))
 	const importedOps = ownerSVG.__data__.moduleMetaData.imports.map(a=>[a,a])
@@ -145,7 +145,7 @@ export function makeManipulationCard(ownerSVG, vertexName, op){
 		listItems = [
 			['Name',space(), makeNodeNameBox(ownerSVG, vertexName)],
 			['Operation',space(), makeOperationDropdown(ownerSVG, vertexName)],
-			['Change Arity',space(), makePB(false, true), makePB(true, true)],
+			['Arguments',space(), makePB(false, true), makePB(true, true)],
 			['Delete Node',space(), makeDeleteButton(ownerSVG, vertexName)],
 		]
 	}
