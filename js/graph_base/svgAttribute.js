@@ -76,6 +76,10 @@ function handleFailedPull(e){
 		}
 	}
 	else{
+		if(e.metaDataIdentifier === 'output_not_tensor'){
+			alert("To compile a module, outputs must be tensors:\n"+e.message)
+			return false
+		}
 		console.log(e)
 		if(e.hasOwnProperty('valueTrace')){
 			bindValuesToPorts(svgData, e.valueTrace)
