@@ -107,8 +107,24 @@ function finalizeEdge(edge, edgeElement, runDebug){
     		return {updatePosition, edgeRelation}
 		})
 		.transition().attr("stroke-width", "0.25%")
-	edgeElement.on('mouseover', function(){valueHover.mouseover(this)})
-	edgeElement.on('mouseout', valueHover.mouseout)
+	edgeElement.on('mouseover', function(){
+		valueHover.mouseover(this)
+		d3.select(this).transition()
+				.attr("stroke-width", "1.5%").duration(100)
+	})
+	edgeElement.on('mouseout', function(){
+		valueHover.mouseout()
+		d3.select(this).transition()
+				.attr("stroke-width", "0.25%").duration(100)
+	})
+	edgeElement.on('click', function(){
+		d3.event.stopPropagation()
+		const name = ft => this.__data__.edgeRelation[ft].node.__data__.vertexName
+		this.ownerSVGElement.__data__.graphStructure.deleteEdge(name('from'), name('to'))
+		if(runDebug){this.ownerSVGElement.__data__.debugModule()}
+		this.remove()
+		valueHover.mouseout()
+	})
 	if(runDebug){edgeElement.each(function(){this.ownerSVGElement.__data__.debugModule()})}
 }
 
