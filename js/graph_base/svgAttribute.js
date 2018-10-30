@@ -80,6 +80,9 @@ function handleFailedPull(e){
 			alert("To compile a module, outputs must be tensors:\n"+e.message)
 			return false
 		}
+		else if(e.metaDataIdentifier === 'cyclic_graph'){
+			throw(e)
+		}
 		console.log(e)
 		if(e.hasOwnProperty('valueTrace')){
 			bindValuesToPorts(svgData, e.valueTrace)

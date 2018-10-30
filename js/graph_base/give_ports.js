@@ -117,15 +117,26 @@ function finalizeEdge(edge, edgeElement, runDebug){
 		d3.select(this).transition()
 				.attr("stroke-width", "0.25%").duration(100)
 	})
+	function removeEdge(edgeEle){
+		const name = ft => edgeEle.__data__.edgeRelation[ft].node.__data__.vertexName
+		edgeEle.ownerSVGElement.__data__.graphStructure.deleteEdge(name('from'), name('to'))
+		edgeEle.ownerSVGElement.__data__.debugModule()
+		edgeEle.remove()
+	}
 	edgeElement.on('click', function(){
 		d3.event.stopPropagation()
-		const name = ft => this.__data__.edgeRelation[ft].node.__data__.vertexName
-		this.ownerSVGElement.__data__.graphStructure.deleteEdge(name('from'), name('to'))
-		if(runDebug){this.ownerSVGElement.__data__.debugModule()}
-		this.remove()
+		removeEdge(this)
 		valueHover.mouseout()
 	})
-	if(runDebug){edgeElement.each(function(){this.ownerSVGElement.__data__.debugModule()})}
+	if(runDebug){edgeElement.each(function(){
+		try{this.ownerSVGElement.__data__.debugModule()}
+		catch(e){
+			if(e.metaDataIdentifier === 'cyclic_graph'){
+				removeEdge(this)
+				alert('Edge created cycle; edge was deleted.')
+			}
+		}
+	})}
 }
 
 // position ports
