@@ -1,0 +1,212 @@
+<html>
+    <head>
+        <title>Tutorial | TaffyStudio</title>
+        <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
+        <script src="../deps/d3/d3.js"></script>
+        <script> // i dont think im going to use a slideshow
+        function makeCard(imgSrc, text, title){
+            const color = "#f0641a"
+            const HTML = `<div class="panel panel-primary" style="border-color:${color};">
+                <div class="panel-heading" style="background-color: ${color}; border-color: ${color};"> <h3 class="panel-title">${title}</h3> </div>
+                <div class="panel-body"><table style="width: 100%;"><tr>
+                    <td style="width:50%;vertical-align: middle;">
+                        <img src="${imgSrc}" style="display: block; margin-left: auto; margin-right: auto;">
+                        </td>
+                    <td style="padding: 2%;vertical-align: middle;">${text}</td>
+                </tr></table></div></div>`
+            const node = document.createRange().createContextualFragment(HTML).firstChild
+            return node
+        }
+        
+        function makeDeck(cardContents){
+            const deck = document.createElement('div')
+            d3.select(deck).selectAll('.panel')
+                .data(cardContents).enter()
+                .append(d => makeCard(...d))
+                .style('width', '80%')
+                .attr('tabindex', "0")
+                .style('display', 'none')
+                .on('keydown', function(data, index, eles){
+                    const key = d3.event.code
+                    const nextCard = eles[(index+1)%eles.length]
+                    d3.select(this)
+                        .transition()
+                            .style('opacity', 0)
+                            .duration(500)
+                            .style('display', 'none')
+                    d3.select(nextCard)
+                        .style('display', 'block')
+                        .each(function(){this.focus();})
+                        .transition()
+                            .style('opacity', 1)
+                            .duration(500)
+                })
+                .node().style.display = 'inherit'
+            return deck
+        }
+        </script>
+<style>
+.figure {
+
+}
+.figure > span {
+    font-size: 14px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: fit-content;
+    max-width: 50%;
+}
+</style>
+
+    </head>
+<body>
+<div style='display: grid; grid-template-columns: 2fr 1fr; grid-gap: 1em;'>
+<p>
+TaffyStudio is an interactive visual interface to Taffy,
+a framework for the development of Neural Network models.
+This document provides a high-level overview of Taffy's API and the TaffyStudio interface, 
+then offers a number of hands-on tutorials.
+</p>
+<div></div>
+
+
+<div>
+<h3>The Taffy Framework</h3>
+<p>
+The Taffy framework allows one to represent a Neural Network model and compile it to an arbitrary backend.
+Taffy's representation extends the concept of a computational graph to contain modules.
+Taffy regards all computational graphs as modules, whose nodes represent operations and edges represent values.
+Operations may be modules, allowing one to compose modules.
+<a href="#figure1">Figure 1</a> illustrates how one module could implement another.
+</p>
+</div>
+<div class="figure" id="figure1">
+<img src="imgs/composition.svg">
+<span>Figure 1: 
+Module&nbsp;A is implemented by nodes in Module&nbsp;B.
+</span>
+</div>
+
+<div>
+<h4>Modules</h4>
+<p>
+The structure of a module is simple - it has nodes, inputs and outputs, a name and a set of imported modules.
+A module is primarily composed of nodes, which implement operations that take inputs and produce outputs.
+A module is itself a functional object; it takes inputs and produces outputs. 
+Every module has a name, which is a unique identifier that allows other modules to access it by name.
+A module may import other modules by referencing their names in its imports, allowing its nodes to specify them as operations.
+<a href="#figure2">Figure 2</a> illustrates the structure of Module B.
+</p>
+</div>
+<div class="figure" id="figure2">
+<img src="imgs/module_structure.svg">
+<span>Figure 2: 
+A formal description of Module&nbsp;B. Note that out:0 refers to the 0<sup>th</sup> output of node "out".
+</span>
+</div>
+
+<div>
+<h4>Nodes</h4>
+<p>
+A node implements an operation that may be a module or a primitive operation.
+There are two forms of data the node may recieve, "inputs" and "literals".
+Inputs are a values obtained from other nodes via an edge, whereas literals are values internal to the node.
+For the sake of simplicity, the majority of operations only take inputs.
+</p>
+</div>
+<div></div>
+
+<div>
+<h4>Inputs, Outputs</h4>
+<p>
+The input/output interface for nodes and modules are compatible by design.
+A node takes a list of inputs and produces a list of outputs.
+Likewise, when a module is run,
+the supplied input values are forwarded to the input nodes,
+and the values along the output edges are extracted and returned.
+</p><p>
+For reasons described in the <a href="#compilationsection">compilation section</a>, 
+if a module is being compiled, its inputs and outputs must be tensors. 
+Otherwise, if it's being implemented by a node, it may take and emit arbitrary values.
+</p>
+</div>
+<div></div>
+
+<div id="compilationsection">
+<h4>Compiling a Module</h4>
+<p>
+A module can be compiled to one of the supported backends, e.g. TensorFlow. 
+During compilation, a module is transformed to only contain tensor values, thus removing dynamic control flow.
+As such, when a module is compiled, all its input and output values must be tensors.
+</p><p>
+Tensor values aren't actually materialized at compile time - rather Taffy operates over <b>tensor descriptions</b> 
+that specify attributes like shape and data type.
+To ensure correctness and evaluate control flow, the compiler must recieve descriptions of the inputs, usually in the form of tensor descriptions.
+</p><p>
+During compilation a module is flattened by an inline expansion procedure, 
+whereby nodes implementing a module are replaced with the module's nodes.
+This procedure is illustrated in <a href="#figure3">figure 3</a>.
+Additionaly, any nodes that do not create tensor values that contribute to an output are pruned.
+This intermediate representation is later compiled to backend code.
+</p>
+</div>
+<div class="figure" id="figure3">
+<img src="imgs/inline_expansion.svg" style="width:50%;margin-left:auto;margin-right:auto;display: block;">
+<span>Figure 3: 
+The result of applying inline expansion to Module&nbsp;B.
+</span>
+</div>
+
+<div>
+<h4>Creating Variables</h4>
+<p>
+A typical use case doesn't require users to manually instantiate variables, 
+but instead use higher-level modules.
+Variables can be created using the variable operation. 
+When a variable is created, it can be placed in a collection to aid in the gathering of variables, 
+for example to gather variables for regularization or training.
+</p>
+</div>
+<div></div>
+
+<div>
+<h3>The TaffyStudio Interface</h3>
+TaffyStudio is an interactive visual interface interface to Taffy.
+</div>
+<div></div>
+
+<div>
+<h4>Creating a Module</h4>
+<p>
+Adding a new module and defining its name and imports can be done from the navigation bar, 
+as shown in <a href="figure4">figure 4</a>.
+A new module can be created by click the "plus" button on the navigation bar.
+This will create a new tab for that module.
+This tab is not only used to navigating to the module's nodes,
+but can also be used to change the module's name and imports.
+The module's name can be changed by double clicking the module's name.
+One can change its imports by clicking the imports button, 
+which gives a collections of modules that can or have been imported.
+Available modules are selected to as to avoid circular dependencies.
+A module can be moved between these collections by clicking on the module. 
+</p>
+</div>
+<div>
+<div class="figure" id="figure4">
+<img src="imgs/name_import.png" style="width:50%;margin-left:auto;margin-right:auto;display: block;">
+<span>Figure 4: 
+Interface for adding a new module and defining its name and imports.
+</span>
+</div>
+</div>
+
+<div>
+<h4>Nodes, Edges</h4>
+Nodes can be created by clicking
+</div>
+<div></div>
+
+</div>
+</body>
+</html>
