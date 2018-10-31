@@ -112,7 +112,7 @@ const makeGetTaffyLibrary = studioEle => () => {
 export function newStudio(studioParent, studioSize, givenModsImports){
 	const [width, height] = studioSize? studioSize : [window.outerWidth*1, window.outerHeight*0.8]
 	const defaultModsImports = givenModsImports ? givenModsImports :
-		{base: baseModules, imports: [], invisible: true}
+		{base: baseModules, imports: defaultImports, invisible: true}
 	const studio = d3.select(studioParent).append('div')
 		.classed('studio', true)
 		.datum(function(){return {
