@@ -118,8 +118,12 @@ function finalizeEdge(edge, edgeElement, runDebug){
 				.attr("stroke-width", "0.25%").duration(100)
 	})
 	function removeEdge(edgeEle){
-		const name = ft => edgeEle.__data__.edgeRelation[ft].node.__data__.vertexName
-		edgeEle.ownerSVGElement.__data__.graphStructure.deleteEdge(name('from'), name('to'))
+		const getName = ft => edgeEle.__data__.edgeRelation[ft].node.__data__.vertexName
+		const [from, to] = ['from', 'to'].map(getName)
+		const {graphStructure} = edgeEle.ownerSVGElement.__data__
+		graphStructure.deleteEdge(from, to)
+			.filter(ele => ele !== edgeEle)
+			.forEach(ele => graphStructure.addEdge(ele, from, to))
 		edgeEle.ownerSVGElement.__data__.debugModule()
 		edgeEle.remove()
 	}
