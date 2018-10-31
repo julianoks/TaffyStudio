@@ -201,10 +201,12 @@ export function addNodes(svg){
 
 export function addNodeNoGUI(coords, op, literal, name){
 	const {svgElement, nodeMetaData} = this
-	return addNode(d3.select(svgElement),
+	const node = addNode(d3.select(svgElement),
 			coords, {}, _nodeEventHandlers, _populateNode, name)
 		.call(s => addTextToGuts(s, op))
 		.each(({vertexName}) => {
 			nodeMetaData[vertexName] = {op, literal}
 		})
+	if(op==='literals'){svgElement.__data__.setNodeColor(name, 'rgba(255,255,255,0.5)')}
+	return node
 }

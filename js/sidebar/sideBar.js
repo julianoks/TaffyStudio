@@ -34,8 +34,9 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 		sideBar.appendChild(makeOpDocCards(ownerSVG, vertexName))
 	}
 
-	if(op === "literals"){
+	if(op === 'literals'){
 		sideBar.appendChild(makeLiteralsCard(ownerSVG, vertexName))
+		ownerSVG.__data__.setNodeColor(vertexName, 'rgba(255,255,255,0.5)')
 	}
 
 	if(op === 'js_function'){
