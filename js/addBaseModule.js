@@ -39,11 +39,10 @@ function transformPositions(positions, svg){
         Object.assign(acc, {[name]: [positionsX[i], positionsY[i]]}), {})
 }
 
-export function addBaseModule(module){
+export function addBaseModule(module, invisible=true){
     const {svg, navbarItem} = this.newTabFn(module.name)
     // don't show in navbar, don't debug when creating
-    navbarItem.classed('defaultModule', true)
-    const {debugModule} = svg.__data__
+    navbarItem.classed('defaultModule', invisible)
     //svg.__data__.debugModule = () => {}
     svg.__data__.moduleMetaData.imports = module.module_import
     svg.__data__.moduleMetaData.doc = module.doc

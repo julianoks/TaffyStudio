@@ -109,8 +109,10 @@ const makeGetTaffyLibrary = studioEle => () => {
 	return new taffyConstructors.library(modules)
 }
 
-export function newStudio(studioParent, studioSize){
+export function newStudio(studioParent, studioSize, givenModsImports){
 	const [width, height] = studioSize? studioSize : [window.outerWidth*1, window.outerHeight*0.8]
+	const defaultModsImports = givenModsImports ? givenModsImports :
+		{base: baseModules, imports: [], invisible: true}
 	const studio = d3.select(studioParent).append('div')
 		.classed('studio', true)
 		.datum(function(){return {
@@ -137,15 +139,18 @@ export function newStudio(studioParent, studioSize){
 		.node()
 	
 	const newTabFn = makeNewTabFn(navbarList, modulesHolder)
-	studio.each(function(){
-		this.__data__.newTabFn = newTabFn
-		baseModules.forEach(mod => this.__data__.addBaseModule(mod))
-	})
-	const newTabItem = navbarList.append('li').append('a')
-		.attr('href', '#')
-		.on('click', () => newTabFn(undefined, defaultImports))
-		.html('<span style="color:green;" class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
-	newTabFn(undefined, defaultImports)
+	{
+		const {base, imports, invisible} = defaultModsImports
+		studio.each(function(){
+			this.__data__.newTabFn = newTabFn
+			base.forEach(mod => this.__data__.addBaseModule(mod, invisible))
+		})
+		const newTabItem = navbarList.append('li').append('a')
+			.attr('href', '#')
+			.on('click', () => newTabFn(undefined, imports))
+			.html('<span style="color:green;" class="glyphicon glyphicon-plus" aria-hidden="true"></span>')
+		newTabFn(undefined, imports)
+	}
 	return modulesHolder
 }
 
