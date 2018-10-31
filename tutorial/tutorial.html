@@ -181,14 +181,14 @@ TaffyStudio is an interactive visual interface interface to Taffy.
 <p>
 Adding a new module and defining its name and imports can be done from the navigation bar, 
 as shown in <a href="figure4">figure 4</a>.
-A new module can be created by click the "plus" button on the navigation bar.
+A new module can be created by clicking the "plus" button on the navigation bar.
 This will create a new tab for that module.
-This tab is not only used to navigating to the module's nodes,
+This tab is not only used to navigate to the module's nodes,
 but can also be used to change the module's name and imports.
 The module's name can be changed by double clicking the module's name.
 One can change its imports by clicking the imports button, 
-which gives a collections of modules that can or have been imported.
-Available modules are selected to as to avoid circular dependencies.
+which gives collections of modules that can or have been imported.
+Available modules are selected so as to avoid circular dependencies.
 A module can be moved between these collections by clicking on the module. 
 </p>
 </div>
@@ -202,8 +202,33 @@ Interface for adding a new module and defining its name and imports.
 </div>
 
 <div>
-<h4>Nodes, Edges</h4>
-Nodes can be created by clicking
+<h4>Defining Nodes</h4>
+<p>
+A module's nodes, inputs and outputs can be defined from a module's nodes panel.
+A node can be created by clicking on the panel, 
+which will create the node and prompt a "sidebar" interface.
+</p>
+<p>
+<a href="#figure5">Figure 5</a> shows a node. 
+The black circles (ports) on the bottom represent a node's inputs, 
+and the ports on top represent its outputs.
+The text inside the node is the name of the operation it implements, 
+or the name of node if its provided by the user.
+To accomadate variadic functions, the sidebar allows one to change the number of input ports.
+</p>
+<p>
+To populate a node's inputs and outputs, the user draws edges between an input and output port.
+An edge may be deleted by clicking on it. 
+As will be described in the debugging section, 
+hovering over an edge will display the value flowing along it.
+</p>
+<p>
+The sidebar, shown in <a href="#figure6">Figure 6</a>, 
+allows users to populate a node's attributes such as its name and operation.
+Once the operation is defined, the sidebar will display the operation's documentation, 
+an interface for defining the node's internal literals, 
+and give the node the appropriate number of ports.
+</p>
 </div>
 <div></div>
 
