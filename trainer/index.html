@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Trainer | TaffyStudio</title>
+    <script src="../deps/d3/d3.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3'></script>
+</head>
+<body>
+
+</body>
+<script>
+const addCSVInput = selection => selection.append("input")
+    .attr("type", "file")
+    .attr("accept", ".csv")
+    .on("change", function(){
+    const file = d3.event.target.files[0]
+    if(file){
+        const reader = new FileReader()
+        reader.onloadend = event => d3.text(event.target.result)
+            .then(text => reactToCSV(d3.csvParseRows(text)))
+        reader.readAsDataURL(file)
+    }})
+
+const addFactoryTextArea = selection => selection.append("textarea")
+    .attr('placeholder', 'Taffy Factory Code')
+    .attr('rows', '5').attr('cols', '50')
+    .on("change", function(){
+        try{ reactToFactory(eval(this.value)) }
+        catch(e){}
+    })
+
+function reactToCSV(data){
+    for(const i in data){ for(const j in data[i]){
+        if(!isNaN(1*data[i][j])){
+            data[i][j] = 1*data[i][j]
+        }
+    }}
+    const columnNames = data.shift()
+    // get labels
+    let labelIdx = data[0].findIndex(s => typeof(s)===typeof(''))
+    labelIdx = labelIdx===-1? 0 : labelIdx
+    let labels = data.map(r => r.splice(labelIdx,1)[0]*1)
+    labels = tf.tensor(labels, undefined, 'int32')
+    data = tf.tensor(data, undefined, 'float32')
+    window.data = {data, labels}
+}
+function reactToFactory(factory){
+    window.factory = factory
+    window.model = new factory(tf)
+}
+
+function optimize(){
+    if(!['data', 'model'].every(s => window.hasOwnProperty(s))){return}
+    const {data, labels} = window.data
+    window.model.optimize([data, labels])
+}
+
+d3.select('body')
+    .call(addCSVInput)
+    .call(s => s.append('br'))
+    .call(addFactoryTextArea)
+    .call(s => s.append('br'))
+    .call(s => s.append('button').text('Optimize').on("click", optimize))
+</script>
+</html>
