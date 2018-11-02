@@ -48,7 +48,8 @@ function getOpDoc(ownerSVG, opName){
 	}
 }
 
-export function makeOperationDropdown(ownerSVG, vertexName){
+
+function makeOperationDropdownGeneric(ownerSVG, vertexName){
 	let select = document.createElement('select')
 	select.className = 'form-control'
 	const firstOption = '<option value="" disabled selected>Select...</option>'
@@ -68,6 +69,11 @@ export function makeOperationDropdown(ownerSVG, vertexName){
 		}
 		select.appendChild(option)
 	})
+	return select
+}
+
+function makeOperationDropdown(ownerSVG, vertexName){
+	let select = makeOperationDropdownGeneric(ownerSVG, vertexName)
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
 		ownerSVG.__data__.graphStructure.V[vertexName].__data__.addText(this.value)
@@ -76,6 +82,15 @@ export function makeOperationDropdown(ownerSVG, vertexName){
 		const nOutputs = opdoc.output.length
 		ownerSVG.__data__.givePorts(vertexName, nInputs, nOutputs)
 		sideBarNodeManipulation(ownerSVG, vertexName)
+		ownerSVG.__data__.debugModule()
+	}
+	return select
+}
+
+function makeHigherOrderOperationDropdown(ownerSVG, vertexName){
+	let select = makeOperationDropdownGeneric(ownerSVG, vertexName)
+	select.oninput = function(){
+		ownerSVG.__data__.nodeMetaData[vertexName].literal = [this.value]
 		ownerSVG.__data__.debugModule()
 	}
 	return select
@@ -148,6 +163,9 @@ export function makeManipulationCard(ownerSVG, vertexName, op){
 			['Arguments',space(), makePB(false, true), makePB(true, true)],
 			['Delete Node',space(), makeDeleteButton(ownerSVG, vertexName)],
 		]
+	}
+	if(['apply', 'map', 'reduce', 'reductions'].includes(op)){
+		listItems.push(['Implements',space(),makeHigherOrderOperationDropdown(ownerSVG, vertexName)])
 	}
 	const list = _makeListFromItems(listItems)
 	list.className += ' list-group-flush'
