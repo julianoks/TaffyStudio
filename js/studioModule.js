@@ -34,6 +34,7 @@ function applyModuleNameChange(aTag, textbox){
 	if(validModuleName(studio, proposedName) !== true
 		|| proposedName === oldName){ return }
 	aTag.text(proposedName)
+	aTag.attr('id', proposedName)
 	const holder = studio.__data__.moduleHolders[oldName]
 	delete studio.__data__.moduleHolders[oldName]
 	studio.__data__.moduleHolders[proposedName] = holder
