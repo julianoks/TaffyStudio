@@ -49,7 +49,7 @@ function getOpDoc(ownerSVG, opName){
 }
 
 
-function makeOperationDropdownGeneric(ownerSVG, vertexName){
+function makeOperationDropdownGeneric(ownerSVG, selectedOp){
 	let select = document.createElement('select')
 	select.className = 'form-control'
 	const firstOption = '<option value="" disabled selected>Select...</option>'
@@ -64,7 +64,7 @@ function makeOperationDropdownGeneric(ownerSVG, vertexName){
 		let option = document.createElement('option')
 		option.value = identifier
 		option.innerHTML = name
-		if(identifier === ownerSVG.__data__.nodeMetaData[vertexName].op){
+		if(identifier === selectedOp){
 			option.selected = 'selected'
 		}
 		select.appendChild(option)
@@ -73,7 +73,8 @@ function makeOperationDropdownGeneric(ownerSVG, vertexName){
 }
 
 function makeOperationDropdown(ownerSVG, vertexName){
-	let select = makeOperationDropdownGeneric(ownerSVG, vertexName)
+	const selectedOp = ownerSVG.__data__.nodeMetaData[vertexName].op
+	let select = makeOperationDropdownGeneric(ownerSVG, selectedOp)
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].op = this.value
 		ownerSVG.__data__.graphStructure.V[vertexName].__data__.addText(this.value)
@@ -88,7 +89,8 @@ function makeOperationDropdown(ownerSVG, vertexName){
 }
 
 function makeHigherOrderOperationDropdown(ownerSVG, vertexName){
-	let select = makeOperationDropdownGeneric(ownerSVG, vertexName)
+	const selectedOp = ownerSVG.__data__.nodeMetaData[vertexName].literal[0]
+	let select = makeOperationDropdownGeneric(ownerSVG, selectedOp)
 	select.oninput = function(){
 		ownerSVG.__data__.nodeMetaData[vertexName].literal = [this.value]
 		ownerSVG.__data__.debugModule()
