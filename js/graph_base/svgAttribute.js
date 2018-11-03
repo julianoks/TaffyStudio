@@ -95,16 +95,16 @@ const clearNodeAlerts = ({svgElement}) =>
 		.forEach(p => p.parentElement.remove())
 
 const bindValuesToPorts = (svgData, valueTrace, failedNode=false) => {
-	Array.from(svgData.svgElement.querySelectorAll('.nodePorts'))
+	Array.from(svgData.svgElement.querySelectorAll('.nodeContainer'))
 		.forEach(e => {e.__data__.outputVals = {}})
-	const inputPorts = svgData.moduleMetaData.inputNode.querySelector('.nodePorts')
-	inputPorts.__data__.outputVals = {}
+	const {inputNode} = svgData.moduleMetaData
+	inputNode.__data__.outputVals = {}
 	const nodesToIdxsToVals = Object.entries(valueTrace)
 		.reduce((acc, [k,v]) => {
 			const [name, idx] = k.split(':')
 			if(name==='DEBUG'){return acc}
 			if(name.startsWith('INPUT_')){
-				inputPorts.__data__.outputVals[name.split('_')[1]] = v
+				inputNode.__data__.outputVals[name.split('_')[1]] = v
 				return acc
 			}
 			if(!acc.hasOwnProperty(name)){ acc[name] = {} }
@@ -124,7 +124,7 @@ const bindValuesToPorts = (svgData, valueTrace, failedNode=false) => {
 			return
 		}
 		const container = svgData.graphStructure.V[node]
-		container.querySelector('.nodePorts').__data__.outputVals = idxToVal
+		container.__data__.outputVals = idxToVal
 		const displayedOut = container.querySelector('.nodeOutPort').querySelectorAll('circle').length
 		const nOut = Object.keys(idxToVal).length
 		if(nOut !== displayedOut){

@@ -1,16 +1,16 @@
 function getValue(ele){
-    let ports, outIndex;
+    let node, outIndex;
     if(ele.tagName === 'path'){
-        const {node, index} = ele.__data__.edgeRelation.from
+        const {index} = ele.__data__.edgeRelation.from
         outIndex = index
-        ports = node.querySelector('.nodePorts')
+        node = ele.__data__.edgeRelation.from.node
     } else if(ele.tagName === 'circle'){
-        ports = ele.closest('.nodePorts')
+        node = ele.closest('.nodeContainer')
         outIndex = ele.__data__.index
     } else {return false}
-    if(!(ports.__data__.hasOwnProperty('outputVals') &&
-        ports.__data__.outputVals.hasOwnProperty(outIndex))){return false}
-    const value = ports.__data__.outputVals[outIndex]
+    if(!(node.__data__.hasOwnProperty('outputVals') &&
+        node.__data__.outputVals.hasOwnProperty(outIndex))){return false}
+    const value = node.__data__.outputVals[outIndex]
     return {value}
 }
 

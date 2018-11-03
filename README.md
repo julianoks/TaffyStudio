@@ -122,6 +122,8 @@ Contains multiple [```nodeContainer```s](#nodecontainer).
 ### nodeContainer
 Data Attribute:
 - vertexName - the name of the node
+- addText - A funciton ```(text) => undefined``` that adds values to the [```nodeGuts```](#nodeguts)
+- outputVals - An object holding the values emmited from the node's ports, used for value hovering
 
 ### nodePorts
 Contains the [```nodeInPort```](#nodeinport) and [```nodeOutPort```](#nodeoutport).
