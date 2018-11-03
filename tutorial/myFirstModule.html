@@ -1,0 +1,25 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My First Module | Tutorial | TensorStudio</title>
+    <script src="../deps/d3/d3.js"></script>
+    <script src="../deps/dagre/dagre.min.js"></script>
+    <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+<div class='interactive' style='display:table;margin-left:auto;margin-right: auto;'></div>
+<script type="module">
+import {displayInteractive} from './utils.js'
+
+const holder = '.interactive'
+const focusModule = 'dense'
+const fullBase = [{"name":"dense","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["relu:0"],"nodes":[{"name":"mx_b","op":"add","input":["mx:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"mx","op":"matmul","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"relu","op":"relu","input":["mx_b:0"],"literal":[]}],"module_import":[],"doc":{"input":["Input 1","Input 2","Input 3"],"output":["Output 1"],"doc":"Implements module \"dense\""}}]
+const inpDesc = {"INPUT_0":{"selectedType":"tensor","shape":["batch",100],"dtype":"float32","JSONtext":""}, "INPUT_1":{"selectedType":"tensor","shape":[100,10],"dtype":"float32","JSONtext":""}, "INPUT_2":{"selectedType":"tensor","shape":[10],"dtype":"float32","JSONtext":""} }
+
+window.displayNodes = showOnly => displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc)
+displayNodes(['INPUT_0', 'INPUT_1', 'INPUT_2', 'mx', 'mx_b',])
+</script>
+</body>
+</html>
