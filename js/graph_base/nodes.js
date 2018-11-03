@@ -203,7 +203,7 @@ export function addNodeNoGUI(coords, op, literal, name){
 	const {svgElement, nodeMetaData} = this
 	const node = addNode(d3.select(svgElement),
 			coords, {}, _nodeEventHandlers, _populateNode, name)
-		.call(s => addTextToGuts(s, op))
+		.call(s => addTextToGuts(s, name.startsWith('vertex_')? op : name))
 		.each(({vertexName}) => {
 			nodeMetaData[vertexName] = {op, literal}
 		})
