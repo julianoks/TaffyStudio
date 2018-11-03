@@ -43,7 +43,8 @@ export function addBaseModule(module, invisible=true){
     const {svg, navbarItem} = this.newTabFn(module.name)
     // don't show in navbar, don't debug when creating
     navbarItem.classed('defaultModule', invisible)
-    //svg.__data__.debugModule = () => {}
+    const origDebug = svg.__data__.debugModule
+    svg.__data__.debugModule = () => {}
     svg.__data__.moduleMetaData.imports = module.module_import
     svg.__data__.moduleMetaData.doc = module.doc
     // add nodes
@@ -62,4 +63,5 @@ export function addBaseModule(module, invisible=true){
                 const fromRef = inputSet.has(f)? `Inputs:${module.input.indexOf(f)}` : `${f}:${fromI}`
                 svg.__data__.addEdge(fromRef, `${name}:${toI}`)
             }))
+    svg.__data__.debugModule = origDebug
 }
