@@ -1,6 +1,6 @@
 import {newStudio} from '../js/studioModule.js'
 
-export function displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc) => {
+export function displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc){
     d3.select(holder).html('')
     const base = fullBase.map(m => m.name!==focusModule? m : 
         Object.assign({}, m, {nodes: m.nodes.filter(({name}) => showOnly.includes(name)),
