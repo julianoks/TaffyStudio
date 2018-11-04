@@ -95,6 +95,7 @@ Data Attribute:
 - handleFailedPull - A function ```(e) => false``` that takes an error ```e``` and propagates it to the UI
 - addNode - A function ```([x,y], 'operation', literals, 'name') => selection``` that adds a node without using the GUI
 - addEdge - A function ```("node1:index", "node2:index") => undefined``` that adds an edge without using the GUI
+- sideBarNode - a function ```(vertex) => undefined``` that displays the sidebar for the specified vertex name
 
 ### drawCanvas
 Used for scaling/translating content.

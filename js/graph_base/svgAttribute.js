@@ -3,6 +3,7 @@ import {addNodeNoGUI as addNode} from './nodes.js'
 import {constructors as taffyConstructors} from '../../deps/Taffy/src/index.js'
 import {puller as taffyPuller} from '../../deps/Taffy/src/index.js'
 import {graphStructure as protoGraphStructure} from './graph_structure.js'
+import {sideBarNodeManipulation} from '../sidebar/sideBar.js'
 
 function getGraph(){
 	const getName = v => v.__data__.vertexName,
@@ -272,6 +273,10 @@ function nodeAlert(vertex, message){
 		})
 }
 
+function sideBarNode(vertex){
+	sideBarNodeManipulation(this.svgElement, vertex)
+}
+
 export function makeSvgData(){
     return {
 		graphStructure: new protoGraphStructure(),
@@ -294,5 +299,6 @@ export function makeSvgData(){
 		handleFailedPull,
 		addEdge,
 		addNode,
+		sideBarNode,
 	}
 }

@@ -1,6 +1,5 @@
 import {primitives} from '../../deps/Taffy/src/index.js'
 import {makeChangePortButton, makeDeleteButton} from './nodeInteraction.js'
-import {sideBarNodeManipulation} from './sideBar.js'
 
 function valid_C_identifier(str){
 	const match = str.match(/[_a-zA-Z][_a-zA-Z0-9]*/)
@@ -82,7 +81,7 @@ function makeOperationDropdown(ownerSVG, vertexName){
 		const nInputs = opdoc.input.length
 		const nOutputs = opdoc.output.length
 		ownerSVG.__data__.givePorts(vertexName, nInputs, nOutputs)
-		sideBarNodeManipulation(ownerSVG, vertexName)
+		ownerSVG.__data__.sideBarNode(vertexName)
 		ownerSVG.__data__.debugModule()
 	}
 	return select
@@ -133,7 +132,7 @@ export function makeNodeNameBox(ownerSVG, vertexName){
 			inp.reportValidity()
 			return
 		}
-		sideBarNodeManipulation(ownerSVG, this.value)
+		ownerSVG.__data__.sideBarNode(this.value)
 		const nextBox = ownerSVG.closest('.moduleHolder').querySelector('.sideBar #vertexName')
 		nextBox.focus()
 		nextBox.value = ''

@@ -1,6 +1,5 @@
 import {giveNodePorts} from './give_ports.js'
 import {inverseRelativeTransform} from './svg_utils.js'
-import {sideBarNodeManipulation} from '../sidebar/sideBar.js'
 
 // node drag behavior
 const __nodeOnDrag = function(ele){
@@ -84,7 +83,7 @@ function addNode(svgSelection, coords, nodeParam, eventHandlers, populateNode, n
 			literal: []
 		}
 		// focus the sidebar on the newly created node
-		sideBarNodeManipulation(this.ownerSVGElement, vertexName)
+		this.ownerSVGElement.__data__.sideBarNode(vertexName)
 	})
 	// upon completion call populateNode callback on node, rescale ports
 	if(typeof populateNode === "function"){
@@ -113,7 +112,7 @@ const _nodeEventHandlers = {
 		*/
 	},
 	click: ele => {
-		sideBarNodeManipulation(ele.ownerSVGElement, ele.__data__.vertexName)
+		ele.ownerSVGElement.__data__.sideBarNode(ele.__data__.vertexName)
 	}
 }
 const _populateNode = container => {
@@ -182,7 +181,7 @@ function addInputOutputNodes(svgSelection){
 			svgEle.__data__.moduleMetaData.outputNode = container.node()
 		}
 		addNode(d3.select(svgEle), [xPos, topYPos], nodeParam, _nodeEventHandlers, populateOutput, 'Outputs')
-		sideBarNodeManipulation(svgEle, 'Inputs')
+		svgEle.__data__.sideBarNode('Inputs')
 	})
 }
 

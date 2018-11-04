@@ -14,5 +14,7 @@ export function displayInteractive(holder, focusModule, showOnly, fullBase, inpD
     d3.select(`${holder} #module_1`).node().parentElement.remove()
     const svgData = studio.__data__.moduleHolders[focusModule].querySelector('svg').__data__
     svgData.moduleMetaData.inputDescriptions = inpDesc
+    svgData.givePorts('Inputs', 0, Object.keys(inpDesc).length)
+    svgData.sideBarNode(showOnly.length==0? 'Inputs' : showOnly.slice(-1)[0])
     svgData.debugModule()
 }
