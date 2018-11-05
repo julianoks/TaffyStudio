@@ -7,19 +7,76 @@
     <script src="../deps/d3/d3.js"></script>
     <script src="../deps/dagre/dagre.min.js"></script>
     <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
-</head>
-<body>
-<div class='interactive' style='display:table;margin-left:auto;margin-right: auto;'></div>
 <script type="module">
 import {displayInteractive} from './utils.js'
 
-const holder = '.interactive'
+const holder = '#interactive'
 const focusModule = 'dense'
-const fullBase = [{"name":"dense","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["relu:0"],"nodes":[{"name":"mx_b","op":"add","input":["mx:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"mx","op":"matmul","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"relu","op":"relu","input":["mx_b:0"],"literal":[]}],"module_import":[],"doc":{"input":["Input 1","Input 2","Input 3"],"output":["Output 1"],"doc":"Implements module \"dense\""}}]
+const fullBase = [{"name":"dense","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["relu:0"],"nodes":[{"name":"XW_b","op":"add","input":["XW:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"XW","op":"matmul","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"relu","op":"relu","input":["XW_b:0"],"literal":[]}],"module_import":[],"doc":{"input":["Input 1","Input 2","Input 3"],"output":["Output 1"],"doc":"Implements module \"dense\""}}]
 const inpDesc = {"INPUT_0":{"selectedType":"tensor","shape":["batch",100],"dtype":"float32","JSONtext":""}, "INPUT_1":{"selectedType":"tensor","shape":[100,10],"dtype":"float32","JSONtext":""}, "INPUT_2":{"selectedType":"tensor","shape":[10],"dtype":"float32","JSONtext":""} }
 
 window.displayNodes = showOnly => displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc)
-displayNodes(['INPUT_0', 'INPUT_1', 'INPUT_2', 'mx', 'mx_b','relu'])
+displayNodes([])
 </script>
+<style>
+.main {
+    width: 80%;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+.main > p {
+    margin-bottom: 2em;
+}
+</style>
+</head>
+<body>
+<div class='main'>
+<h2>My First Module, a Dense Layer</h2>
+<p>
+<h5>Defining Inputs <a href="#interactive" onclick="displayNodes([])">GO!</a></h5>
+We're going to create a module that implements a simple "dense" layer given the values W, X, and b.
+A dense layer can be expressed as f(x) = ReLU(XW + b), where X, W, and b are tensor values.
+<br>
+We'll first populate the input descriptions, expecting X to have shape (batch, 100), 
+W to have shape (100, 10), and b to have shape (10).
+Notice how we can hover over the input node's ports to inspect these value.
+</p>
+
+<p>
+<h5>Matrix Multiplication, XW <a href="#interactive" onclick="displayNodes(['XW'])">GO!</a></h5>
+We then apply a matrix multiplication to the first two inputs, leaving us with XW.
+We click on the canvas which creates a node, then select "matmul" (matrix multiplication) as its operation.
+We can also give it the name "XW". 
+Now we drag the values from the first to inputs to the matrix multiplication node. 
+By hovering over the node's output ports, we can see the resulting tensor's shape is ("batch", 10).
+</p>
+
+<p>
+<h5>Addition, XW_b <a href="#interactive" onclick="displayNodes(['XW', 'XW_b'])">GO!</a></h5>
+Next we create a node that implements the addition ("add") operation that adds "XW" and our last input.
+We call this "XW_b"
+</p>
+
+<p>
+<h5>ReLU and outputs <a href="#interactive" onclick="displayNodes(['XW', 'XW_b', 'relu'])">GO!</a></h5>
+Finally, we hit 'XW_b' with a ReLU.
+To emit the resulting value as an output, we draw an edge from the "relu" node to the Output node.
+</p>
+
+<p>
+<h5>Experiment!</h5>
+This would be a good point to play around and get familiar with TaffyStudio.
+For example, try to
+<ul>
+    <li>Change the input descriptions so as to produce an error.
+        For example, change the shapes so that matrix multiplication or addition is invalid.</li>
+    <li>Add or remove operations.</li>
+    <li>Add or remove inputs and outputs, which can be done by clicking an input or output node 
+        and adjusting the "number of input/outputs" in the side bar.</li>
+</ul>
+</p>
+</div>
+
+<div id='interactive' style='display:table;margin-left:auto;margin-right: auto;'></div>
 </body>
 </html>
