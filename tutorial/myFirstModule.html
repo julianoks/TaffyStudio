@@ -7,6 +7,7 @@
     <script src="../deps/d3/d3.js"></script>
     <script src="../deps/dagre/dagre.min.js"></script>
     <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 <script type="module">
 import {displayInteractive} from './utils.js'
 
@@ -18,16 +19,6 @@ const inpDesc = {"INPUT_0":{"selectedType":"tensor","shape":["batch",100],"dtype
 window.displayNodes = showOnly => displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc)
 displayNodes([])
 </script>
-<style>
-.main {
-    width: 80%;
-    padding-left: 10%;
-    padding-right: 10%;
-}
-.main > p {
-    margin-bottom: 2em;
-}
-</style>
 </head>
 <body>
 <div class='main'>
@@ -35,7 +26,7 @@ displayNodes([])
 <p>
 <h5>Defining Inputs <a href="#interactive" onclick="displayNodes([])">GO!</a></h5>
 We're going to create a module that implements a simple "dense" layer given the values W, X, and b.
-A dense layer can be expressed as f(x) = ReLU(XW + b), where X, W, and b are tensor values.
+A dense layer can be expressed as f(X,W,B) = ReLU(XW + b), where X, W, and b are tensor values.
 <br>
 We'll first populate the input descriptions, expecting X to have shape (batch, 100), 
 W to have shape (100, 10), and b to have shape (10).
@@ -43,11 +34,12 @@ Notice how we can hover over the input node's ports to inspect these value.
 </p>
 
 <p>
-<h5>Matrix Multiplication, XW <a href="#interactive" onclick="displayNodes(['XW'])">GO!</a></h5>
-We then apply a matrix multiplication to the first two inputs, leaving us with XW.
+<h5>My First Node: Matrix Multiplication, XW <a href="#interactive" onclick="displayNodes(['XW'])">GO!</a></h5>
+We'll start by creating a node for the value XW.
+It applies a matrix multiplication to the first two inputs (X and W), leaving us with XW.
 We click on the canvas which creates a node, then select "matmul" (matrix multiplication) as its operation.
-We can also give it the name "XW". 
-Now we drag the values from the first to inputs to the matrix multiplication node. 
+We can give the node the name "XW". 
+Now we drag the first two input values to the matrix multiplication node. 
 By hovering over the node's output ports, we can see the resulting tensor's shape is ("batch", 10).
 </p>
 
@@ -71,12 +63,12 @@ For example, try to
     <li>Change the input descriptions so as to produce an error.
         For example, change the shapes so that matrix multiplication or addition is invalid.</li>
     <li>Add or remove operations.</li>
-    <li>Add or remove inputs and outputs, which can be done by clicking an input or output node 
+    <li>Add or remove inputs and outputs. This can be done by clicking an input or output node 
         and adjusting the "number of input/outputs" in the side bar.</li>
 </ul>
 </p>
 </div>
 
-<div id='interactive' style='display:table;margin-left:auto;margin-right: auto;'></div>
+<div id='interactive'></div>
 </body>
 </html>
