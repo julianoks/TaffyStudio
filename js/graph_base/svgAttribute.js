@@ -20,12 +20,6 @@ function getGraph(){
 	return g
 }
 
-const _createOpDoc = (moduleInputs, moduleOutputs, moduleName) => {
-	const inputs = moduleInputs.map((_,i) => `Input ${i+1}`)
-	const outputs = moduleOutputs.map((_,i) => `Output ${i+1}`)
-	const doc = `Implements module "${moduleName}"`
-	return new taffyConstructors.op_doc(inputs, outputs, doc)
-}
 function getTaffyModule(){
 	const svgData = this
 	let moduleInputs = [],
@@ -62,7 +56,7 @@ function getTaffyModule(){
 		}
 		return acc.concat([new node(name, op, inputs, literal)])
 	}, []),
-	moduleDoc = _createOpDoc(moduleInputs, moduleOutputs, moduleName)
+	moduleDoc = svgData.moduleMetaData.doc
 	return new module(moduleName, moduleInputs, moduleOutputs, nodes, moduleImport, moduleDoc)
 }
 
