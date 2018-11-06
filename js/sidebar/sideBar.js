@@ -1,6 +1,7 @@
 import {makeManipulationCard, makeOpDocCards, makeLiteralsCard, makeFunctionCard} from './nodeMetaDataManipulation.js'
 import {makeInputDescCard} from './inputDescriptions.js'
 import {makeCompileButton} from './compileModuleModal.js'
+import {makeModuleDocCard} from './moduleDocumentation.js'
 
 export function addSideBar(svgSelection, size){
 	svgSelection.nodes().forEach(svgEle => {
@@ -48,6 +49,7 @@ export function sideBarNodeManipulation(ownerSVG, vertexName){
 	}
 
 	if(op === 'INPUTS' || op === 'OUTPUTS'){
+		sideBar.append(makeModuleDocCard(ownerSVG))
 		const button = makeCompileButton(ownerSVG)
 		button.style = 'margin-left: auto; margin-right: auto; display: table;'
 		sideBar.appendChild(button)

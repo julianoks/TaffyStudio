@@ -287,7 +287,8 @@ export function makeSvgData(){
 			inputDescriptions: {},
 			imports: [],
 			inputNode: undefined,
-			outputNode: undefined
+			outputNode: undefined,
+			doc: new taffyConstructors.op_doc([''], [''], ''),
 		},
 		pullModule,
 		debugModule,
