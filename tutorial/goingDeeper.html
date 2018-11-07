@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Going Deeper | Tutorial | TensorStudio</title>
+    <script src="../deps/d3/d3.js"></script>
+    <script src="../deps/dagre/dagre.min.js"></script>
+    <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+<script type="module">
+import {displayInteractive} from './utils.js'
+
+const dense = {"name":"dense","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["relu:0"],"nodes":[{"name":"XW_b","op":"add","input":["XW:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"XW","op":"matmul","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"relu","op":"relu","input":["XW_b:0"],"literal":[]}],"module_import":[],"doc":{"input":["Input 1","Input 2","Input 3"],"output":["Output 1"],"doc":"Implements module \"dense\""}}
+const denseStack = {"name":"denseStack","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["vertex_4:0"],"nodes":[{"name":"vertex_1","op":"dense","input":["INPUT_0:0","INPUT_1:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"vertex_2","op":"dense","input":["vertex_1:0","INPUT_1:0","INPUT_2:0"],"literal":[]},{"name":"vertex_3","op":"dense","input":["vertex_2:0","INPUT_1:0","INPUT_2:0"],"literal":[]},{"name":"vertex_4","op":"add","input":["INPUT_0:0","vertex_3:0"],"literal":[]}],"module_import":["dense"],"doc":{"input":[""],"output":[""],"doc":""}}
+
+const holder = '#interactive'
+const focusModule = 'denseStack'
+const fullBase = [dense, denseStack]
+const inpDesc = {"INPUT_0":{"selectedType":"tensor","shape":["batch",10],"dtype":"float32","JSONtext":""}, "INPUT_1":{"selectedType":"tensor","shape":[10,10],"dtype":"float32","JSONtext":""}, "INPUT_2":{"selectedType":"tensor","shape":[10],"dtype":"float32","JSONtext":""} }
+
+window.displayNodes = (showUpTo, inD=inpDesc) => 
+    displayInteractive(holder, focusModule, Array(showUpTo).fill().map((_,i) => `vertex_${i+1}`), fullBase, inD)
+displayNodes(0)
+</script>
+</head>
+<body>
+<div class='main'>
+<h2>Going Deeper, Composing Modules</h2>
+<p>
+This tutorial introduces composition by using the "dense" module from the previous tutorial to create new modules.
+We'll create a module, 
+<a href="#interactive" onclick="displayNodes(4)">"denseChain"</a>, 
+that nests "dense" modules together and adds the first input back to the result.
+</p>
+
+<p>
+<h5>Defining Imports <a href="#interactive" onclick="displayNodes(0, {})">GO!</a></h5>
+In order for a module's node to implement another module as its operation, 
+the node's module must explicitly import that module.
+This is done by clicking the Imports button attached to tab at the top bar.
+You'll notice that "denseChain" already imports the "dense" module.
+You can import and unimport a module by clicking on it in the imports interface.
+</p>
+
+<p>
+<h5>Inputs <a href="#interactive" onclick="displayNodes(0)">GO!</a></h5>
+Because our module's inputs are being passed directly to a "dense" module, 
+we'll provide it with corresponding input descriptions.
+The "dense" module takes 3 inputs (X,W,b) to produce a single output, XW+b.
+Let's give our module's input shapes of (batch, 10), (10,10) and (10).
+</p>
+
+<p>
+<h5>Nodes</h5>
+We'll start by creating a single node that implements the "dense" module as an operation, 
+and give it the same values supplied to our module, <a href="#interactive" onclick="displayNodes(1)">GO!</a>.
+To nest, we simply repeat this 
+<a href="#interactive" onclick="displayNodes(2)">again</a>, and 
+<a href="#interactive" onclick="displayNodes(3)">again</a>... 
+Finally, we may add the final result to the first input, 
+<a href="#interactive" onclick="displayNodes(4)">GO!</a>.
+</p>
+
+<p>
+<h5>Going Deeper...</h5>
+Congratulations, you've just composed a module!
+Now that you know how to compose modules, try creating another module that uses our new "denseChain" module.
+And maybe compose something out of that!
+</p>
+
+
+</div>
+
+<div id='interactive'></div>
+
+<hr>
+<div class='main'>
+<p></p>
+</div>
+
+</body>
+</html>
