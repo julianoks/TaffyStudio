@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>First Neural Network | Tutorial | TensorStudio</title>
+    <script src="../deps/d3/d3.js"></script>
+    <script src="../deps/dagre/dagre.min.js"></script>
+    <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+<script type="module">
+import {displayInteractive} from './utils.js'
+
+const getWeight = {"name":"get_weight","input":["INPUT_0","INPUT_1"],"output":["final:0"],"nodes":[{"name":"multiplier_params","op":"js_function","input":["INPUT_0:0"],"literal":["tensor => [[], Math.sqrt(2/tensor.shape.slice(1).reduce((a,b)=>a*b,1)), tensor.dtype]"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"weight_params","op":"js_function","input":["INPUT_0:0","INPUT_1:0"],"literal":["(tensor, units) => [[...tensor.shape.slice(1), units], \"normal\"]"]},{"name":"multiplier","op":"get_tensor","input":["multiplier_params:0","multiplier_params:1","multiplier_params:2"],"literal":[]},{"name":"unscaled_weight","op":"get_tensor","input":["weight_params:0","weight_params:1","multiplier_params:2"],"literal":[]},{"name":"scaled","op":"multiply","input":["multiplier:0","unscaled_weight:0"],"literal":[]},{"name":"final","op":"variable","input":["scaled:0","collections:0"],"literal":[]},{"name":"collections","op":"literals","input":[],"literal":[["trainable","regularization"]]}],"module_import":[],"doc":{"input":["Input tensor","Number of units"],"output":["Weight tensor"],"doc":"Gets weight tensor using he initialization"}}
+const getBias = {"name":"get_bias","input":["INPUT_0"],"output":["vertex_3:0"],"nodes":[{"name":"vertex_2","op":"get_tensor","input":["get_shape:0","vertex_1:0","INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"get_shape","op":"js_function","input":["INPUT_0:0"],"literal":["t => [t.shape.slice(1)]"]},{"name":"vertex_3","op":"variable","input":["vertex_2:0","vertex_1:1"],"literal":[]},{"name":"vertex_1","op":"literals","input":[],"literal":["zeros",["trainable"]]}],"module_import":[],"doc":{"input":["Input 1"],"output":["Output 1"],"doc":"Implements module \"get_bias\""}}
+const denseLayer = {"name":"denseLayer","input":["INPUT_0","INPUT_1"],"output":["XW_b:0"],"nodes":[{"name":"ingest","op":"js_function","input":["INPUT_0:0","INPUT_1:0"],"literal":["(tensor, givenUnits) => {\nif(!(tensor.shape && tensor.shape.length>=2)){\nthrow(\"First input must be tensor of rank>=2\");}\nconst units = givenUnits || tensor.shape.slice(-1)[0];\nif(!(Number.isInteger(units) && units>0)){\nthrow(\"Second input, units, must be a positive integer.\");}\nreturn [tensor, units];\n}"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"bias","op":"get_bias","input":["XW:0"],"literal":[]},{"name":"XW","op":"matmul","input":["ingest:0","weight:0"],"literal":[]},{"name":"XW_b","op":"add","input":["XW:0","bias:0"],"literal":[]},{"name":"weight","op":"get_weight","input":["ingest:0","ingest:1"],"literal":[]}],"module_import":["get_weight","get_bias"],"doc":{"input":["Input 1","Input 2"],"output":["Output 1"],"doc":"Implements module \"denseLayer\""}};
+const denseLayerReLU = {"name":"denseLayerReLU","input":["INPUT_0","INPUT_1"],"output":["ReLU:0"],"nodes":[{"name":"dense","op":"denseLayer","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"ReLU","op":"relu","input":["dense:0"],"literal":[]}],"module_import":["denseLayer"],"doc":{"input":["Input 1","Input 2"],"output":["Output 1"],"doc":"Implements module \"denseLayerReLU\""}}
+const crossEntropyLoss = {"name":"cross_entropy_loss","input":["INPUT_0","INPUT_1"],"output":["vertex_7:0"],"nodes":[{"name":"vertex_1","op":"softmax","input":["INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"vertex_2","op":"gather","input":["vertex_1:0","INPUT_1:0"],"literal":[]},{"name":"vertex_4","op":"log","input":["vertex_2:0"],"literal":[]},{"name":"vertex_6","op":"reduce_avg","input":["vertex_4:0"],"literal":[]},{"name":"vertex_7","op":"negate","input":["vertex_6:0"],"literal":[]}],"module_import":[],"doc":{"input":["2D Tensor, shape of (N,D)","Indices, shape (D), dtype \"int32\""],"output":["Loss (a scalar)"],"doc":"Implements the cross-entropy loss."}}
+const sum_squares = {"name":"sum_squares","input":["INPUT_0"],"output":["vertex_6:0"],"nodes":[{"name":"vertex_2","op":"pow","input":["INPUT_0:0","vertex_5:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"vertex_6","op":"reduce_sum","input":["vertex_2:0"],"literal":[]},{"name":"vertex_5","op":"get_tensor","input":["vertex_4:0","vertex_4:1"],"literal":[]},{"name":"vertex_4","op":"literals","input":[],"literal":[[],2]}],"module_import":[],"doc":{"input":["Input 1"],"output":["Output 1"],"doc":"Implements module \"sum_squares\""}}
+const L2_regularization = {"name":"L2_regularization","input":["INPUT_0","INPUT_1"],"output":["vertex_6:0"],"nodes":[{"name":"vertex_2","op":"get_collection","input":["vertex_3:0","INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"vertex_7","op":"js_function","input":["INPUT_1:0"],"literal":["(number=1) => number"]},{"name":"vertex_1","op":"map","input":["vertex_2:0"],"literal":["sum_squares"]},{"name":"vertex_6","op":"multiply","input":["sum_l2s:0","vertex_5:0"],"literal":[]},{"name":"sum_l2s","op":"apply","input":["vertex_1:0"],"literal":["add"]},{"name":"vertex_3","op":"literals","input":[],"literal":[["regularization"]]},{"name":"vertex_5","op":"scalar","input":["vertex_7:0"],"literal":[]}],"module_import":["sum_squares"],"doc":{"input":["Control edge","Regularization strength"],"output":["Regularization loss"],"doc":"Implements L2 regularization"}}
+
+const logits = {"name":"logits","input":["INPUT_0"],"output":["last:0"],"nodes":[{"name":"first","op":"denseLayerReLU","input":["INPUT_0:0","layerSizes:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"second","op":"denseLayerReLU","input":["first:0","layerSizes:1"],"literal":[]},{"name":"layerSizes","op":"literals","input":[],"literal":[50,20,10]},{"name":"last","op":"denseLayer","input":["second:0","layerSizes:2"],"literal":[]}],"module_import":["denseLayerReLU","denseLayer"],"doc":{"input":["Data, of shape (batch,...)"],"output":["Logits, of shape (batch,...,10)"],"doc":"Calculates the logits from data"}}
+const trainer = {"name":"trainer","input":["INPUT_0","INPUT_1"],"output":["total_loss:0"],"nodes":[{"name":"logits","op":"logits","input":["INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"data_loss","op":"cross_entropy_loss","input":["logits:0","INPUT_1:0"],"literal":[]},{"name":"reg_loss","op":"L2_regularization","input":["logits:0","reg_strength:0"],"literal":[]},{"name":"total_loss","op":"add","input":["reg_loss:0","data_loss:0"],"literal":[]},{"name":"reg_strength","op":"literals","input":[],"literal":[0.001]}],"module_import":["logits","cross_entropy_loss","L2_regularization"],"doc":{"input":["Data, shape (batch, ...)","Indices, int32, shape (batch)"],"output":["Data + regularization loss"],"doc":"Given data and labels, calculates loss"}}
+
+const holder = '#interactive'
+
+window.displayTrainer = (showOnly=["logits","data_loss","reg_strength","reg_loss","total_loss"]) => {
+    const focusModule = 'trainer'
+    const fullBase = [getWeight, getBias, denseLayer, denseLayerReLU,crossEntropyLoss,sum_squares,L2_regularization,logits,trainer]
+    const inpDesc = {
+        "INPUT_0":{"selectedType":"tensor","shape":["batch",784],"dtype":"float32","JSONtext":""},
+        "INPUT_1":{"selectedType":"tensor","shape":["batch"],"dtype":"int32","JSONtext":""}
+    }
+    displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc)
+}
+
+window.displayModel = (showOnly=["layerSizes","first","second","last"]) => {
+    const focusModule = 'logits'
+    const fullBase = [getWeight, getBias, denseLayer, denseLayerReLU,crossEntropyLoss,sum_squares,L2_regularization,logits,trainer]
+    const inpDesc = {
+        "INPUT_0":{"selectedType":"tensor","shape":["batch",784],"dtype":"float32","JSONtext":""},
+    }
+    displayInteractive(holder, focusModule, showOnly, fullBase, inpDesc)
+}
+
+displayTrainer()
+</script>
+</head>
+<body>
+<div class='main'>
+<h2>My First Neural Network</h2>
+<p>
+<h5>Inputs <a href="#interactive" onclick="displayTrainer([])">GO!</a></h5>
+We're going to make a Neural Network for a supervised classification task known as MNIST.
+MNIST is a dataset of pictures of hand written digits, each associated with a label from 0 to 9.
+The goal here is to predict a label from the picture.
+<br><br>
+First, a model is created that takes an input object (photos), and maps it to a set of labels.
+The training phase will take this model and try to tune its parameters so as to have it match the associated labels.
+The output of our model will then be a vector of 10 values for every image, essentially giving how much evidence there is for each of the 10 possible labels.
+This output is typically called a "logit" in machine learning.
+<br><br>
+Each photo has 784 pixels, and each pixel has just one value for opacity.
+Each photo is given as an unraveled row vector of length 784.
+Thus our data input will be of shape (batch, 784), and of type "float32".
+Every photo is associated with a label, which will be an integer from 0-9.
+Thus the labels input will be of shape (784), and of type "int32".
+</p>
+
+<h5>The Model <a href="#interactive" onclick="displayTrainer(['logits'])">GO!</a></h5>
+<p>
+Our model is supposed to take a batch of images and produce a batch of logits.
+The internals of the model follow from the previous tutorials, so we won't detail its internals.
+The interested reader can view its internals <a href="#interactive" onclick="displayModel()">here</a>.
+</p>
+
+<h5>Data Loss <a href="#interactive" onclick="displayTrainer(['logits','data_loss'])">GO!</a></h5>
+<p>
+Given the logits we just produced, we can evaluate the loss on the data using the cross-entropy loss, 
+sometimes called the negative log-likelihood.
+This gives us a scalar loss value.
+</p>
+
+<h5>Regularization Loss <a href="#interactive" onclick="displayTrainer(['logits','reg_strength','reg_loss'])">GO!</a></h5>
+<p>
+A regularization loss is used to give preference towards simpler, less overfit models.
+In this case we use L2 regularization which we weight by some regularization strength.
+We first define our regularization strength in a <a href="#interactive" onclick="displayTrainer(['logits','reg_strength',])">literals operation</a>,
+which will be passed to our <a href="#interactive" onclick="displayTrainer(['logits','reg_strength','reg_loss'])">regularization node</a>.
+<br><br>
+Notice that the regularization node takes the logits as an argument, despite not using its value.
+This is because the L2_regularization module uses a <i>control edge</i> to ensure that 
+it can use all the variables that were used prior to the logits operation.
+</p>
+
+<h5>Coming Together <a href="#interactive" onclick="displayTrainer()">GO!</a></h5>
+Finally, we add the data and regularization losses together to yield our final loss.
+We use the final loss as the output of our module.
+<br><br>
+<p>
+To train our model, we minimize the loss we just defined with respect to trainable variables.
+To use our model, we simply "cut out" the logits module.
+Training and extracting a module is covered in a future tutorial.
+</p>
+</div>
+
+<div id='interactive'></div>
+
+<hr>
+<div class='main'>
+</div>
+
+</body>
+</html>
