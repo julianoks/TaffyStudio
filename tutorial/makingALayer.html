@@ -51,7 +51,7 @@ displayNoIngest([])
 The module in the previous took 3 inputs (X,W,b) to produce a single output, XW+b.
 The module we're producing in this tutorial, "denseLayer", takes just one tensor (X) 
 and the number of units in the layer, to produce the output XW+b.
-<br>
+<br><br>
 First, we'll populate the input descriptions so that we may expect an input tensor of shape (batch, 784),
 and for the layer to have perhaps 10 units.
 </p>
@@ -62,7 +62,7 @@ Unlike the module from the previous tutorial, W and b are not supplied as argume
 Rather, we expect a layer to implicitly produce the appropriate <strong><i>variables</i></strong>.
 A variable is a tensor whose state is persistent and mutable.
 In this case, W and b are variables that we may use and update, so we will register them as variables.
-<br>
+<br><br>
 There is some complexity around how one shapes and initializes the values of weight and bias variables,
 which we leave to the "get_weight" and "get_bias" modules. 
 These modules create the weights using He initialization and zero initialization, respectively.
@@ -88,12 +88,6 @@ We then pass the value from XW to a node that implements "get_bias".
 </p>
 
 <p>
-<h5>Getting the bias variable, bias <a href="#interactive" onclick="displayNoIngest(['weight', 'XW', 'bias'])">GO!</a></h5>
-Similar to how we got the weight variable, we first import the "get_bias" module/
-We then pass the value from XW to a node that implements "get_bias".
-</p>
-
-<p>
 <h5>Addition and Outptus, XW_b <a href="#interactive" onclick="displayNoIngest(['weight', 'XW', 'bias', 'XW_b'])">GO!</a></h5>
 Finally, we add 'XW' and 'bias' to produce 'XW_b', which we emit as an output.
 </p>
@@ -101,7 +95,7 @@ Finally, we add 'XW' and 'bias' to produce 'XW_b', which we emit as an output.
 <p>
 <h5>Improvements?</h5>
 To simulate applying this module to different inputs, try changing the input descriptions.
-<br>
+<br><br>
 When an error is produced, you may notice that it is not entirely obvious how it relates to the inputs.
 When one writes a computer program, this is usually alleviated by creating assertions when ingesting inputs.
 Likewise, to improve the usability of a module a good programmer should 
@@ -112,7 +106,7 @@ in <a href="#interactive" onclick="displayIngest(['ingest', 'weight', 'XW', 'bia
 
 <h5>Composing denseLayer: adding activation functions <a href="#interactive" onclick="displayReLU(['dense', 'ReLU'])">GO!</a></h5>
 The "denseLayer" module can be reused elsewhere, for example in creating a dense layer that uses a ReLU activation.
-<br>
+<br><br>
 We'll create a layer called "denseLayerReLU" that forwards the result of 
 <a href="#interactive" onclick="displayReLU(['dense'])">denseLayer</a> to a 
 <a href="#interactive" onclick="displayReLU(['dense', 'ReLU'])">ReLU operation</a>. Easy!
