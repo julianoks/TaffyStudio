@@ -60,11 +60,10 @@ The training phase will take this model and try to tune its parameters so as to 
 The output of our model will then be a vector of 10 values for every image, essentially giving how much evidence there is for each of the 10 possible labels.
 This output is typically called a "logit" in machine learning.
 <br><br>
-Each photo has 784 pixels, and each pixel has just one value for opacity.
-Each photo is given as an unraveled row vector of length 784.
+Each photo is given as an unraveled row vector of 784 values, each representing how dark a pixel is.
 Thus our data input will be of shape (batch, 784), and of type "float32".
-Every photo is associated with a label, which will be an integer from 0-9.
-Thus the labels input will be of shape (784), and of type "int32".
+Every photo is also associated with a label, which will be an integer from 0-9.
+Thus the labels input will be of shape (batch), and of type "int32".
 </p>
 
 <h5>The Model <a href="#interactive" onclick="displayTrainer(['logits'])">GO!</a></h5>
