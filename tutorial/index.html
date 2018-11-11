@@ -21,10 +21,17 @@
     margin-right: auto;
     display: block;
 }
+
+.main {
+    width: 75vw;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 1em;
+}
 </style>
 </head>
 <body>
-<div style='display: grid; grid-template-columns: 2fr 1fr; grid-gap: 1em;'>
+<div class="center main">
 <div>
 <p>
 TaffyStudio is an interactive visual interface to Taffy,
@@ -185,7 +192,7 @@ which may update aspects of the GUI such as the ports and the values attached to
 
 <h4>Evaluation</h4>
 <p>
-Evaluations are performed to update values and debugging errors in the graph.
+Evaluations are performed to update values and debug errors in the graph.
 </p><p>
 When a user hovers over a port or edge, a tooltip displays the value flowing along it, as shown in <a href="#figure7">figure 7</a>.
 This makes tensor operations easier to construct because the shape and type of the tensor arguments are readily accesible.
@@ -240,6 +247,7 @@ reflecting the state at the time of the error.
     <li><a href="goingDeeper.html">Going Deeper</a> shows how one can compose modules.</li>
     <li><a href="makingALayer.html">Making a Layer</a> builds off the first tutorial to produce a standard layer implementation.</li>
     <li><a href="firstNeuralNetwork.html">My First Neural Network</a> uses dense layers to make an MNIST classifier.</li>
+    <li><a href="CNN.html">Deep CNN MNIST Classifier</a> uses CNNs+Batch Normalization to make a better MNIST classifier.</li>
 </ul>
 </div>
 
