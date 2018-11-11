@@ -50,10 +50,14 @@ export function addBaseModule(module, invisible=true){
     // add nodes
     const inputSet = new Set(module.input)
     const positions = transformPositions(getPositions(module), svg)
-    module.nodes.filter(({name}) => !inputSet.has(name))
-        .forEach(({name, op, literal}) => {
-            svg.__data__.addNode(positions[name], op, literal, name)
+    const notInputNodes = module.nodes.filter(({name}) => !inputSet.has(name))
+    let scaleNode = 8 * Math.min(+svg.getAttribute('width'), +svg.getAttribute('height'))
+    scaleNode /= Math.max(8, notInputNodes.length)
+    notInputNodes.forEach(({name, op, literal}) => {
+        svg.__data__.addNode(positions[name], op, literal, name, {
+            width: 0.12*scaleNode, height: 0.06*scaleNode, rounding: 0.005*scaleNode
         })
+    })
     // add edges
     const outputPsuedoNode = {name: 'Outputs', input: module.output}
     module.nodes.concat([outputPsuedoNode])
