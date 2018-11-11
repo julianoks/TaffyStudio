@@ -11,7 +11,9 @@
 <body>
 
 </body>
-<script>
+<script type="module">
+import {optimize as optimizeModule} from './optimize.js'
+
 const addCSVInput = selection => selection.append("input")
     .attr("type", "file")
     .attr("accept", ".csv")
@@ -49,13 +51,13 @@ function reactToCSV(data){
 }
 function reactToFactory(factory){
     window.factory = factory
-    window.model = new factory(tf)
+    window.moduleFn = new factory(tf)
 }
 
 function optimize(){
-    if(!['data', 'model'].every(s => window.hasOwnProperty(s))){return}
+    if(!['data', 'moduleFn'].every(s => window.hasOwnProperty(s))){return}
     const {data, labels} = window.data
-    window.model.optimize([data, labels])
+    optimizeModule(window.moduleFn, [data, labels])
 }
 
 d3.select('body')
