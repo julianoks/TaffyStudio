@@ -213,7 +213,7 @@ export function makeLiteralsCard(ownerSVG, vertexName){
 		textbox.oninput = () => {
 			const nLiteralsCommited = ownerSVG.__data__.nodeMetaData[vertexName].literal
 			if(list.childElementCount !== nLiteralsCommited){
-				ownerSVG.__data__.givePorts(vertexName, 0, list.childElementCount)
+				ownerSVG.__data__.givePorts(vertexName, 0, list.childElementCount, false)
 			}
 			textbox.setCustomValidity('')
 			textbox.reportValidity()
@@ -228,6 +228,7 @@ export function makeLiteralsCard(ownerSVG, vertexName){
 				}
 			}
 			ownerSVG.__data__.nodeMetaData[vertexName].literal = newLiterals
+			ownerSVG.__data__.debugModule()
 		}
 		li.appendChild(textbox)
 		list.appendChild(li)
