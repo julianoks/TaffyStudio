@@ -131,6 +131,7 @@ export function newStudio(studioParent, studioSize, givenModsImports){
 		.style('width', width)
 		.append('div').classed('navbar-collapse collapse', true)
 		.append('ul').classed('nav navbar-nav', true)
+		.style('display', 'flex').style('flex-direction', 'row').style('flex-wrap', 'wrap')
 
 	const modulesHolder = studio.append('div')
 		.classed('modulesHolder', true)
