@@ -23,6 +23,7 @@
 }
 
 .main {
+    font-size: 14px;
     width: 75vw;
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -32,14 +33,32 @@
 </head>
 <body>
 <div class="center main">
+
 <div>
+<br>
 <p>
 TaffyStudio is an interactive visual interface to Taffy,
 a framework for the development of Neural Network models.
 This document provides a high-level overview of Taffy's API and the TaffyStudio interface, 
-then offers a number of hands-on tutorials.
+and offers a number of hands-on tutorials.
 </p>
+</div>
+<div></div>
 
+<div>
+<h3>Tutorials</h3>
+<ul>
+    <li><a href="myFirstModule.html">My First Module</a> provides a simple example for a module that implements a dense layer.</li>
+    <li><a href="goingDeeper.html">Going Deeper</a> shows how one can compose modules.</li>
+    <li><a href="makingALayer.html">Making a Layer</a> builds off the first tutorials to produce a standard layer implementation.</li>
+    <li><a href="firstNeuralNetwork.html">My First Neural Network</a> uses dense layers to make an MNIST classifier.</li>
+    <li><a href="resnet.html">ResNet, A Very Deep CNN</a> uses a ResNet architecture (with 18 convolution layers!) to make a better MNIST classifier.</li>
+    <li>Compiling, training, deploying</li>
+</ul>
+</div>
+<div></div>
+
+<div>
 <h3>The Taffy Framework</h3>
 <p>
 The Taffy framework allows one to represent a Neural Network model and compile it to an arbitrary backend.
@@ -238,17 +257,6 @@ reflecting the state at the time of the error.
     A warning message, with a link to the module where the error occured.
     </span>
     </div>
-</div>
-
-<div>
-    <h3>Tutorials</h3>
-<ul>
-    <li><a href="myFirstModule.html">My First Module</a> provides a simple example for a module that implements a dense layer.</li>
-    <li><a href="goingDeeper.html">Going Deeper</a> shows how one can compose modules.</li>
-    <li><a href="makingALayer.html">Making a Layer</a> builds off the first tutorial to produce a standard layer implementation.</li>
-    <li><a href="firstNeuralNetwork.html">My First Neural Network</a> uses dense layers to make an MNIST classifier.</li>
-    <li><a href="CNN.html">Deep CNN MNIST Classifier</a> uses CNNs+Batch Normalization to make a better MNIST classifier.</li>
-</ul>
 </div>
 
 </div>

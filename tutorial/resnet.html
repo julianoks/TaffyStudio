@@ -1,0 +1,226 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ResNet, A Very Deep CNN | Tutorial | TensorStudio</title>
+    <script src="../deps/d3/d3.js"></script>
+    <script src="../deps/dagre/dagre.min.js"></script>
+    <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+<script type="module">
+import {displayInteractive} from './utils.js'
+
+// Base modules
+
+// dense
+const getWeight = {"name":"get_weight","input":["INPUT_0","INPUT_1"],"output":["final:0"],"nodes":[{"name":"multiplier_params","op":"js_function","input":["INPUT_0:0"],"literal":["tensor => [[], Math.sqrt(2/tensor.shape.slice(1).reduce((a,b)=>a*b,1)), tensor.dtype]"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"weight_params","op":"js_function","input":["INPUT_0:0","INPUT_1:0"],"literal":["(tensor, units) => [[...tensor.shape.slice(1), units], \"normal\"]"]},{"name":"multiplier","op":"get_tensor","input":["multiplier_params:0","multiplier_params:1","multiplier_params:2"],"literal":[]},{"name":"unscaled_weight","op":"get_tensor","input":["weight_params:0","weight_params:1","multiplier_params:2"],"literal":[]},{"name":"scaled","op":"multiply","input":["multiplier:0","unscaled_weight:0"],"literal":[]},{"name":"final","op":"variable","input":["scaled:0","collections:0"],"literal":[]},{"name":"collections","op":"literals","input":[],"literal":[["trainable","regularization"]]}],"module_import":[],"doc":{"input":["Input tensor","Number of units"],"output":["Weight tensor"],"doc":"Gets weight tensor using he initialization"}}
+const getBias = {"name":"get_bias","input":["INPUT_0"],"output":["vertex_3:0"],"nodes":[{"name":"vertex_2","op":"get_tensor","input":["get_shape:0","vertex_1:0","INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"get_shape","op":"js_function","input":["INPUT_0:0"],"literal":["t => [t.shape.slice(1)]"]},{"name":"vertex_3","op":"variable","input":["vertex_2:0","vertex_1:1"],"literal":[]},{"name":"vertex_1","op":"literals","input":[],"literal":["zeros",["trainable"]]}],"module_import":[],"doc":{"input":["Input 1"],"output":["Output 1"],"doc":"Implements module \"get_bias\""}}
+const denseLayer = {"name":"denseLayer","input":["INPUT_0","INPUT_1"],"output":["XW_b:0"],"nodes":[{"name":"ingest","op":"js_function","input":["INPUT_0:0","INPUT_1:0"],"literal":["(tensor, givenUnits) => {\nif(!(tensor.shape && tensor.shape.length>=2)){\nthrow(\"First input must be tensor of rank>=2\");}\nconst units = givenUnits || tensor.shape.slice(-1)[0];\nif(!(Number.isInteger(units) && units>0)){\nthrow(\"Second input, units, must be a positive integer.\");}\nreturn [tensor, units];\n}"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"bias","op":"get_bias","input":["XW:0"],"literal":[]},{"name":"XW","op":"matmul","input":["ingest:0","weight:0"],"literal":[]},{"name":"XW_b","op":"add","input":["XW:0","bias:0"],"literal":[]},{"name":"weight","op":"get_weight","input":["ingest:0","ingest:1"],"literal":[]}],"module_import":["get_weight","get_bias"],"doc":{"input":["Input 1","Input 2"],"output":["Output 1"],"doc":"Implements module \"denseLayer\""}};
+const denseModules = [getWeight, getBias, denseLayer]
+
+// conv
+const get_conv_weight = {"name":"get_conv_weight","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["weight_var:0"],"nodes":[{"name":"scale_calc","op":"js_function","input":["INPUT_0:0"],"literal":["(tensor) => [[], Math.sqrt(2/tensor.shape.slice(1).reduce((a,b)=>a*b,1)), tensor.dtype]"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"shape","op":"js_function","input":["INPUT_0:0","INPUT_1:0","INPUT_2:0"],"literal":["(tensor, filter, units) => {\nconst inDepth = tensor.shape.slice(-1)[0];\nconst newShape = [...filter, inDepth, units || inDepth];\nreturn [newShape, \"normal\", tensor.dtype];\n}"]},{"name":"vertex_2","op":"get_tensor","input":["shape:0","shape:1","shape:2"],"literal":[]},{"name":"scale_tensor","op":"get_tensor","input":["scale_calc:0","scale_calc:1","scale_calc:2"],"literal":[]},{"name":"weight_var","op":"variable","input":["scaling:0","collections:0"],"literal":[]},{"name":"scaling","op":"multiply","input":["vertex_2:0","scale_tensor:0"],"literal":[]},{"name":"collections","op":"literals","input":[],"literal":[["trainable","regularization"]]}],"module_import":[],"doc":{"input":["Input tensor","Filter shape (array of positive integers)","Out Channels"],"output":["Weight tensor"],"doc":"Gets a weight tensor (ie filter) for convolution."}}
+const convLayer = {"name":"convLayer","input":["INPUT_0","INPUT_1","INPUT_2","INPUT_3","INPUT_4"],"output":["vertex_6:0"],"nodes":[{"name":"ingest","op":"js_function","input":["INPUT_0:0","INPUT_1:0","INPUT_2:0","INPUT_3:0","INPUT_4:0"],"literal":["(...args) => {\nlet [tensor, filter, channels, strides, padding] = args;\nif(!(tensor.shape && tensor.shape.length >= 3)){throw(\"First input, tensor, must be tensor of rank>=3\");}\nfilter = Number.isInteger(filter)? Array(tensor.shape.length-2).fill(filter) : filter;\nchannels = channels || tensor.shape.slice(-1)[0];\nif(!(Array.isArray(filter) && filter.every(x=>Number.isInteger(x)))){throw(\"Second input, filter, must be an array of positive integers\");}\nif(!Number.isInteger(channels)){throw(\"Third input, channels, must be an integer.\");}\nreturn [tensor, filter, channels, strides, padding];\n}"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_3","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_4","op":"placeholder","input":[],"literal":[]},{"name":"vertex_2","op":"get_conv_weight","input":["ingest:0","ingest:1","ingest:2"],"literal":[]},{"name":"vertex_1","op":"js_function","input":["ingest:0","ingest:2"],"literal":["(input, units) => [[units], \"zeros\", input.dtype, [\"trainable\"]]"]},{"name":"vertex_10","op":"convolution","input":["ingest:0","vertex_2:0","ingest:3","ingest:4"],"literal":[]},{"name":"vertex_3","op":"get_tensor","input":["vertex_1:0","vertex_1:1","vertex_1:2"],"literal":[]},{"name":"bias","op":"variable","input":["vertex_3:0","vertex_1:3"],"literal":[]},{"name":"vertex_6","op":"add","input":["bias:0","vertex_10:0"],"literal":[]}],"module_import":["get_conv_weight"],"doc":{"input":["Input tensor","Filter shape (array of positive integers)","Output Channels","(optional) Strides","(optional) Padding"],"output":["Convolution"],"doc":"Implements a convolution with bias, no activation"}}
+const convModules = [get_conv_weight, convLayer]
+
+// resnet block
+const resnetBlock = {"name":"resnetBlock","input":["INPUT_0"],"output":["add:0"],"nodes":[{"name":"bn1","op":"batch_norm","input":["INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"add","op":"add","input":["INPUT_0:0","conv2:0"],"literal":[]},{"name":"conv1","op":"convLayer","input":["vertex_2:0","conv1Params:0"],"literal":[]},{"name":"vertex_2","op":"relu","input":["bn1:0"],"literal":[]},{"name":"conv2","op":"convLayer","input":["vertex_6:0","conv2Params:0"],"literal":[]},{"name":"vertex_6","op":"relu","input":["bn2:0"],"literal":[]},{"name":"bn2","op":"batch_norm","input":["conv1:0"],"literal":[]},{"name":"conv1Params","op":"literals","input":[],"literal":[3]},{"name":"conv2Params","op":"literals","input":[],"literal":[1]}],"module_import":["convLayer"],"doc":{"input":["Input tensor"],"output":["Output, same shape as input tensor"],"doc":"A ResNet block"}}
+const resnetBlockModules = [...convModules, resnetBlock]
+
+// resnet model
+const model = {"name":"resnetMNIST","input":["INPUT_0"],"output":["logits:0"],"nodes":[{"name":"inputReshape","op":"reshape","input":["INPUT_0:0","inputNewShape:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"logits","op":"denseLayer","input":["flatten:0","nClasses:0"],"literal":[]},{"name":"nClasses","op":"literals","input":[],"literal":[10]},{"name":"flatten","op":"reshape","input":["pooling:0","flatShape:0"],"literal":[]},{"name":"flatShape","op":"literals","input":[],"literal":[["batch",196]]},{"name":"block3","op":"resnetBlock","input":["block2:0"],"literal":[]},{"name":"block2","op":"resnetBlock","input":["block1:0"],"literal":[]},{"name":"block1","op":"resnetBlock","input":["inputReshape:0"],"literal":[]},{"name":"block4","op":"resnetBlock","input":["block3:0"],"literal":[]},{"name":"block5","op":"resnetBlock","input":["block4:0"],"literal":[]},{"name":"block6","op":"resnetBlock","input":["block5:0"],"literal":[]},{"name":"block7","op":"resnetBlock","input":["block6:0"],"literal":[]},{"name":"block8","op":"resnetBlock","input":["block7:0"],"literal":[]},{"name":"block9","op":"resnetBlock","input":["block8:0"],"literal":[]},{"name":"pooling","op":"avg_pool","input":["block9:0","poolingParams:0","poolingParams:1"],"literal":[]},{"name":"inputNewShape","op":"literals","input":[],"literal":[["batch",28,28,1]]},{"name":"poolingParams","op":"literals","input":[],"literal":[2,2]}],"module_import":["denseLayer","resnetBlock","convLayer"],"doc":{"input":["A batch of MNIST images, of the shape (batch, 784)"],"output":["Logits on the MNIST images, of the shape (batch, 10)"],"doc":"A ResNet based MNIST classifier"}}
+const resnetModelModules = [...denseModules, ...resnetBlockModules, model]
+
+// loss
+const crossEntropyLoss = {"name":"cross_entropy_loss","input":["INPUT_0","INPUT_1"],"output":["vertex_7:0"],"nodes":[{"name":"vertex_1","op":"softmax","input":["INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"vertex_2","op":"gather_rows","input":["vertex_1:0","INPUT_1:0"],"literal":[]},{"name":"vertex_4","op":"log","input":["vertex_2:0"],"literal":[]},{"name":"vertex_6","op":"reduce_avg","input":["vertex_4:0"],"literal":[]},{"name":"vertex_7","op":"negate","input":["vertex_6:0"],"literal":[]}],"module_import":[],"doc":{"input":["2D Tensor, shape of (N,D)","Indices, shape (D), dtype \"int32\""],"output":["Loss (a scalar)"],"doc":"Implements the cross-entropy loss."}}
+const sum_squares = {"name":"sum_squares","input":["INPUT_0"],"output":["vertex_6:0"],"nodes":[{"name":"vertex_2","op":"pow","input":["INPUT_0:0","vertex_5:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"vertex_6","op":"reduce_sum","input":["vertex_2:0"],"literal":[]},{"name":"vertex_5","op":"get_tensor","input":["vertex_4:0","vertex_4:1"],"literal":[]},{"name":"vertex_4","op":"literals","input":[],"literal":[[],2]}],"module_import":[],"doc":{"input":["Input 1"],"output":["Output 1"],"doc":"Implements module \"sum_squares\""}}
+const L2_regularization = {"name":"L2_regularization","input":["INPUT_0","INPUT_1"],"output":["vertex_6:0"],"nodes":[{"name":"vertex_2","op":"get_collection","input":["vertex_3:0","INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"vertex_7","op":"js_function","input":["INPUT_1:0"],"literal":["(number=1) => number"]},{"name":"vertex_1","op":"map","input":["vertex_2:0"],"literal":["sum_squares"]},{"name":"vertex_6","op":"multiply","input":["sum_l2s:0","vertex_5:0"],"literal":[]},{"name":"sum_l2s","op":"apply","input":["vertex_1:0"],"literal":["add"]},{"name":"vertex_3","op":"literals","input":[],"literal":[["regularization"]]},{"name":"vertex_5","op":"scalar","input":["vertex_7:0"],"literal":[]}],"module_import":["sum_squares"],"doc":{"input":["Control edge","Regularization strength"],"output":["Regularization loss"],"doc":"Implements L2 regularization"}}
+const loss = {"name":"CrossEntropyL2Loss","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["totalLoss:0"],"nodes":[{"name":"regLoss","op":"L2_regularization","input":["INPUT_0:0","regStrength:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"dataLoss","op":"cross_entropy_loss","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"regStrength","op":"js_function","input":["INPUT_2:0"],"literal":["strength => strength || 0.001"]},{"name":"totalLoss","op":"add","input":["regLoss:0","dataLoss:0"],"literal":[]}],"module_import":["L2_regularization","cross_entropy_loss"],"doc":{"input":["Logits","Labels (indices)","(optional) regularization strength, defaults to 0.001"],"output":["Total loss"],"doc":"Calculates cross entropy loss + L2 regularization loss"}}
+const lossModules = [crossEntropyLoss, sum_squares, L2_regularization ,loss]
+
+// trainer
+const trainer = {"name":"trainer","input":["INPUT_0","INPUT_1"],"output":["loss:0"],"nodes":[{"name":"model","op":"resnetMNIST","input":["INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"loss","op":"CrossEntropyL2Loss","input":["model:0","INPUT_1:0"],"literal":[]}],"module_import":["resnetMNIST","CrossEntropyL2Loss"],"doc":{"input":[""],"output":[""],"doc":""}}
+const trainerModules = [...resnetModelModules, ...lossModules, trainer]
+
+
+
+// interactives
+const holder = '#interactive'
+
+window.displayBlock = showN => {
+    const nodes = ["bn1", "vertex_2", "conv1Params", "conv1", "bn2", "vertex_6", "conv2Params", "conv2", "add"]
+    const showOnly = nodes.slice(0, showN || nodes.length)
+    const inpDesc = {
+        "INPUT_0":{"selectedType":"tensor","shape":["batch",28,28,3],"dtype":"float32","JSONtext":""},
+    }
+    displayInteractive(holder, 'resnetBlock', showOnly, resnetBlockModules, inpDesc)
+}
+
+window.displayModel = showN => {
+    const nodes = ["inputNewShape", "inputReshape", "block1", "block2", "block3", "block4", "block5", "block6", "block7", "block8", "block9", "poolingParams", "pooling", "flatShape", "flatten", "nClasses", "logits"]
+    const showOnly = nodes.slice(0, showN || nodes.length)
+    const inpDesc = {
+        "INPUT_0":{"selectedType":"tensor","shape":["batch",784],"dtype":"float32","JSONtext":""},
+    }
+    displayInteractive(holder, 'resnetMNIST', showOnly, resnetModelModules, inpDesc)
+}
+
+window.displayTrainer = showN => {
+    const nodes = ["model", "loss"]
+    const showOnly = nodes.slice(0, showN || nodes.length)
+    const inpDesc = {
+        "INPUT_0":{"selectedType":"tensor","shape":["batch",784],"dtype":"float32","JSONtext":""},
+        "INPUT_1":{"selectedType":"tensor","shape":["batch"],"dtype":"int32","JSONtext":""},
+    }
+    displayInteractive(holder, 'trainer', showOnly, trainerModules, inpDesc)
+}
+
+
+displayModel()
+</script>
+</head>
+<body>
+<div class='main'>
+<h2>ResNet, A Very Deep CNN</h2>
+<p>
+We’re going to make an MNIST classifier using a model based on the ResNet architecture. The ResNet model is predominantly composed of building blocks. This tutorial will focus on the 3 main ingredients: ResNet blocks, the ResNet model, and the loss function used for training. Each of these components will be implemented as modules.
+<br><br>
+As a comparison, here is the 
+<a href="https://github.com/tensorflow/models/blob/628b970a3d7c59a3b65220e24972f9987e879bca/official/resnet/resnet_model.py">official TensorFlow implementation</a> and the 
+<a href="https://github.com/KaimingHe/deep-residual-networks/blob/a7026cb6d478e131b765b898c312e25f9f6dc031/prototxt/ResNet-50-deploy.prototxt">official Caffe implementation from the ResNet paper</a>. The Neural Network constructed in this tutorial is very close to these implementations, but was far easier to develop, edit, debug, and visualize.
+</p>
+
+<h3>ResNet Blocks
+<a href="#interactive" onclick="displayBlock()">GO!</a>
+</h3>
+<p>
+ResNet is predominantly composed of many building blocks. A block applies multiple interleaved batch normalization, ReLu, and convolution operations to the input, and adds this result to the input itself to produce the block’s output. The ResNet paper defines a building block as y=x+F(x,{W}), where F is the function containing batch normalizations, ReLUs, and convolutions.
+</p>
+
+<h5>Inputs
+<a href="#interactive" onclick="displayBlock(0)">GO!</a>
+</h5>
+<p>
+A building block takes a multidimensional input of rank 3 or greater and produces 
+an output of the same size and dtype. 
+This allows multiple blocks to be stacked together. 
+For example, we may choose to provide an input shape of (batch, 28, 28, 3) and dtype "float32".
+</p>
+
+<h5>Batch Normalization -> ReLU -> Conv
+<a href="#interactive" onclick="displayBlock(8)">GO!</a>
+</h5>
+<p>
+A building block may repeat the "Batch Normalization -> ReLU -> Conv" pattern, usually 2 or 3 times. 
+Although we could extract this to a module, because we're only repeating this twice we won’t. 
+We’ll apply this pattern 
+<a href="#interactive" onclick="displayBlock(4)">once</a> … and then a 
+<a href="#interactive" onclick="displayBlock(8)">second time</a>.
+</p>
+
+<h5>Addition, Outputs
+<a href="#interactive" onclick="displayBlock(9)">GO!</a>
+</h5>
+<p>
+Finally, we’ll add the input to the result of our other computation, and return this as the block’s output.
+</p>
+
+<h3>ResNet Model
+<a href="#interactive" onclick="displayModel()">GO!</a>
+</h3>
+<p>
+We’re now going to use the building blocks we just created to make a Resnet model.
+</p>
+
+<h5>Inputs, Reshaping
+<a href="#interactive" onclick="displayModel(2)">GO!</a>
+</h5>
+<p>
+The 
+<a href="#interactive" onclick="displayModel(0)">input</a>
+to our model will be a batch of MNIST images, of shape (batch, 784). 
+Before applying any convolution, we will first 
+<a href="#interactive" onclick="displayModel(2)">reshape</a>
+our images from vectors of shape (784) 
+to a more natural image shape of (28,28,1). 
+Each image now has width and height 28, and a depth of a single channels (which represents darkness). Now we’re operating over an input of shape (batch, 28, 28, 1).
+</p>
+
+<h5>A Very Deep Stack of Blocks
+<a href="#interactive" onclick="displayModel(11)">GO!</a>
+</h5>
+<p>
+Next we’ll feed our reshaped input to a ResNet block, 
+<a href="#interactive" onclick="displayModel(3)">again</a>, 
+<a href="#interactive" onclick="displayModel(5)">and again</a>, …
+<a href="#interactive" onclick="displayModel(7)">and again</a>, …
+<a href="#interactive" onclick="displayModel(11)">and again</a>.
+<br><br>
+Note that there are higher-order operations, namely "reduce", that allow you to 
+programmatically stack an arbitrary number of blocks, 
+but for this example we’ll stack them manually.
+</p>
+
+<h5>Pooling
+<a href="#interactive" onclick="displayModel(13)">GO!</a>
+</h5>
+<p>
+We’ll use average pooling to reduce the size of the results from the blocks. 
+This is helpful because we are quartering the size of the input to the dense layer, 
+one of the more expensive layers. This reduces its parameter count from 8624 to 2156.
+</p>
+
+<h5>Output, Flattening, Logits
+<a href="#interactive" onclick="displayModel()">GO!</a>
+</h5>
+<p>
+Next we’ll 
+<a href="#interactive" onclick="displayModel(15)">flatten</a>
+our data to a rank 2 matrix of size (batch, 196). 
+This will be fed to a 
+<a href="#interactive" onclick="displayModel()">dense layer</a>
+that creates logits of size (batch, 10), which will be returned as the output of our model.
+</p>
+
+<h3>The Loss Function
+<a href="#interactive" onclick="displayTrainer()">GO!</a>
+</h3>
+<h5>Inputs
+<a href="#interactive" onclick="displayTrainer(0)">GO!</a>
+</h5>
+<p>
+When training, we will compare the output of the model to the ground truth labels. 
+Hence our module will take two inputs: the images, of size (batch, 784) and dtype "float32", 
+and the labels, of size (batch) and dtype "int32".
+</p>
+
+<h5>The Model
+<a href="#interactive" onclick="displayTrainer(1)">GO!</a>
+</h5>
+<p>
+Now we’ll feed the images into our model.
+</p>
+
+<h5>Loss, Output
+<a href="#interactive" onclick="displayTrainer()">GO!</a>
+</h5>
+<p>
+And we’ll use this to finally calculate the loss. The loss is calculated using the "CrossEntropyL2Loss" module.
+</p>
+
+</div>
+
+<div class="alert alert-warning" role="alert" style="width: 50%; margin-left: auto; margin-right: auto;">
+The automatic graph layout algorithm is still under development and may have some kinks.
+For the time being, please do this manaully and "excuse our appearance".
+</div>
+
+<div id='interactive'></div>
+
+<hr>
+<div class='main'>
+</div>
+
+</body>
+</html>
