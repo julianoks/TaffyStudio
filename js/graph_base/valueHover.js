@@ -1,3 +1,5 @@
+import {d3} from '../../deps/d3/index'
+
 function getValue(ele){
     let node, outIndex;
     if(ele.tagName === 'path'){

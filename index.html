@@ -1,9 +1,8 @@
 <html>
 <head>
 <title>TaffyStudio</title>
-<script src="deps/d3/d3.js"></script>
-<script src="deps/dagre/dagre.min.js"></script>
 <link rel="stylesheet" href="deps/bootstrap/css/bootstrap.min.css">
+<script src="studio.js"></script>
 <style>
 .placeholder {
 	width: 85vw;
@@ -14,9 +13,8 @@
 <body>
 <div class="placeholder"></div>
 </body>
-<script type="module">
-import {newStudio} from './js/studioModule.js'
-const studio = newStudio('.placeholder')
+<script>
+studio.newStudio('.placeholder')
 </script>
 
 </html>

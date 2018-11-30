@@ -1,5 +1,7 @@
+import {d3} from '../../deps/d3/index'
 import {relativeTransform, makeSVGCircles} from './svg_utils.js'
 import {valueHover} from './valueHover.js'
+
 
 function createEdge(svgSelection){
 	return svgSelection.select(".edgesGroup")

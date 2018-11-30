@@ -1,3 +1,4 @@
+import {d3} from '../../deps/d3/index'
 import {makeManipulationCard, makeOpDocCards, makeLiteralsCard, makeFunctionCard} from './nodeMetaDataManipulation.js'
 import {makeInputDescCard} from './inputDescriptions.js'
 import {makeCompileButton} from './compileModuleModal.js'

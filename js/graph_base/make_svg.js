@@ -1,3 +1,4 @@
+import {d3} from '../../deps/d3/index'
 import {makeGridLines} from './svg_utils.js'
 import {makeSvgData} from './svgAttribute.js'
 

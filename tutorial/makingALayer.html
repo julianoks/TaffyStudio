@@ -8,8 +8,9 @@
     <script src="../deps/dagre/dagre.min.js"></script>
     <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-<script type="module">
-import {displayInteractive} from './utils.js'
+<script src="../studio.js"></script>
+<script src="./utils.js"></script>
+<script>
 
 const getWeight = {"name":"get_weight","input":["INPUT_0","INPUT_1"],"output":["final:0"],"nodes":[{"name":"multiplier_params","op":"js_function","input":["INPUT_0:0"],"literal":["tensor => [[], Math.sqrt(2/tensor.shape.slice(1).reduce((a,b)=>a*b,1)), tensor.dtype]"]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"weight_params","op":"js_function","input":["INPUT_0:0","INPUT_1:0"],"literal":["(tensor, units) => [[...tensor.shape.slice(1), units], \"normal\"]"]},{"name":"multiplier","op":"get_tensor","input":["multiplier_params:0","multiplier_params:1","multiplier_params:2"],"literal":[]},{"name":"unscaled_weight","op":"get_tensor","input":["weight_params:0","weight_params:1","multiplier_params:2"],"literal":[]},{"name":"scaled","op":"multiply","input":["multiplier:0","unscaled_weight:0"],"literal":[]},{"name":"final","op":"variable","input":["scaled:0","collections:0"],"literal":[]},{"name":"collections","op":"literals","input":[],"literal":[["trainable","regularization"]]}],"module_import":[],"doc":{"input":["Input tensor","Number of units"],"output":["Weight tensor"],"doc":"Gets weight tensor using he initialization"}}
 const getBias = {"name":"get_bias","input":["INPUT_0"],"output":["vertex_3:0"],"nodes":[{"name":"vertex_2","op":"get_tensor","input":["get_shape:0","vertex_1:0","INPUT_0:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"get_shape","op":"js_function","input":["INPUT_0:0"],"literal":["t => [t.shape.slice(1)]"]},{"name":"vertex_3","op":"variable","input":["vertex_2:0","vertex_1:1"],"literal":[]},{"name":"vertex_1","op":"literals","input":[],"literal":["zeros",["trainable"]]}],"module_import":[],"doc":{"input":["Input 1"],"output":["Output 1"],"doc":"Implements module \"get_bias\""}}

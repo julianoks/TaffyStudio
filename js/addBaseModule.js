@@ -1,3 +1,5 @@
+import {dagre} from '../deps/dagre/dagre.min.js'
+
 function getPositions(module){
     let g = new dagre.graphlib.Graph()
     g.setGraph({rankdir: 'BT'})

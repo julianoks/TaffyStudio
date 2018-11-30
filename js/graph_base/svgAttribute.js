@@ -1,3 +1,4 @@
+import {d3} from '../../deps/d3/index'
 import {giveNodePorts, addEdge} from './give_ports.js'
 import {addNodeNoGUI as addNode} from './nodes.js'
 import {constructors as taffyConstructors} from '../../deps/Taffy/src/index.js'

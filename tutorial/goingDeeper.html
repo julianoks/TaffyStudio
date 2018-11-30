@@ -8,9 +8,9 @@
     <script src="../deps/dagre/dagre.min.js"></script>
     <link rel="stylesheet" href="../deps/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-<script type="module">
-import {displayInteractive} from './utils.js'
-
+<script src="../studio.js"></script>
+<script src="./utils.js"></script>
+<script>
 const dense = {"name":"dense","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["relu:0"],"nodes":[{"name":"XW_b","op":"add","input":["XW:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"XW","op":"matmul","input":["INPUT_0:0","INPUT_1:0"],"literal":[]},{"name":"relu","op":"relu","input":["XW_b:0"],"literal":[]}],"module_import":[],"doc":{"input":["Input 1","Input 2","Input 3"],"output":["Output 1"],"doc":"Implements module \"dense\""}}
 const denseStack = {"name":"denseStack","input":["INPUT_0","INPUT_1","INPUT_2"],"output":["vertex_4:0"],"nodes":[{"name":"vertex_1","op":"dense","input":["INPUT_0:0","INPUT_1:0","INPUT_2:0"],"literal":[]},{"name":"INPUT_0","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_1","op":"placeholder","input":[],"literal":[]},{"name":"INPUT_2","op":"placeholder","input":[],"literal":[]},{"name":"vertex_2","op":"dense","input":["vertex_1:0","INPUT_1:0","INPUT_2:0"],"literal":[]},{"name":"vertex_3","op":"dense","input":["vertex_2:0","INPUT_1:0","INPUT_2:0"],"literal":[]},{"name":"vertex_4","op":"add","input":["INPUT_0:0","vertex_3:0"],"literal":[]}],"module_import":["dense"],"doc":{"input":[""],"output":[""],"doc":""}}
 

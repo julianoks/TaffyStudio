@@ -1,3 +1,4 @@
+import {d3} from '../deps/d3/index'
 import {createSVG} from './graph_base/make_svg.js'
 import {addNodes} from './graph_base/nodes.js'
 import {addSideBar} from './sidebar/sideBar.js'

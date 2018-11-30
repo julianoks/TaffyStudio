@@ -1,3 +1,5 @@
+import {d3} from '../../deps/d3/index'
+
 export function makeGridLines(selection, svgSize, minGridLines=100){
 	const [width, height] = svgSize,
 	increment = Math.min(...svgSize) / minGridLines,

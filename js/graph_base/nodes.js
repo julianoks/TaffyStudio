@@ -1,3 +1,4 @@
+import {d3} from '../../deps/d3/index'
 import {giveNodePorts} from './give_ports.js'
 import {inverseRelativeTransform} from './svg_utils.js'
 
