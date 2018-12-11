@@ -29,8 +29,8 @@ September Sprint:
 
 October Sprint:
 - [x] debugging interface 
-- [ ] make nodes informative & pretty
-- [ ] put operation name, and user provided name when defined, in nodeGuts
+- [x] make nodes informative & pretty
+- [x] put operation name, and user provided name when defined, in nodeGuts
 - [x] refactor make_svg.js into multiple files
 - [x] call debugModule when edges are drawn or operation is defined
 - [x] debug message for input descriptions
