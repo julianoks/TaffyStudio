@@ -27,7 +27,7 @@ function makeModal(svgElement){
             <select><option value="" disabled="" selected=""></option></select> 
             <a id="copy" style="display: none;" class="btn btn-primary btn-sm" href="#" role="button">copy code</a>
             <br><br>
-            <textarea style="display: none;" class="form-control" rows="3"></textarea>
+            <textarea style="visibility: hidden;" class="form-control" rows="3"></textarea>
             </p>
             </div>
         </div><!-- /.modal-content -->
@@ -51,14 +51,14 @@ function makeModal(svgElement){
     selector.oninput = () => {
         const code = packagers[selector.value](pulled)
         textarea.innerText = code
-        textarea.style.display = 'initial'
+        textarea.style.visibility = 'visible'
         copyButton.style.display = 'initial'
     }
     svgElement.parentElement.appendChild(modal)
 }
 
 export function makeCompileButton(svgElement){
-    const html = '<a class="btn btn-primary btn-lg" href="#" role="button">Compile Module</a>'
+    const html = '<a class="btn btn-primary btn-lg" role="button">Compile Module</a>'
     const button = document.createRange().createContextualFragment(html).firstChild
     button.onclick = () => makeModal(svgElement)
     return button
