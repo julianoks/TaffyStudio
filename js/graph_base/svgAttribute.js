@@ -253,8 +253,9 @@ function nodeAlert(vertex, message){
 	getVertexByName(this, vertex)
 		.select('.nodeGuts').each(function(){
             const ele = document.createRange().createContextualFragment(tooltipHTML).firstElementChild
-			ele.style.opacity = 0
-			this.appendChild(ele)
+            ele.style.opacity = 0
+            this.appendChild(ele)
+            this.style.overflow = 'initial'
 			const tool = ele.querySelector('.nodeAlertTooltip')
             tool.innerHTML = message
 			tool.style.bottom = this.parentElement.querySelector('.nodeBody').getAttribute('height')+'px'

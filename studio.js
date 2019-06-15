@@ -3910,7 +3910,7 @@
             <p>
             Select backend to compile to: 
             <select><option value="" disabled="" selected=""></option></select> 
-            <a id="copy" style="display: none;" class="btn btn-primary btn-sm" href="#" role="button">copy code</a>
+            <a id="copy" style="display: none;" class="btn btn-primary btn-sm" role="button">copy code</a>
             <br><br>
             <textarea style="visibility: hidden;" class="form-control" rows="3"></textarea>
             </p>
@@ -3935,7 +3935,7 @@
 	    };
 	    selector.oninput = () => {
 	        const code = packagers[selector.value](pulled);
-	        textarea.innerText = code;
+	        textarea.value = code;
 	        textarea.style.visibility = 'visible';
 	        copyButton.style.display = 'initial';
 	    };
@@ -4298,7 +4298,8 @@
 			.select('.nodeGuts').each(function(){
 	            const ele = document.createRange().createContextualFragment(tooltipHTML).firstElementChild;
 				ele.style.opacity = 0;
-				this.appendChild(ele);
+	            this.appendChild(ele);
+	            this.style.overflow = 'initial';
 				const tool = ele.querySelector('.nodeAlertTooltip');
 	            tool.innerHTML = message;
 				tool.style.bottom = this.parentElement.querySelector('.nodeBody').getAttribute('height')+'px';
